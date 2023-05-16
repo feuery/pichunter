@@ -1,0 +1,17 @@
+* Pichunter 
+
+** Usage
+
+** Installation
+
+** Author
+
++ Ilpo Lehtinen (feuer at feuerx.net)
+
+** Copyright
+
+Copyright (c) 2023 Ilpo Lehtinen (feuer at feuerx.net)
+
+** License
+
+Licensed under the LLGPL License.

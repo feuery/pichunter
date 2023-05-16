@@ -1,0 +1,14 @@
+
+src/Main.elm,344
+module MainMain1,0
+main =main14,207
+type MsgMsg25,402
+    = HelloHello26,411
+    | UrlChangedUrlChanged27,423
+    | LinkClickedLinkClicked28,448
+type alias Model =type30,494
+type alias ModelModel30,494
+init _ url key =init34,537
+subscriptions _ =subscriptions40,659
+update msg model =update44,753
+view model =view52,994
