@@ -3,6 +3,17 @@
 ** Usage
 
 ** Installation
+#+NAME: installation script, that prepares your environment
+#+BEGIN_SRC sh
+  mkdir -p ~/common-lisp
+  cd ~/common-lisp
+  ln -s $where_ever_you_git_cloned_this_repo_to
+#+END_SRC
+
+after which edit src/main.lisp and add your hostname to the cond form after the form
+#+BEGIN_SRC lisp
+(defparameter *js-location* nil)}
+#+END_SRC
 
 ** Author
 
