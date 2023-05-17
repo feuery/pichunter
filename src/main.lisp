@@ -8,8 +8,12 @@
 (defparameter *js-location* nil)
 
 (cond ((string= (machine-instance)
-	       "roland")
-       (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js")))
+		"roland")
+       (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js"))
+      
+      ((string= (machine-instance)
+		"vivacia")
+       (setf *js-location* #P"/Users/feuer/Projects/pichunter/frontend/elm.js")))
 
 (assert *js-location* nil "JS location should be configured in the source code when developing")
 
