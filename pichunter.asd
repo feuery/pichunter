@@ -11,7 +11,9 @@
                "str")
   :components ((:module "src"
                 :components
-                ((:file "main"))))
+                ((:file "std")
+		 (:file "migrations")
+		 (:file "main"))))
   :description ""
   :in-order-to ((test-op (test-op "pichunter/tests"))))
 

@@ -1,6 +1,7 @@
 (defpackage pichunter
   (:use :cl :cl-who
-	:easy-routes :postmodern))
+	:easy-routes :postmodern)
+  (:import-from :pichunter.std :slurp))
 
 (in-package :pichunter)
 
@@ -22,15 +23,9 @@
   (funcall next))
 
 (defun @transaction (next)
-  ;; (with-connection '("blogdb" "blogadmin" "blog" "localhost" :pooled-p t)
-  ;;   (with-transaction ()
-  (funcall next));))
-
-(defun slurp (path)
-  (with-open-file (stream path)
-    (let ((data (make-string (file-length stream))))
-      (read-sequence data stream)
-      data)))
+  (with-connection '("pichunter" "pichunter" "TESTIPASSU" "localhost" :pooled-p t)
+    (with-transaction ()
+      (funcall next))))
 
 (defparameter elm-init-script
 "var app = Elm.Main.init({
