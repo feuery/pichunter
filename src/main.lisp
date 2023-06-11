@@ -1,11 +1,10 @@
 (defpackage pichunter
-  (:use :cl :cl-who
-	:easy-routes :postmodern)
-  (:import-from :pichunter.std :slurp))
+  (:use :cl :cl-who :postmodern )
+  (:import-from :pichunter.std :slurp)
+  (:import-from :pichunter.decorators :@json :@transaction))
 
 (in-package :pichunter)
 
-(defparameter *server* (hunchentoot:start (make-instance 'easy-routes:routes-acceptor :port 3000)))
 (defparameter *js-location* nil)
 
 (cond ((string= (machine-instance)
@@ -13,27 +12,65 @@
        (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js"))
       
       ((string= (machine-instance)
-		"vivacia")
+		"vivacia.local")
        (setf *js-location* #P"/Users/feuer/Projects/pichunter/frontend/elm.js")))
 
 (assert *js-location* nil "JS location should be configured in the source code when developing")
 
-(defun @json (next)
-  (setf (hunchentoot:content-type*) "application/json")
-  (funcall next))
 
-(defun @transaction (next)
-  (with-connection '("pichunter" "pichunter" "TESTIPASSU" "localhost" :pooled-p t)
-    (with-transaction ()
-      (funcall next))))
+
+
 
 (defparameter elm-init-script
 "var app = Elm.Main.init({
     node: document.getElementById(\"app\")
 });")
 
-(defroute main ("/" :method :get
-		    :decorators (@transaction))
-    ()
-  (let ((script (slurp *js-location*)))
-    (format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))
+(defparameter result nil)
+(defun get-picture (guid)
+  (format t "guid is ~a~%" guid)
+  (let* ((res (pichunter.file-handler:get-picture-data guid)))
+
+    (setf result res)
+    
+    `(200 (:content-type "image/jpeg") ,res)))
+
+(defun extract-pic-guid (path-info)
+    (declare (optimize (debug 3)))
+  (declaim (optimize debug))
+  (let* ((pattern "/api/pictures/(.*)$"))
+    (ppcre:register-groups-bind (guid) (pattern path-info)
+      guid)))
+
+(defparameter *env* nil)
+
+(defun handler (env)
+  (destructuring-bind (&key request-method path-info request-uri
+                         query-string headers
+			 content-type content-length raw-body 
+		       &allow-other-keys)
+      env
+    
+    (format t "path-info: ~a~%" path-info)
+    (if (string= path-info "/")
+	`(200 nil (,(let ((script (slurp *js-location*)))
+		      (format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script))))
+	(if (string= path-info "/api/pictures")
+	    `(200 nil ,(pichunter.file-handler:handle-upload (http-body:parse content-type content-length raw-body)))
+
+	    (if (str:starts-with? "/api/pictures/" path-info)
+		(let ((guid (extract-pic-guid path-info)))
+		  (get-picture guid))
+
+		`(204 nil nil))))))
+		 
+
+(defvar *clack-server*
+  (clack:clackup (lambda (env)
+		   (funcall 'handler env))
+		 :port 3000))
+
+;; (defroute main ("/" :method :get
+;; 		    :decorators (@transaction))
+;;     ()
+;;   )

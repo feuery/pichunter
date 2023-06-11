@@ -6,8 +6,12 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 
 import Http
-
 import Url
+
+import File_view
+import File exposing (mime)
+import State exposing (..)
+import Pichunter_http exposing (..)
 
 
 main : Program () Model Msg
@@ -21,18 +25,9 @@ main =
     , onUrlRequest = LinkClicked
     }
 
-
-type Msg
-    = Hello
-    | UrlChanged Url.Url
-    | LinkClicked Browser.UrlRequest
         
-type alias Model =
-    { world: String }
-
-
 init _ url key =
-        ( Model "hello world!"
+        ( Model File_upload_demo "hello world!"
         , Cmd.batch [] )
         
       
@@ -45,12 +40,24 @@ update msg model =
     case msg of
         Hello -> ( { model | world = "Update ran!"}
                  , Cmd.none)
+        GotInputFiles files ->
+            if List.all (\file -> String.startsWith "image" (mime file)) files then
+                ( model
+                , Cmd.batch (List.map (\file -> postPicture file) files))
+            else
+                Debug.log ("Expected images, got " ++ (String.join ", " (List.map mime files)))
+                ( model
+                , Cmd.none)
+        UploadedImage result ->
+            Debug.log ("Probably uploaded an image. What does the lisp side look like? " ++ (Debug.toString result))
+            ( model, Cmd.none)
         UrlChanged _ -> ( model, Cmd.none)
         LinkClicked _ -> ( model, Cmd.none)
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
-    , body =
-        [ div [] [ text model.world ]
-        , button [onClick Hello] [ text "TEST ME"]]}
+    , body = case model.viewstate of
+                 Demo -> [ div [] [ text model.world ]
+                         , button [onClick Hello] [ text "TEST ME"]]
+                 File_upload_demo -> File_view.view model}

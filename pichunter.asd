@@ -6,13 +6,17 @@
 	       "cl-who"
                "simple-date"
                "simple-date/postgres-glue"
-               "easy-routes"
+               "clack"
+	       "http-body"
                "cl-json"
                "str")
   :components ((:module "src"
                 :components
                 ((:file "std")
 		 (:file "migrations")
+		 (:file "migration-list")
+		 (:file "decorators")
+		 (:file "file-handler")
 		 (:file "main"))))
   :description ""
   :in-order-to ((test-op (test-op "pichunter/tests"))))

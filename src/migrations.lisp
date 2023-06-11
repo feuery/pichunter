@@ -85,10 +85,7 @@
 	(execute "UPDATE pichunter.migrations_tracker SET installed_successfully = TRUE where filename = $1" name)))))
 
 (init-migration-system)
-
-;; how to use:
-;; (defmigration #P"/Users/feuer/Projects/pichunter/src/init-main-tables.sql")
-;; (defmigration #P"/Users/feuer/Projects/pichunter/src/init-main-tables2.sql")
   
 ;; (with-db
+;;     (clean)
 ;;     (migrate))
