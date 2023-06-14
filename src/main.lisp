@@ -42,18 +42,15 @@
 		       &allow-other-keys)
       env
     
-    (format t "path-info: ~a~%" path-info)
     (if (string= path-info "/")
 	`(200 nil (,(let ((script (slurp *js-location*)))
 		      (format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script))))
-	(if (string= path-info "/api/pictures")
-	    `(200 nil ,(pichunter.file-handler:handle-upload (http-body:parse content-type content-length raw-body)))
 
-	    (if (str:starts-with? "/api/pictures/" path-info)
-		(let ((guid (extract-pic-guid path-info)))
-		  (get-picture guid))
+	(if (str:starts-with? "/api/pictures/" path-info)
+	    (let ((guid (extract-pic-guid path-info)))
+	      (get-picture guid))
 
-		`(204 nil nil))))))
+	    `(204 nil nil)))))
 		 
 
 (defvar *clack-server*
