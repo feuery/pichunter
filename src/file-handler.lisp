@@ -37,8 +37,6 @@
 	     
   
 (defun handle-upload (files)
-  ;; (format t "~a~%" env)
-  ;; (setf file-stuff env)
   (pichunter.std:with-db 
       (dolist (file files)
 	(let ((stream (second file))
@@ -50,9 +48,13 @@
     ""))
 
 (defun get-picture-data (guid)
-    (assert guid)
-    (pichunter.std:with-db
-	(let ((result 
-		(caar
-		 (postmodern:query "SELECT data FROM pichunter.pictures WHERE id = $1" guid))))
-	  result)))
+  ;; (declare (optimize (debug 3)))
+  ;; (declaim (optimize debug))
+  (pichunter.std:with-db
+      (let* ((result 
+	      (car
+	       (postmodern:query "SELECT data, mime FROM pichunter.pictures WHERE id = $1" guid)))
+	     (file-data (car result))
+	     (mime (cadr result)))
+	(break)
+	(values file-data mime))))

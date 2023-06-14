@@ -26,23 +26,14 @@
     node: document.getElementById(\"app\")
 });")
 
-(defparameter result nil)
 (defun get-picture (guid)
-  (format t "guid is ~a~%" guid)
-  (let* ((res (pichunter.file-handler:get-picture-data guid)))
-
-    (setf result res)
-    
-    `(200 (:content-type "image/jpeg") ,res)))
+  (multiple-value-bind (picture-data mime) (pichunter.file-handler:get-picture-data guid)
+    `(200 (:content-type ,mime) ,picture-data)))
 
 (defun extract-pic-guid (path-info)
-    (declare (optimize (debug 3)))
-  (declaim (optimize debug))
   (let* ((pattern "/api/pictures/(.*)$"))
     (ppcre:register-groups-bind (guid) (pattern path-info)
       guid)))
-
-(defparameter *env* nil)
 
 (defun handler (env)
   (destructuring-bind (&key request-method path-info request-uri

@@ -67,13 +67,7 @@
                                 ;; TODO maybe use a authentication middleware?
                                 :middleware [middleware.multipart/multipart-middleware]
                                 :post {:handler #'post-pictures
-                                       :parameters {:multipart {:file middleware.multipart/temp-file-part}}}
-                                :delete {:handler #'delete-pictures
-                                         :parameters {:body {:ids [string?]}}}}]
-                  ["/pictures"
-                   ["/:id" {:swagger {:tags ["media"]}
-                            :get {:handler #'get-pictures
-                                  :parameters {:path {:id string?}}}}]]]
+                                       :parameters {:multipart {:file middleware.multipart/temp-file-part}}}}]]
                  ["" {:no-doc true}
                   ["/swagger.json" {:get (reitit.swagger/create-swagger-handler)}]
                   ["/swagger/*" {:get (reitit.swagger-ui/create-swagger-ui-handler)}]]])
