@@ -1,6 +1,7 @@
 (defpackage pichunter
   (:use :cl :cl-who :postmodern )
   (:import-from :pichunter.std :slurp)
+  (:import-from :pichunter.routes :defroute)
   (:import-from :pichunter.decorators :@json :@transaction))
 
 (in-package :pichunter)
@@ -35,30 +36,37 @@
     (ppcre:register-groups-bind (guid) (pattern path-info)
       guid)))
 
+(defroute "get" "/" env
+  `(200 nil (,(let ((script (slurp *js-location*)))
+		(format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
+
+(defroute "get" "/api/pictures/[\\w-]+" env
+  (destructuring-bind (&key path-info &allow-other-keys) env
+    (let ((guid (extract-pic-guid path-info)))
+	  (get-picture guid))))
+
 (defun handler (env)
-  (destructuring-bind (&key request-method path-info request-uri
-                         query-string headers
-			 content-type content-length raw-body 
+  (destructuring-bind (&key request-method request-uri 
 		       &allow-other-keys)
       env
-    
-    (if (string= path-info "/")
-	`(200 nil (,(let ((script (slurp *js-location*)))
-		      (format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script))))
 
-	(if (str:starts-with? "/api/pictures/" path-info)
-	    (let ((guid (extract-pic-guid path-info)))
-	      (get-picture guid))
-
-	    `(204 nil nil)))))
+    (let* ((urls (pichunter.std:hash-keys
+		  (gethash (string-upcase request-method)
+			   pichunter.routes:*routes*)))
+	   (correct-url (some (lambda (url-regex)
+				(if (cl-ppcre:scan-to-strings url-regex request-uri )
+				    url-regex))
+			      urls))
+	   (handler (if correct-url
+			(gethash correct-url
+				 (gethash (string-upcase request-method)
+					  pichunter.routes:*routes*)))))
+      (if handler
+	  (funcall handler env)
+	  `(400 nil (,(format nil "No handler found for ~a" request-uri)))))))
 		 
 
 (defvar *clack-server*
   (clack:clackup (lambda (env)
 		   (funcall 'handler env))
 		 :port 3000))
-
-;; (defroute main ("/" :method :get
-;; 		    :decorators (@transaction))
-;;     ()
-;;   )

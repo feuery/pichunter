@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :slurp :if-let :when-let :with-db :take))
+  (:export :hash-keys :slurp :if-let :when-let :with-db :take))
 
 (in-package pichunter.std)
 
@@ -41,3 +41,6 @@
 
 (defmacro while (condition &body body)
   `(loop while ,condition do ,@body))
+
+(defun hash-keys (hash-table)
+  (loop for key being the hash-keys of hash-table collect key))

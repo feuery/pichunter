@@ -55,8 +55,6 @@
   (init-migration-system))
 
 (defun migrate ()
-  ;; (declare (optimize (debug 3)))
-  ;; (declaim (optimize debug))
   (let* ((migrations (reverse migrations))
 	 (old-migrations (query "SELECT * FROM pichunter.migrations_tracker" :alists))
 	 (migrations-to-run (remove-if-not (lambda (new-migration)
