@@ -36,7 +36,7 @@
     (ppcre:register-groups-bind (guid) (pattern path-info)
       guid)))
 
-(defroute "get" "/" env
+(defroute "get" :fallback env
   `(200 nil (,(let ((script (slurp *js-location*)))
 		(format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
 
@@ -54,13 +54,13 @@
 		  (gethash (string-upcase request-method)
 			   pichunter.routes:*routes*)))
 	   (correct-url (some (lambda (url-regex)
-				(if (cl-ppcre:scan-to-strings url-regex request-uri )
+				(if (and (stringp url-regex)
+					 (cl-ppcre:scan-to-strings url-regex request-uri ))
 				    url-regex))
 			      urls))
-	   (handler (if correct-url
-			(gethash correct-url
-				 (gethash (string-upcase request-method)
-					  pichunter.routes:*routes*)))))
+	   (method-handlers (gethash (string-upcase request-method)
+				     pichunter.routes:*routes*))
+	   (handler (gethash (or correct-url :fallback) method-handlers)))
       (if handler
 	  (funcall handler env)
 	  `(400 nil (,(format nil "No handler found for ~a" request-uri)))))))

@@ -21,9 +21,11 @@
 
 (defmacro defroute (method url-regexp env-symbol &rest body)
   (let ((method (string-upcase method))
-	(url-regexp (if (str:ends-with? "$" url-regexp)
-			url-regexp
-			(format nil "~a$" url-regexp))))
+	(url-regexp (if (stringp url-regexp)
+			(if (str:ends-with? "$" url-regexp)
+			    url-regexp
+			    (format nil "~a$" url-regexp))
+			url-regexp)))
     (assert (gethash method *routes*) () (format nil "Method ~a not recognised. Should be one of the following: ~a" method (hash-keys *routes*)))
     `(setf (gethash ,url-regexp
 		    (gethash ,method *routes*))
