@@ -4,20 +4,30 @@ import File exposing (File)
 import Url
 import Http
 import Browser
+import RouteParser exposing (..)
+import Browser.Navigation as Nav
 
--- TODO replace with a real url handling
-type Viewstate
-    = Demo
-    | File_upload_demo
+type alias RegistrationForm =
+    { displayname: String
+    , username: String
+    , password: String
+    , password_again: String}
 
 type alias Model =
-    { viewstate : Viewstate
-    , world: String }
+    { route: Route
+    , key: Nav.Key
+    , registrationFormState: Maybe RegistrationForm
+    }
+
+type Nth
+    = First
+    | Second
 
 type Msg
-    = Hello
-    | UrlChanged Url.Url
+    = UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
-    | GotInputFiles (List File)
-    | UploadedImage (Result Http.Error ())
-
+    | RegistrationDisplayname String
+    | RegistrationUsername String
+    | RegistrationPassword Nth String
+    | SendRegistration RegistrationForm
+    | RegistrationResult (Result Http.Error ())

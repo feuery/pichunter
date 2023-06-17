@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
@@ -8,11 +9,23 @@ import Html.Events exposing (onInput, onClick)
 import Http
 import Url
 
-import File_view
-import File exposing (mime)
 import State exposing (..)
 import Pichunter_http exposing (..)
+import RouteParser exposing (..)
+import HomeScreen exposing (homeScreen)
+import RegistrationScreen exposing (registrationScreen)
 
+
+viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
+viewStatePerUrl url =
+    let route = RouteParser.url_to_route url
+    in
+        ( route
+        , case route of
+              Home -> []
+              RegisterScreen -> []
+              LoggedInHome -> []
+              NotFound -> [])
 
 main : Program () Model Msg
 main =
@@ -25,10 +38,13 @@ main =
     , onUrlRequest = LinkClicked
     }
 
-        
 init _ url key =
-        ( Model File_upload_demo "hello world!"
-        , Cmd.batch [] )
+    let (route, cmds) = viewStatePerUrl url
+    in 
+        ( Model route key (case route of
+                               RegisterScreen -> Just (RegistrationForm "" "" "" "")
+                               _ -> Nothing)
+        , Cmd.batch cmds )
         
       
 subscriptions : Model -> Sub Msg
@@ -38,26 +54,45 @@ subscriptions _ = Sub.batch
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Hello -> ( { model | world = "Update ran!"}
-                 , Cmd.none)
-        GotInputFiles files ->
-            if List.all (\file -> String.startsWith "image" (mime file)) files then
-                ( model
-                , Cmd.batch (List.map (\file -> postPicture file) files))
-            else
-                Debug.log ("Expected images, got " ++ (String.join ", " (List.map mime files)))
-                ( model
-                , Cmd.none)
-        UploadedImage result ->
-            Debug.log ("Probably uploaded an image. What does the lisp side look like? " ++ (Debug.toString result))
-            ( model, Cmd.none)
-        UrlChanged _ -> ( model, Cmd.none)
-        LinkClicked _ -> ( model, Cmd.none)
+        UrlChanged url ->
+            init Nothing url model.key
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    (model, Nav.pushUrl model.key (Url.toString url))
+                Browser.External href ->
+                    (model, Nav.load href)
+        RegistrationDisplayname name ->
+            ({ model | registrationFormState =
+                   case model.registrationFormState of
+                       Just state ->
+                           Just { state | displayname = name}
+                       Nothing -> Nothing}
+            , Cmd.none)
+        RegistrationUsername name ->
+            ({ model | registrationFormState =
+                   case model.registrationFormState of
+                       Just state ->
+                           Just { state | username = name}
+                       Nothing -> Nothing}
+            , Cmd.none)
+        RegistrationPassword nth password ->
+            ({ model | registrationFormState =
+                   case model.registrationFormState of
+                       Just state ->
+                           case nth of
+                               First -> Just { state | password = password}
+                               Second -> Just { state | password_again = password}
+
+                       Nothing -> Nothing}
+            , Cmd.none)
+        SendRegistration formState -> (model, doRegister formState)
+        RegistrationResult _ -> (model, Cmd.none)
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
-    , body = case model.viewstate of
-                 Demo -> [ div [] [ text model.world ]
-                         , button [onClick Hello] [ text "TEST ME"]]
-                 File_upload_demo -> File_view.view model}
+    , body = case model.route of
+                 Home -> homeScreen
+                 RegisterScreen -> registrationScreen model.registrationFormState
+                 _ -> [div [] [ text "Hello World!" ]]}

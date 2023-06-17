@@ -2,8 +2,10 @@ module Pichunter_http exposing (..)
 
 import Http exposing (..)
 import State exposing (..)
+import Pichunter_json as Json
 
-postPicture pictureFile = Http.post 
-                          { url = "/api/pictures"
-                          , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
-                          , expect = Http.expectWhatever UploadedImage}
+doRegister state =
+    Http.post
+        { url = "/api/login/register"
+        , expect = Http.expectWhatever RegistrationResult
+        , body = Http.jsonBody <| Json.encodeRegistration state }

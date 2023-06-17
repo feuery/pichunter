@@ -1,31 +1,53 @@
 
-src/Main.elm,167
+src/Pichunter_json.elm,92
+module Pichunter_jsonPichunter_json1,0
+encodeRegistration state =encodeRegistration5,65
+
+src/Main.elm,214
 module MainMain1,0
-main =main18,315
-init _ url key =init29,518
-subscriptions _ =subscriptions35,657
-update msg model =update39,751
-view model =view58,1550
+viewStatePerUrl url =viewStatePerUrl20,469
+main =main31,735
+init _ url key =init41,929
+subscriptions _ =subscriptions51,1245
+update msg model =update55,1339
+view model =view93,2914
 
-src/Pichunter_http.elm,84
+src/Pichunter_http.elm,77
 module Pichunter_httpPichunter_http1,0
-postPicture pictureFile =postPicture6,91
+doRegister state =doRegister7,121
 
-src/State.elm,384
+src/State.elm,611
 module StateState1,0
-type ViewstateViewstate9,136
-    = DemoDemo10,151
-    | File_upload_demoFile_upload_demo11,162
-type alias Model =type13,186
-type alias ModelModel13,186
-type MsgMsg17,256
-    = HelloHello18,265
-    | UrlChangedUrlChanged19,277
-    | LinkClickedLinkClicked20,302
-    | GotInputFilesGotInputFiles21,339
-    | UploadedImageUploadedImage22,371
+type alias RegistrationForm =type10,161
+type alias RegistrationFormRegistrationForm10,161
+type alias Model =type16,294
+type alias ModelModel16,294
+type NthNth22,410
+    = FirstFirst23,419
+    | SecondSecond24,431
+type MsgMsg26,445
+    = UrlChangedUrlChanged27,454
+    | LinkClickedLinkClicked28,479
+    | RegistrationDisplaynameRegistrationDisplayname29,516
+    | RegistrationUsernameRegistrationUsername30,553
+    | RegistrationPasswordRegistrationPassword31,587
+    | SendRegistrationSendRegistration32,625
+    | RegistrationResultRegistrationResult33,665
 
-src/File_view.elm,91
-module File_viewFile_view1,0
-filesDecoder =filesDecoder11,245
-view model =view14,309
+src/RegistrationScreen.elm,112
+module RegistrationScreenRegistrationScreen1,0
+registrationScreen maybe_formState =registrationScreen11,278
+
+src/RouteParser.elm,264
+module RouteParserRouteParser1,0
+type RouteRoute7,153
+    = HomeHome8,164
+    | RegisterScreenRegisterScreen9,176
+    | LoggedInHomeLoggedInHome10,197
+    | NotFoundNotFound11,217
+routeParser =routeParser13,233
+url_to_route url =url_to_route19,364
+
+src/HomeScreen.elm,65
+module HomeScreenHomeScreen1,0
+homeScreen =homeScreen30,1440

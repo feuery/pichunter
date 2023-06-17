@@ -7,14 +7,17 @@
 (in-package :pichunter)
 
 (defparameter *js-location* nil)
+(defparameter *css-location* nil)
 
 (cond ((string= (machine-instance)
 		"roland")
-       (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js"))
+       (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js")
+       (setf *css-location* #P"/home/feuer/common-lisp/pichunter/frontend/site.css"))
       
       ((string= (machine-instance)
 		"vivacia.local")
-       (setf *js-location* #P"/Users/feuer/Projects/pichunter/frontend/elm.js")))
+       (setf *js-location* #P"/Users/feuer/Projects/pichunter/frontend/elm.js")
+       (setf *css-location* #P"/Users/feuer/Projects/pichunter/frontend/site.css")))
 
 (assert *js-location* nil "JS location should be configured in the source code when developing")
 
@@ -36,9 +39,15 @@
     (ppcre:register-groups-bind (guid) (pattern path-info)
       guid)))
 
+(defroute "get" "/site.css"
+    env
+  
+  `(200 (:content-type "text/css")
+	(,(slurp *css-location*))))
+
 (defroute "get" :fallback env
   `(200 nil (,(let ((script (slurp *js-location*)))
-		(format nil "<html> <head> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
+		(format nil "<html> <head> <link href=\"/site.css\" rel=\"stylesheet\" type=\"text/css\" /> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
 
 (defroute "get" "/api/pictures/[\\w-]+" env
   (destructuring-bind (&key path-info &allow-other-keys) env
