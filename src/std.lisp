@@ -15,6 +15,13 @@
       (read-sequence data stream)
       data)))
 
+(defun slurp-string-body (raw-body)
+  ;; read-line does something completely moronic that makes valid-utf-8 look bad on the lisp side
+  (trivial-utf-8:utf-8-bytes-to-string 
+   (loop for byte = (read-byte raw-body nil)
+	 while byte
+	 collect byte)))
+
 (defmacro when-let (bindings &rest body)
   (let ((symbol (first bindings))
 	(initform (second bindings)))
