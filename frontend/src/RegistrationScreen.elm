@@ -34,8 +34,8 @@ registrationScreen maybe_formState =
                           , value formState.password] []
                       
                   , label [for "password2"] [text "Repeat password"]
-                  , input [ name "password"
-                          , id "password"
+                  , input [ name "password2"
+                          , id "password2"
                           , onInput (RegistrationPassword Second)
                           , type_ "password"
                           , value formState.password_again] []

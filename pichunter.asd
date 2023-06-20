@@ -3,12 +3,15 @@
   :author "Ilpo Lehtinen"
   :license "LLGPL"
   :depends-on ("postmodern"
-	       "cl-who"
+	       "json-mop"
+	       "closer-mop"
                "simple-date"
                "simple-date/postgres-glue"
+	       "ironclad"
                "clack"
 	       "http-body"
                "cl-json"
+	       "trivial-utf-8"
                "str")
   :components ((:module "src"
                 :components
@@ -17,6 +20,7 @@
 		 (:file "migration-list")
 		 (:file "decorators")
 		 (:file "routes")
+		 (:file "user-routes")
 		 (:file "file-handler")
 		 (:file "main"))))
   :description ""

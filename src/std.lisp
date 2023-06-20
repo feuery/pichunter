@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :hash-keys :slurp :if-let :when-let :with-db :take))
+  (:export :hash-keys :slurp :if-let :when-let :with-db :take :slurp-string-body :sha-512))
 
 (in-package pichunter.std)
 
@@ -51,3 +51,8 @@
 
 (defun hash-keys (hash-table)
   (loop for key being the hash-keys of hash-table collect key))
+
+(defun sha-512 (str)
+  (ironclad:byte-array-to-hex-string
+    (ironclad:digest-sequence :sha512
+                              (ironclad:ascii-string-to-byte-array str))))

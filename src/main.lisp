@@ -1,5 +1,5 @@
 (defpackage pichunter
-  (:use :cl :cl-who :postmodern )
+  (:use :cl :postmodern )
   (:import-from :pichunter.std :slurp)
   (:import-from :pichunter.routes :defroute)
   (:import-from :pichunter.decorators :@json :@transaction))
@@ -47,7 +47,7 @@
 
 (defroute "get" :fallback env
   `(200 nil (,(let ((script (slurp *js-location*)))
-		(format nil "<html> <head> <link href=\"/site.css\" rel=\"stylesheet\" type=\"text/css\" /> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
+		(format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
 
 (defroute "get" "/api/pictures/[\\w-]+" env
   (destructuring-bind (&key path-info &allow-other-keys) env
