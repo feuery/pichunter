@@ -44,6 +44,7 @@ init _ url key =
         ( Model route key (case route of
                                RegisterScreen -> Just (RegistrationForm "" "" "" "")
                                _ -> Nothing)
+              (LoginState "" "")
         , Cmd.batch cmds )
         
       
@@ -88,11 +89,21 @@ update msg model =
             , Cmd.none)
         SendRegistration formState -> (model, doRegister formState)
         RegistrationResult _ -> (model, Cmd.none)
+        LoginUsername name ->
+            let loginstate = model.loginState in
+            ({ model | loginState =
+                   { loginstate | username = name}}
+            , Cmd.none)
+        LoginPassword password ->
+            let loginstate = model.loginState in
+            ({ model | loginState =
+                   { loginstate | password = password }}
+            , Cmd.none)
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
     , body = case model.route of
-                 Home -> homeScreen
+                 Home -> homeScreen model.loginState
                  RegisterScreen -> registrationScreen model.registrationFormState
                  _ -> [div [] [ text "Hello World!" ]]}

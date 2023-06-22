@@ -13,10 +13,15 @@ type alias RegistrationForm =
     , password: String
     , password_again: String}
 
+type alias LoginState =
+    { username: String
+    , password: String }
+
 type alias Model =
     { route: Route
     , key: Nav.Key
     , registrationFormState: Maybe RegistrationForm
+    , loginState: LoginState
     }
 
 type Nth
@@ -31,3 +36,5 @@ type Msg
     | RegistrationPassword Nth String
     | SendRegistration RegistrationForm
     | RegistrationResult (Result Http.Error ())
+    | LoginUsername String
+    | LoginPassword String

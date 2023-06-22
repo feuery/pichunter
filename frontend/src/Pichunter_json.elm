@@ -7,4 +7,9 @@ encodeRegistration state =
         [ ("displayname", Json.string state.displayname)
         , ("username", Json.string state.username)
         , ("password", Json.string state.password)
-        , ("password-again", Json.string state.password_again)] 
+        , ("password-again", Json.string state.password_again)]
+
+encodeLogin state =
+    Json.object
+        [ ("username", Json.string state.username)
+        , ("password", Json.string state.password)]

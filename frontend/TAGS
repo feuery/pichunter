@@ -1,38 +1,43 @@
 
-src/Pichunter_json.elm,92
+src/Pichunter_json.elm,131
 module Pichunter_jsonPichunter_json1,0
 encodeRegistration state =encodeRegistration5,65
+encodeLogin state =encodeLogin12,332
 
-src/Main.elm,214
+src/Main.elm,215
 module MainMain1,0
 viewStatePerUrl url =viewStatePerUrl20,469
 main =main31,735
 init _ url key =init41,929
-subscriptions _ =subscriptions51,1245
-update msg model =update55,1339
-view model =view93,2914
+subscriptions _ =subscriptions52,1278
+update msg model =update56,1372
+view model =view104,3338
 
 src/Pichunter_http.elm,77
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister7,121
 
-src/State.elm,611
+src/State.elm,769
 module StateState1,0
 type alias RegistrationForm =type10,161
 type alias RegistrationFormRegistrationForm10,161
-type alias Model =type16,294
-type alias ModelModel16,294
-type NthNth22,410
-    = FirstFirst23,419
-    | SecondSecond24,431
-type MsgMsg26,445
-    = UrlChangedUrlChanged27,454
-    | LinkClickedLinkClicked28,479
-    | RegistrationDisplaynameRegistrationDisplayname29,516
-    | RegistrationUsernameRegistrationUsername30,553
-    | RegistrationPasswordRegistrationPassword31,587
-    | SendRegistrationSendRegistration32,625
-    | RegistrationResultRegistrationResult33,665
+type alias LoginState =type16,294
+type alias LoginStateLoginState16,294
+type alias Model =type20,367
+type alias ModelModel20,367
+type NthNth27,512
+    = FirstFirst28,521
+    | SecondSecond29,533
+type MsgMsg31,547
+    = UrlChangedUrlChanged32,556
+    | LinkClickedLinkClicked33,581
+    | RegistrationDisplaynameRegistrationDisplayname34,618
+    | RegistrationUsernameRegistrationUsername35,655
+    | RegistrationPasswordRegistrationPassword36,689
+    | SendRegistrationSendRegistration37,727
+    | RegistrationResultRegistrationResult38,767
+    | LoginUsernameLoginUsername39,815
+    | LoginPasswordLoginPassword40,842
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -48,6 +53,6 @@ type RouteRoute7,153
 routeParser =routeParser13,233
 url_to_route url =url_to_route19,364
 
-src/HomeScreen.elm,65
+src/HomeScreen.elm,75
 module HomeScreenHomeScreen1,0
-homeScreen =homeScreen30,1440
+homeScreen loginstate =homeScreen24,712

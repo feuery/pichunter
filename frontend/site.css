@@ -6,3 +6,19 @@
     border-color: #FF0000;
     color: #FF0000;
 }
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.login {
+    border: 1px rgba(77, 77, 77, 77) solid;
+    flex-wrap: wrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+.login h2 {
+    margin-right: 3em;
+}
