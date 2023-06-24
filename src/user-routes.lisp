@@ -56,7 +56,11 @@
 ;; 		  (encode obj s))
 ;; 		'register-form))
 
-
+(defun setup-admin-user ()
+  (execute "INSERT INTO pichunter.groupmapping (UserID, GroupID)
+SELECT \"user\".ID, \"group\".ID
+FROM pichunter.user \"user\"
+JOIN pichunter.usergroup \"group\" ON 1=1;"))
 
 (defroute "post" "/register"
     env  
@@ -66,16 +70,19 @@
       (handler-case 
 	  (with-db
 	      (with-transaction ()
-		(with-slots (username displayname password password-again) registration-form
-		  (assert (string= password password-again))
-		  (execute "INSERT INTO pichunter.user(username, password, display_name) VALUES ($1, $2, $3)"
-			   username
-			   (sha-512 password)
-			   displayname)
-		  `(200 (:content-type "application/json"
-			 :charset "utf-8")
-			(,(with-output-to-string (s)
-			    (encode registration-form s)))))))
+		(let ((prior-users (query "SELECT EXISTS (SELECT * FROM pichunter.user)" :single)))
+		  (with-slots (username displayname password password-again) registration-form
+		    (assert (string= password password-again))
+		    (execute "INSERT INTO pichunter.user(username, password, display_name) VALUES ($1, $2, $3)"
+			     username
+			     (sha-512 password)
+			     displayname)
+		    (unless prior-users
+		      (setup-admin-user))
+		    `(200 (:content-type "application/json"
+			   :charset "utf-8")
+			  (,(with-output-to-string (s)
+			      (encode registration-form s))))))))
 	(error (e)
 	  (format t "Error in \"/register\": ~a~%" e)
 	  (break "~a" e)
