@@ -23,13 +23,6 @@
 
 
 
-
-
-(defparameter elm-init-script
-"var app = Elm.Main.init({
-    node: document.getElementById(\"app\")
-});")
-
 (defun get-picture (guid)
   (multiple-value-bind (picture-data mime) (pichunter.file-handler:get-picture-data guid)
     `(200 (:content-type ,mime) ,picture-data)))
@@ -45,9 +38,12 @@
   `(200 (:content-type "text/css")
 	(,(slurp *css-location*))))
 
+(defun js-helper-script ()
+  (slurp #P"./pichunter-helper.js"))
+
 (defroute "get" :fallback env
   `(200 nil (,(let ((script (slurp *js-location*)))
-		(format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script elm-init-script)))))
+		(format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script (js-helper-script))))))
 
 (defroute "get" "/api/pictures/[\\w-]+" env
   (destructuring-bind (&key path-info &allow-other-keys) env
@@ -73,9 +69,11 @@
       (if handler
 	  (funcall handler env)
 	  `(400 nil (,(format nil "No handler found for ~a" request-uri)))))))
-		 
 
 (defvar *clack-server*
-  (clack:clackup (lambda (env)
-		   (funcall 'handler env))
-		 :port 3000))
+  (clack:clackup
+   (lack:builder
+    :session
+    (lambda (env)
+      (funcall 'handler env)))
+    :port 3000))

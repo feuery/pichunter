@@ -1,5 +1,5 @@
 (defpackage pichunter.user-routes
-  (:use :cl :postmodern :json-mop)
+  (:use :cl :postmodern :json-mop :pichunter.std)
   (:import-from :pichunter.std :slurp-string-body :with-db :sha-512)
   (:import-from :pichunter.routes :defroute))
 
@@ -21,6 +21,32 @@
 		   :json-key "password-again"))
   (:metaclass json-serializable-class))
 
+(defclass login-request ()
+  ((username :initarg :username
+	     :json-type :string
+	     :json-key "username")
+   (password :initarg :password
+	     :json-type :string
+	     :json-key "password"))
+  (:metaclass json-serializable-class))
+
+(defclass user ()
+  ((username :initarg username
+
+
+	     :col-type string
+	     :accessor user-username)
+   (id :initarg id
+       :col-type integer
+       :accessor user-id)
+   (display_name :initarg display-name
+		 :col-type string
+		 :accessor user-display-name)
+   (img_id :initarg image-id
+	   :col-type string
+	   :accessor user-image-id))
+  (:metaclass dao-class)
+  (:keys id))
 
 ;; (let ((obj (make-instance 'register-form :displayname "på"
 ;; 					 :username "feuer"
@@ -63,3 +89,43 @@
 	  (,(str:join "\n"
 		      (mapcar #'prin1-to-string
 			      (query "SELECT * FROM pichunter.users")))))))
+
+(defroute "post" "/api/login"
+    env
+  (destructuring-bind (&key raw-body &allow-other-keys) env
+    (let* ((session (getf env :lack.session))
+	   (params (json-to-clos (slurp-string-body raw-body) 'login-request)))
+      (with-slots (username password) params
+	(with-db
+	  
+	    (let ((user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE username = $1 AND password = $2" username (sha-512 password)
+				    (:dao user :single)))
+		  (user-json (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE username = $1 AND password = $2" username (sha-512 password)
+				    :json-str)))
+
+
+	      (if (and user-row
+		       (string= (user-username user-row) username))
+		  (progn
+		    (setf (gethash :logged-in-username session) username)
+		    (setf (gethash :logged-in-user-id session) (user-id user-row))
+
+		    `(200 nil (,user-json)))
+		  `(401 nil nil))))))))
+
+(defroute "get" "/api/session"
+    env
+  (let ((session (getf env :lack.session)))
+    (if (gethash :logged-in-username session)
+	(with-db 
+	    (let ((user (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE id = $1" (gethash :logged-in-user-id session)
+			       :json-str)))
+	      `(200 nil (,user))))
+	`(401 nil nil))))
+
+(defroute "get" "/api/logout"
+    env
+  (let ((session (getf env :lack.session)))
+    (remhash :logged-in-username session)
+    (remhash :logged-in-user-id session)
+    `(204 nil nil)))

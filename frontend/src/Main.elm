@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
@@ -16,16 +16,18 @@ import HomeScreen exposing (homeScreen)
 import RegistrationScreen exposing (registrationScreen)
 
 
+port alert : String -> Cmd msg
+
 viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
 viewStatePerUrl url =
     let route = RouteParser.url_to_route url
     in
         ( route
         , case route of
-              Home -> []
-              RegisterScreen -> []
-              LoggedInHome -> []
-              NotFound -> [])
+              Home -> [checkSession]
+              RegisterScreen -> [checkSession]
+              LoggedInHome -> [checkSession]
+              NotFound -> [checkSession])
 
 main : Program () Model Msg
 main =
@@ -44,13 +46,32 @@ init _ url key =
         ( Model route key (case route of
                                RegisterScreen -> Just (RegistrationForm "" "" "" "")
                                _ -> Nothing)
-              (LoginState "" "")
+              (LoginForm "" "")
+              LoggedOut
         , Cmd.batch cmds )
         
       
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.batch 
                   [ ]
+
+handleSession model result =
+    case result of
+        Ok user ->
+            ( { model | session = LoggedIn user}
+            , Cmd.none)
+        Err error ->
+            case error of
+                Http.BadStatus status ->
+                    if status == 401 then
+                        ( model
+                        , Cmd.none)
+                    else
+                        ( model
+                        , Cmd.none)
+                _ ->
+                    ( model
+                    , Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -88,7 +109,7 @@ update msg model =
                        Nothing -> Nothing}
             , Cmd.none)
         SendRegistration formState -> (model, doRegister formState)
-        RegistrationResult _ -> (model, Cmd.none)
+        DummyResponse _ -> (model, Cmd.none)
         LoginUsername name ->
             let loginstate = model.loginState in
             ({ model | loginState =
@@ -99,11 +120,31 @@ update msg model =
             ({ model | loginState =
                    { loginstate | password = password }}
             , Cmd.none)
+        Login state ->
+            ( { model | loginState = (LoginForm "" "")}
+            , login state )
+        Logout ->
+            ( model
+            , logout)
+        LogoutResult res ->
+            case res of
+                Ok _ -> 
+                    ({ model | session = LoggedOut }
+                    , Cmd.none)
+                Err error ->
+                    ( model
+                    , alert (Debug.toString error))
+        LoginResult result ->
+            handleSession model result
+        SessionResult result ->
+            handleSession model result
+
+           
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
     , body = case model.route of
-                 Home -> homeScreen model.loginState
+                 Home -> homeScreen model.session model.loginState
                  RegisterScreen -> registrationScreen model.registrationFormState
                  _ -> [div [] [ text "Hello World!" ]]}

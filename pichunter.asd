@@ -9,6 +9,8 @@
                "simple-date/postgres-glue"
 	       "ironclad"
                "clack"
+	       "lack"
+	       "circular-streams"
 	       "http-body"
                "cl-json"
 	       "trivial-utf-8"

@@ -1,15 +1,29 @@
 module Pichunter_json exposing (..)
 
-import Json.Encode as Json
+import Json.Encode as Encode
+import Json.Decode as Decode
+
+import User exposing (..)
+
+decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
+decodeApply value partial =
+    Decode.andThen (\p -> Decode.map p value) partial
 
 encodeRegistration state =
-    Json.object
-        [ ("displayname", Json.string state.displayname)
-        , ("username", Json.string state.username)
-        , ("password", Json.string state.password)
-        , ("password-again", Json.string state.password_again)]
+    Encode.object
+        [ ("displayname", Encode.string state.displayname)
+        , ("username", Encode.string state.username)
+        , ("password", Encode.string state.password)
+        , ("password-again", Encode.string state.password_again)]
 
 encodeLogin state =
-    Json.object
-        [ ("username", Json.string state.username)
-        , ("password", Json.string state.password)]
+    Encode.object
+        [ ("username", Encode.string state.username)
+        , ("password", Encode.string state.password)]
+
+decodeUser =
+    Decode.succeed User
+        |> decodeApply (Decode.field "username" Decode.string)
+        |> decodeApply (Decode.field "id" Decode.int)
+        |> decodeApply (Decode.field "displayName" Decode.string)
+        |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))

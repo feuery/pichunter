@@ -6,6 +6,7 @@ import Http
 import Browser
 import RouteParser exposing (..)
 import Browser.Navigation as Nav
+import User exposing (..)
 
 type alias RegistrationForm =
     { displayname: String
@@ -13,7 +14,10 @@ type alias RegistrationForm =
     , password: String
     , password_again: String}
 
-type alias LoginState =
+type Session = LoggedIn User
+    | LoggedOut
+    
+type alias LoginForm =
     { username: String
     , password: String }
 
@@ -21,7 +25,8 @@ type alias Model =
     { route: Route
     , key: Nav.Key
     , registrationFormState: Maybe RegistrationForm
-    , loginState: LoginState
+    , loginState: LoginForm
+    , session: Session
     }
 
 type Nth
@@ -35,6 +40,11 @@ type Msg
     | RegistrationUsername String
     | RegistrationPassword Nth String
     | SendRegistration RegistrationForm
-    | RegistrationResult (Result Http.Error ())
+    | DummyResponse (Result Http.Error ())
+    | LoginResult (Result Http.Error User)
     | LoginUsername String
     | LoginPassword String
+    | Login LoginForm
+    | Logout
+    | LogoutResult (Result Http.Error ())
+    | SessionResult (Result Http.Error User)
