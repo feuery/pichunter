@@ -68,7 +68,7 @@
 	      (with-transaction ()
 		(with-slots (username displayname password password-again) registration-form
 		  (assert (string= password password-again))
-		  (execute "INSERT INTO pichunter.users(username, password, display_name) VALUES ($1, $2, $3)"
+		  (execute "INSERT INTO pichunter.user(username, password, display_name) VALUES ($1, $2, $3)"
 			   username
 			   (sha-512 password)
 			   displayname)
@@ -88,7 +88,7 @@
     `(200 (:content-type "text/plain; charset=utf-8")
 	  (,(str:join "\n"
 		      (mapcar #'prin1-to-string
-			      (query "SELECT * FROM pichunter.users")))))))
+			      (query "SELECT * FROM pichunter.user")))))))
 
 (defroute "post" "/api/login"
     env
@@ -98,9 +98,9 @@
       (with-slots (username password) params
 	(with-db
 	  
-	    (let ((user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE username = $1 AND password = $2" username (sha-512 password)
+	    (let ((user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
 				    (:dao user :single)))
-		  (user-json (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE username = $1 AND password = $2" username (sha-512 password)
+		  (user-json (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
 				    :json-str)))
 
 
@@ -118,7 +118,7 @@
   (let ((session (getf env :lack.session)))
     (if (gethash :logged-in-username session)
 	(with-db 
-	    (let ((user (query "SELECT id, username, display_name, img_id FROM pichunter.users WHERE id = $1" (gethash :logged-in-user-id session)
+	    (let ((user (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE id = $1" (gethash :logged-in-user-id session)
 			       :json-str)))
 	      `(200 nil (,user))))
 	`(401 nil nil))))

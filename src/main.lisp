@@ -39,7 +39,7 @@
 	(,(slurp *css-location*))))
 
 (defun js-helper-script ()
-  (slurp #P"./pichunter-helper.js"))
+  (slurp (pathname (format nil "/~{~a/~}pichunter-helper.js" (cdr (pathname-directory *js-location*))))))
 
 (defroute "get" :fallback env
   `(200 nil (,(let ((script (slurp *js-location*)))

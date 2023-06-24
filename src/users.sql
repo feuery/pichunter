@@ -1,4 +1,4 @@
-CREATE TABLE pichunter.users
+CREATE TABLE pichunter.user
 (
   id SERIAL,
   username VARCHAR(100) NOT NULL UNIQUE,

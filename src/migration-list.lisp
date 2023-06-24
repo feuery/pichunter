@@ -1,4 +1,5 @@
 (defpackage pichunter.migration-list
+  (:use :cl)
   (:import-from :pichunter.migrations
    :defmigration))
 
@@ -6,3 +7,6 @@
 
 (defmigration #P"./init-main-tables.sql")
 (defmigration #P"./users.sql")
+(defmigration #P"./groups.sql")
+
+(+ 2 1)
