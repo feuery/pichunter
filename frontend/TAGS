@@ -7,13 +7,13 @@ encodeLogin state =encodeLogin19,561
 decodeUser =decodeUser24,707
 
 src/Main.elm,246
-viewStatePerUrl url =viewStatePerUrl22,506
-main =main33,820
-init _ url key =init43,1014
-subscriptions _ =subscriptions55,1386
-handleSession model result =handleSession58,1438
-update msg model =update77,1993
-view model =view145,4545
+viewStatePerUrl url =viewStatePerUrl23,585
+main =main35,951
+init _ url key =init45,1145
+subscriptions _ =subscriptions57,1517
+handleSession model result =handleSession60,1569
+update msg model =update79,2144
+view model =view147,4696
 
 src/Pichunter_http.elm,162
 module Pichunter_httpPichunter_http1,0
@@ -26,6 +26,9 @@ src/User.elm,75
 module UserUser1,0
 type alias User =type3,27
 type alias UserUser3,27
+
+src/Header.elm,25
+module HeaderHeader1,0
 
 src/State.elm,1017
 module StateState1,0
@@ -61,16 +64,21 @@ src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
 registrationScreen maybe_formState =registrationScreen11,278
 
-src/RouteParser.elm,264
+src/RouteParser.elm,313
 module RouteParserRouteParser1,0
 type RouteRoute7,153
     = HomeHome8,164
     | RegisterScreenRegisterScreen9,176
     | LoggedInHomeLoggedInHome10,197
-    | NotFoundNotFound11,217
-routeParser =routeParser13,233
-url_to_route url =url_to_route19,364
+    | ManageUsersGroupsManageUsersGroups11,216
+    | NotFoundNotFound12,241
+routeParser =routeParser14,257
+url_to_route url =url_to_route21,454
 
-src/HomeScreen.elm,84
+src/GroupManager.elm,87
+module GroupManagerGroupManager1,0
+groupManagerView session =groupManagerView9,174
+
+src/HomeScreen.elm,63
 module HomeScreenHomeScreen1,0
-homeScreen session loginstate =homeScreen27,1151
+homeScreen =homeScreen9,182

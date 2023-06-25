@@ -4,4 +4,5 @@ type alias User =
     { username: String
     , id: Int
     , displayName: String
-    , imgId: Maybe String}
+    , imgId: Maybe String
+    , abilities: List String}

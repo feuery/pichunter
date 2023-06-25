@@ -14,7 +14,8 @@ import Pichunter_http exposing (..)
 import RouteParser exposing (..)
 import HomeScreen exposing (homeScreen)
 import RegistrationScreen exposing (registrationScreen)
-
+import Header exposing (topbar)
+import GroupManager exposing (groupManagerView)
 
 port alert : String -> Cmd msg
 
@@ -27,6 +28,7 @@ viewStatePerUrl url =
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
+              ManageUsersGroups -> [ checkSession ]
               NotFound -> [checkSession])
 
 main : Program () Model Msg
@@ -71,7 +73,7 @@ handleSession model result =
                         , Cmd.none)
                 _ ->
                     ( model
-                    , Cmd.none)
+                    , alert (Debug.toString error))
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -144,7 +146,10 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
-    , body = case model.route of
-                 Home -> homeScreen model.session model.loginState
+    , body = (topbar model.session model.loginState)
+             ::
+             (case model.route of
+                 Home -> homeScreen
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 _ -> [div [] [ text "Hello World!" ]]}
+                 ManageUsersGroups -> groupManagerView model.session
+                 _ -> [div [] [ text "Hello World!" ]])}

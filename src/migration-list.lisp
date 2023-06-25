@@ -8,5 +8,3 @@
 (defmigration #P"./init-main-tables.sql")
 (defmigration #P"./users.sql")
 (defmigration #P"./groups.sql")
-
-(+ 2 1)

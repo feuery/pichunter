@@ -7,13 +7,15 @@ import String exposing (fromInt)
 type Route
     = Home 
     | RegisterScreen
-    | LoggedInHome 
+    | LoggedInHome
+    | ManageUsersGroups 
     | NotFound
 
 routeParser =
     oneOf
         [ map Home top
         , map RegisterScreen (s "register")
+        , map ManageUsersGroups (s "admin" </> (s "usersgroups"))
         , map LoggedInHome (s "home")]
 
 url_to_route url =

@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS pichunter.usergroup (
        PRIMARY KEY (ID));
 
 INSERT INTO pichunter.usergroup(Name, Description) VALUES ('Admins', 'Group for admins');
-INSERT INTO pichunter.usergroup(Name, Description) VALUES ('Users', 'Group for ordinary mortals');
 
 CREATE TABLE IF NOT EXISTS pichunter.groupmapping (
        UserID INT NOT NULL,
@@ -26,6 +25,7 @@ CREATE TABLE pichunter.permission (
 
 INSERT INTO pichunter.permission(action) VALUES('view-picture');
 INSERT INTO pichunter.permission(action) VALUES('insert-picture');
+INSERT INTO pichunter.permission(action) VALUES('can-admin');
        
 CREATE TABLE pichunter.grouppermission (
        PermissionID INT,
@@ -39,8 +39,12 @@ CREATE TABLE pichunter.grouppermission (
        	       ON UPDATE CASCADE
 	       ON DELETE CASCADE);
 
-INSERT INTO pichunter.grouppermission VALUES (1, 1);
-INSERT INTO pichunter.grouppermission VALUES (2, 1);
+INSERT INTO pichunter.grouppermission(PermissionID, GroupID)
+SELECT permission.ID, usergroup.ID
+FROM pichunter.permission permission
+JOIN pichunter.usergroup usergroup ON 1=1;
+
+INSERT INTO pichunter.usergroup(Name, Description) VALUES ('Users', 'Group for ordinary mortals');
 
 CREATE VIEW pichunter.user_abilities AS
 SELECT "user".id, "user".username, perm.action

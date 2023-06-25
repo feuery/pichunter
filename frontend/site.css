@@ -19,6 +19,23 @@ body {
     align-items: center;
 }
 
+.login * {
+ 
+}
 .login h2 {
     margin-right: 3em;
+}
+
+#logout_btn {
+    background-color: #00FF00;
+}
+
+#topbar_tools {
+    list-style: none;
+    flex-grow: 1;
+}
+
+#topbar_tools li {
+    display: inline-block;
+    margin: 2px;
 }

@@ -97,6 +97,14 @@ JOIN pichunter.usergroup \"group\" ON 1=1;"))
 		      (mapcar #'prin1-to-string
 			      (query "SELECT * FROM pichunter.user")))))))
 
+;; I hate the fact that combining the postmodern-dao-metaclass-thing and json-serialization-metaclass seems impossible
+(defun clean-postmodern-rubbish-json (json)
+  (str:replace-all "\"null\"" "null"
+		   (str:replace-all "]\"" "]"
+				    (str:replace-all "\"[" "["
+						     (str:replace-all "\\\"" "\""
+								      json)))))
+
 (defroute "post" "/api/login"
     env
   (destructuring-bind (&key raw-body &allow-other-keys) env
@@ -104,12 +112,15 @@ JOIN pichunter.usergroup \"group\" ON 1=1;"))
 	   (params (json-to-clos (slurp-string-body raw-body) 'login-request)))
       (with-slots (username password) params
 	(with-db
-	  
 	    (let ((user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
 				    (:dao user :single)))
-		  (user-json (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
-				    :json-str)))
-
+		  (user-json (clean-postmodern-rubbish-json
+			      (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities
+FROM pichunter.user \"user\"
+JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
+WHERE \"user\".username = $1 AND \"user\".password = $2
+GROUP BY \"user\".id" username (sha-512 password)
+:json-str))))
 
 	      (if (and user-row
 		       (string= (user-username user-row) username))
@@ -124,9 +135,14 @@ JOIN pichunter.usergroup \"group\" ON 1=1;"))
     env
   (let ((session (getf env :lack.session)))
     (if (gethash :logged-in-username session)
-	(with-db 
-	    (let ((user (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE id = $1" (gethash :logged-in-user-id session)
-			       :json-str)))
+	(with-db
+	    (let ((user (clean-postmodern-rubbish-json
+			 (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities
+FROM pichunter.user \"user\"
+JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
+WHERE \"user\".id = $1
+GROUP BY \"user\".id" (gethash :logged-in-user-id session)
+:json-str))))
 	      `(200 nil (,user))))
 	`(401 nil nil))))
 

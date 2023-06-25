@@ -27,3 +27,4 @@ decodeUser =
         |> decodeApply (Decode.field "id" Decode.int)
         |> decodeApply (Decode.field "displayName" Decode.string)
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
+        |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
