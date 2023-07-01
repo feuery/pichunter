@@ -28,3 +28,27 @@ decodeUser =
         |> decodeApply (Decode.field "displayName" Decode.string)
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
+
+decodeAdministrativeUser =
+    Decode.succeed User
+        |> decodeApply (Decode.field "username" Decode.string)
+        |> decodeApply (Decode.field "id" Decode.int)
+        |> decodeApply (Decode.field "displayName" Decode.string)
+        |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
+        |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
+
+decodePermission =
+    Decode.succeed Permission
+        |> decodeApply (Decode.field "id" (Decode.maybe Decode.int))
+        |> decodeApply (Decode.field "action" (Decode.maybe (Decode.string)))
+
+decodeGroup =
+    Decode.succeed Group
+        |> decodeApply (Decode.field "id" Decode.int)
+        |> decodeApply (Decode.field "name" Decode.string)
+        |> decodeApply (Decode.field "description" Decode.string)
+        |> decodeApply (Decode.field "users" (Decode.list decodeAdministrativeUser))
+        |> decodeApply (Decode.field "permissions" (Decode.list decodePermission))
+        |> decodeApply (Decode.field "all-abilities" (Decode.list decodePermission))
+
+decodeGroupTree = Decode.list decodeGroup

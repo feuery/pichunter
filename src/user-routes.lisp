@@ -154,8 +154,8 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
     `(204 nil nil)))
 
 (defclass permission-response ()
-  ((id :accessor permission-id :initarg :id :json-type :number :json-key "id")
-   (action :accessor permission-action :initarg :action :json-type :string :json-key "action"))
+  ((id :accessor permission-id :initarg :id :json-type :any :json-key "id")
+   (action :accessor permission-action :initarg :action :json-type :any :json-key "action"))
   (:metaclass json-serializable-class))
 
 (defclass user-response (login-request)
@@ -173,7 +173,15 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
     :accessor user-id
     :initarg :id
     :json-type :number
-    :json-key "id"))
+    :json-key "id")
+   (abilities :accessor abilities
+	      :initarg :abilities
+	      :json-type :any
+	      :json-key "abilities")
+   (imgId :accessor imgId
+	  :initarg :imgId
+	  :json-type :string
+	  :json-key "imgId"))
   (:metaclass json-serializable-class))
 
 (defclass group-response ()
@@ -181,6 +189,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
    (name :accessor group-name :initarg :name :json-type :string :json-key "name")
    (description :accessor group-description :initarg :description :json-type :string :json-key "description")
    (permissions :accessor group-permissions :initarg :permissions :json-type (:list permission-response) :json-key "permissions")
+   (all-abilities :accessor all-abilities :initarg :all-abilities :json-type :any :json-key "all-abilities")
    (users :accessor group-users :initarg :users :json-type (:list user-response) :json-key "users"))
   (:metaclass json-serializable-class))
 
@@ -188,7 +197,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 (defroute "get" "/api/grouptree"
     env
   (with-db
-      (with-transaction ()  
+      (with-transaction ()
 	(let* ((groups (query (:select (:as :usergroup.id :group-id)
 				       (:as :usergroup.name :group-name)
 				       (:as :usergroup.description :group-description)
@@ -207,16 +216,23 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 				       :join :pichunter.user
 				       :on (:= :groupmapping.userid :user.id)
 
-				       :join :pichunter.grouppermission
+				       :left-join :pichunter.grouppermission
 				       :on (:= :grouppermission.groupid :usergroup.id)
 
-				       :join :pichunter.permission
+				       :left-join :pichunter.permission
 				       :on (:= :grouppermission.permissionid :permission.id))
 			      :plists))
+	       (all-abilities (query (:select :action :id
+					      :from :pichunter.permission)
+				     :plists))
 	       (actual-groups (remove-duplicates
 			       (mapcar (lambda (g)
-				
 					 (make-instance 'group-response
+							:all-abilities (mapcar (lambda (permission)
+										(make-instance 'permission-response
+											       :action (getf permission :action )
+											       :id (getf permission :id)))
+									       all-abilities)
 							:description (getf g :group-description)
 							:name (getf g :group-name)
 							:id (getf g :group-id)
@@ -232,10 +248,15 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 									       (permission-id b))))
 							:users (remove-duplicates
 								(mapcar (lambda (user)
-									  (make-instance 'user-response
-											 :username (getf user :username)
-											 :displayname (getf user :displayName )
-											 :id (getf user :user-id)))
+									  (let* ((img-id (getf user :imgId)))
+									    (make-instance 'user-response
+											   :abilities '("")
+											   :imgId (if (equalp img-id :null)
+												      ""
+												      img-id)
+											   :username (getf user :username)
+											   :displayname (getf user :displayName )
+											   :id (getf user :user-id))))
 									groups)
 								:test (lambda (a b)
 									(equalp
@@ -245,6 +266,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 					 :test (lambda (a b)
 						 (equalp (group-id a)
 							 (group-id b))))))
+
 	  `(200 (:content-type "application/json"
 		 :charset "utf-8")
 		(,(with-output-to-string (s)

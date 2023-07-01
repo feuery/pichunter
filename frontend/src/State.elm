@@ -21,12 +21,19 @@ type alias LoginForm =
     { username: String
     , password: String }
 
+type alias GroupManagerState =
+    { selectedGroup: Maybe Group
+    , selectedUser: Maybe User
+    , selectedPermission: Maybe Permission
+    , loadedGroups: List Group}
+    
 type alias Model =
     { route: Route
     , key: Nav.Key
     , registrationFormState: Maybe RegistrationForm
     , loginState: LoginForm
     , session: Session
+    , groupManagerState: Maybe GroupManagerState
     }
 
 type Nth
@@ -48,3 +55,11 @@ type Msg
     | Logout
     | LogoutResult (Result Http.Error ())
     | SessionResult (Result Http.Error User)
+    | GroupTreeResult (Result Http.Error (List Group))
+    -- strings here are ids, because you cant set an 'a as elm's html option's value
+    | AdminGroupSelected String
+    | AdminUserSelected String
+    | AdminSelectExistingAbility String
+    | AdminDisallow
+    | AdminAllow
+    | AdminSelectNonExistingAbility String

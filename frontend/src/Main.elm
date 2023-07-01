@@ -28,9 +28,11 @@ viewStatePerUrl url =
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
-              ManageUsersGroups -> [ checkSession ]
+              ManageUsersGroups -> [ checkSession
+                                   , loadGroupTree
+                                   ]
               NotFound -> [checkSession])
-
+        
 main : Program () Model Msg
 main =
   Browser.application
@@ -50,6 +52,7 @@ init _ url key =
                                _ -> Nothing)
               (LoginForm "" "")
               LoggedOut
+              Nothing
         , Cmd.batch cmds )
         
       
@@ -140,9 +143,141 @@ update msg model =
             handleSession model result
         SessionResult result ->
             handleSession model result
+        GroupTreeResult result ->
+            case result of
+                Ok groups ->
+                    ( { model
+                          | groupManagerState = Just (GroupManagerState Nothing Nothing Nothing groups)}
+                            
+                    , Cmd.none)
+                Err error ->
+                    ( model
+                    , alert ("Parsing grouptreeresult failed due to " ++ (Debug.toString error)))
+        AdminGroupSelected groupid ->
+            case model.groupManagerState of
+                Just state ->
+                    let groups = state.loadedGroups 
+                        selectedgroup = List.head (List.filter
+                                                       (\group -> (String.fromInt group.id) == groupid)
+                                                       groups) in 
+                    ( { model | groupManagerState =
+                            Just { state
+                                     | selectedGroup = selectedgroup
+                                     , selectedUser = Nothing}}
+                    , Cmd.none)
+                _ -> ( model, alert "GroupManager uninitialized")
 
-           
-
+        AdminUserSelected userid ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            let selectedUser = List.head (List.filter
+                                                              (\user -> (String.fromInt user.id) == userid)
+                                                              selectedGroup.users) in
+                            ( {model | groupManagerState =
+                                   Just { state | selectedUser = selectedUser} }
+                            , Cmd.none)
+                        Nothing -> ( model, alert "no group selected")
+                Nothing -> ( model, alert "group state is nil")
+        AdminSelectExistingAbility permission_id ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case List.head (List.filter
+                                                (\permission ->
+                                                     case permission.id of
+                                                         Just id ->
+                                                             (String.fromInt id) == permission_id
+                                                         _ -> False)
+                                                selectedGroup.permissions) of
+                                Just permission -> 
+                                    ( { model | groupManagerState =
+                                            Just { state | selectedPermission = Just permission}}
+                                    , Cmd.none)
+                                Nothing -> ( model
+                                           , alert ("no permission " ++ permission_id ++ " selected"))
+                        Nothing -> ( model
+                                   , alert "no group selected")
+                Nothing -> ( model
+                           , alert "no state initialized")
+        AdminSelectNonExistingAbility permission_id ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case List.head (List.filter
+                                                (\permission ->
+                                                     case permission.id of
+                                                         Just id ->
+                                                             (String.fromInt id) == permission_id
+                                                         _ -> False)
+                                                selectedGroup.all_abilities) of
+                                Just permission -> 
+                                    ( { model | groupManagerState =
+                                            Just { state | selectedPermission = Just permission}}
+                                    , Cmd.none)
+                                Nothing -> ( model
+                                           , alert ("no permission " ++ permission_id ++ " selected"))
+                        Nothing -> ( model
+                                   , alert "no group selected")
+                Nothing -> ( model
+                           , alert "no state initialized")
+        AdminDisallow ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case state.selectedPermission of
+                                Just selectedPermission ->
+                                    let new_state = disallow_permission state selectedGroup selectedPermission
+                                    in
+                                    ( { model
+                                          | groupManagerState =
+                                            Just new_state}
+                                    , Cmd.none)
+                                _ -> (model, alert "no permission selected")
+                        _ -> (model, alert "no group selected")
+                _ -> (model, alert "groupmanager uninitialized")
+        AdminAllow ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case state.selectedPermission of
+                                Just selectedPermission ->
+                                    let new_state = allow_permission state selectedGroup selectedPermission
+                                    in
+                                    ( { model
+                                          | groupManagerState =
+                                            Just new_state}
+                                    , Cmd.none)
+                                _ -> (model, alert "no permission selected")
+                        _ -> (model, alert "no group selected")
+                _ -> (model, alert "groupmanager uninitialized")
+                                    
+disallow_permission state old_group permission 
+    = let group = { old_group | permissions =
+                        (  old_group.permissions
+                        |> List.filter ((/=) permission)) } in
+      { state
+          | selectedGroup = Just group
+          , loadedGroups = (  state.loadedGroups
+                           |> List.map (\g -> if g.id == group.id then
+                                                  group
+                                              else
+                                                  g))}
+allow_permission state old_group permission 
+    = let group = { old_group | permissions = permission :: old_group.permissions} in
+      { state
+          | selectedGroup = Just group
+          , loadedGroups = (  state.loadedGroups
+                           |> List.map (\g -> if g.id == group.id then
+                                                  group
+                                              else
+                                                  g))}          
+                     
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
@@ -151,5 +286,5 @@ view model =
              (case model.route of
                  Home -> homeScreen
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 ManageUsersGroups -> groupManagerView model.session
+                 ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  _ -> [div [] [ text "Hello World!" ]])}

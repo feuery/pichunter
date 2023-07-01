@@ -1,36 +1,45 @@
 
-src/Pichunter_json.elm,210
+src/Pichunter_json.elm,390
 module Pichunter_jsonPichunter_json1,0
 decodeApply value partial =decodeApply9,201
 encodeRegistration state =encodeRegistration12,284
 encodeLogin state =encodeLogin19,561
 decodeUser =decodeUser24,707
+decodeAdministrativeUser =decodeAdministrativeUser32,1081
+decodePermission =decodePermission40,1469
+decodeGroup =decodeGroup45,1666
+decodeGroupTree =decodeGroupTree54,2138
 
-src/Main.elm,246
+src/Main.elm,248
 viewStatePerUrl url =viewStatePerUrl23,585
-main =main35,951
-init _ url key =init45,1145
-subscriptions _ =subscriptions57,1517
-handleSession model result =handleSession60,1569
-update msg model =update79,2144
-view model =view147,4696
+main =main37,1045
+init _ url key =init47,1239
+subscriptions _ =subscriptions60,1633
+handleSession model result =handleSession63,1685
+update msg model =update82,2260
+view model =view282,12293
 
-src/Pichunter_http.elm,162
+src/Pichunter_http.elm,199
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister7,121
 login state =login13,312
 checkSession =checkSession19,492
 logout =logout24,618
+loadGroupTree =loadGroupTree29,724
 
-src/User.elm,75
+src/User.elm,212
 module UserUser1,0
 type alias User =type3,27
 type alias UserUser3,27
+type alias Permission =type10,165
+type alias PermissionPermission10,165
+type alias Group =type14,239
+type alias GroupGroup14,239
 
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/State.elm,1017
+src/State.elm,1488
 module StateState1,0
 type alias RegistrationForm =type11,187
 type alias RegistrationFormRegistrationForm11,187
@@ -39,26 +48,35 @@ type SessionSession17,320
     | LoggedOutLoggedOut18,349
 type alias LoginForm =type20,370
 type alias LoginFormLoginForm20,370
-type alias Model =type24,442
-type alias ModelModel24,442
-type NthNth32,609
-    = FirstFirst33,618
-    | SecondSecond34,630
-type MsgMsg36,644
-    = UrlChangedUrlChanged37,653
-    | LinkClickedLinkClicked38,678
-    | RegistrationDisplaynameRegistrationDisplayname39,715
-    | RegistrationUsernameRegistrationUsername40,752
-    | RegistrationPasswordRegistrationPassword41,786
-    | SendRegistrationSendRegistration42,824
-    | DummyResponseDummyResponse43,864
-    | LoginResultLoginResult44,907
-    | LoginUsernameLoginUsername45,950
-    | LoginPasswordLoginPassword46,977
-    | LoginLogin47,1004
-    | LogoutLogout48,1026
-    | LogoutResultLogoutResult49,1039
-    | SessionResultSessionResult50,1081
+type alias GroupManagerState =type24,442
+type alias GroupManagerStateGroupManagerState24,442
+type alias Model =type30,617
+type alias ModelModel30,617
+type NthNth39,833
+    = FirstFirst40,842
+    | SecondSecond41,854
+type MsgMsg43,868
+    = UrlChangedUrlChanged44,877
+    | LinkClickedLinkClicked45,902
+    | RegistrationDisplaynameRegistrationDisplayname46,939
+    | RegistrationUsernameRegistrationUsername47,976
+    | RegistrationPasswordRegistrationPassword48,1010
+    | SendRegistrationSendRegistration49,1048
+    | DummyResponseDummyResponse50,1088
+    | LoginResultLoginResult51,1131
+    | LoginUsernameLoginUsername52,1174
+    | LoginPasswordLoginPassword53,1201
+    | LoginLogin54,1228
+    | LogoutLogout55,1250
+    | LogoutResultLogoutResult56,1263
+    | SessionResultSessionResult57,1305
+    | GroupTreeResultGroupTreeResult58,1350
+    | AdminGroupSelectedAdminGroupSelected60,1490
+    | AdminUserSelectedAdminUserSelected61,1522
+    | AdminSelectExistingAbilityAdminSelectExistingAbility62,1553
+    | AdminDisallowAdminDisallow63,1593
+    | AdminAllowAdminAllow64,1613
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility65,1630
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -75,9 +93,16 @@ type RouteRoute7,153
 routeParser =routeParser14,257
 url_to_route url =url_to_route21,454
 
-src/GroupManager.elm,87
+src/GroupManager.elm,404
 module GroupManagerGroupManager1,0
-groupManagerView session =groupManagerView9,174
+list_diff a b =list_diff9,174
+userDetails user =userDetails14,275
+group_users groupstate group =group_users17,336
+group_permissions group =group_permissions31,917
+group_details group =group_details59,2340
+groupmanager groupstate =groupmanager62,2414
+authorizator view groupstate session =authorizator90,3741
+groupManagerView =groupManagerView101,4074
 
 src/HomeScreen.elm,63
 module HomeScreenHomeScreen1,0

@@ -25,3 +25,8 @@ logout =
     Http.get
         { url = "/api/logout"
         , expect = Http.expectWhatever LogoutResult}
+
+loadGroupTree =
+    Http.get
+        { url = "/api/grouptree"
+        , expect = Http.expectJson GroupTreeResult Json.decodeGroupTree}
