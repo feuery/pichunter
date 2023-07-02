@@ -48,6 +48,7 @@ decodeGroup =
         |> decodeApply (Decode.field "name" Decode.string)
         |> decodeApply (Decode.field "description" Decode.string)
         |> decodeApply (Decode.field "users" (Decode.list decodeAdministrativeUser))
+        |> decodeApply (Decode.field "all-users" (Decode.list decodeAdministrativeUser))
         |> decodeApply (Decode.field "permissions" (Decode.list decodePermission))
         |> decodeApply (Decode.field "all-abilities" (Decode.list decodePermission))
 

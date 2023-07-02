@@ -190,8 +190,20 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
    (description :accessor group-description :initarg :description :json-type :string :json-key "description")
    (permissions :accessor group-permissions :initarg :permissions :json-type (:list permission-response) :json-key "permissions")
    (all-abilities :accessor all-abilities :initarg :all-abilities :json-type :any :json-key "all-abilities")
-   (users :accessor group-users :initarg :users :json-type (:list user-response) :json-key "users"))
+   (users :accessor group-users :initarg :users :json-type (:list user-response) :json-key "users")
+   (all-users :accessor all-users :initarg :all-users :json-type (:list user-response) :json-key "all-users"))
   (:metaclass json-serializable-class))
+
+(defun user-plist->user-response (user)
+  (let ((img-id (getf user :imgId)))
+    (make-instance 'user-response
+		   :abilities '("")
+		   :imgId (if (equalp img-id :null)
+			      ""
+			      img-id)
+		   :username (getf user :username)
+		   :displayname (getf user :displayName )
+		   :id (getf user :user-id))))
 
 ;; FIXME add authentication
 (defroute "get" "/api/grouptree"
@@ -225,9 +237,16 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 	       (all-abilities (query (:select :action :id
 					      :from :pichunter.permission)
 				     :plists))
+	       (all-users (query (:select (:as :user.id :user-id)
+					  (:as :user.username :username)
+					  (:as :display-name :displayName)
+					  (:as :img_id :imgId)
+				  :from :pichunter.user)
+				 :plists))
 	       (actual-groups (remove-duplicates
 			       (mapcar (lambda (g)
 					 (make-instance 'group-response
+							:all-users (mapcar #'user-plist->user-response all-users)
 							:all-abilities (mapcar (lambda (permission)
 										(make-instance 'permission-response
 											       :action (getf permission :action )
@@ -247,16 +266,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 									       (permission-id a)
 									       (permission-id b))))
 							:users (remove-duplicates
-								(mapcar (lambda (user)
-									  (let* ((img-id (getf user :imgId)))
-									    (make-instance 'user-response
-											   :abilities '("")
-											   :imgId (if (equalp img-id :null)
-												      ""
-												      img-id)
-											   :username (getf user :username)
-											   :displayname (getf user :displayName )
-											   :id (getf user :user-id))))
+								(mapcar #'user-plist->user-response
 									groups)
 								:test (lambda (a b)
 									(equalp

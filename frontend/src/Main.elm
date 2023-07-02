@@ -78,6 +78,26 @@ handleSession model result =
                     ( model
                     , alert (Debug.toString error))
 
+add_user_to_group state group user =
+    let new_group = {group | users = user :: group.users}
+        new_loaded_groups = List.map (\g -> if g.id == new_group.id then
+                                                new_group
+                                            else g) state.loadedGroups
+    in
+    { state
+        | selectedGroup = Just new_group
+        , loadedGroups = new_loaded_groups}
+
+drop_user_from_group state group user =
+    let new_group = {group | users = List.filter ((/=) user) group.users}
+        new_loaded_groups = List.map (\g -> if g.id == new_group.id then
+                                                new_group
+                                            else g) state.loadedGroups
+    in
+    { state
+        | selectedGroup = Just new_group
+        , loadedGroups = new_loaded_groups}
+                    
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
@@ -174,7 +194,7 @@ update msg model =
                         Just selectedGroup ->
                             let selectedUser = List.head (List.filter
                                                               (\user -> (String.fromInt user.id) == userid)
-                                                              selectedGroup.users) in
+                                                              selectedGroup.all_users) in
                             ( {model | groupManagerState =
                                    Just { state | selectedUser = selectedUser} }
                             , Cmd.none)
@@ -256,7 +276,44 @@ update msg model =
                                 _ -> (model, alert "no permission selected")
                         _ -> (model, alert "no group selected")
                 _ -> (model, alert "groupmanager uninitialized")
-                                    
+        AdminUserToGroup ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case state.selectedUser of
+                                Just selectedUser ->
+                                    if not (List.member selectedUser selectedGroup.users) then
+                                        ({ model | groupManagerState =
+                                              Just (add_user_to_group state selectedGroup selectedUser)}
+                                        , Cmd.none)
+                                    else
+                                        ( model
+                                        , alert "User is already a member of the group")
+                                _ -> ( model
+                                     , alert "No user selected")
+                        _ -> ( model
+                             , alert "No group selected")
+                _ -> ( model
+                     , alert "state uninited")
+        AdminUserFromGroup ->
+            case model.groupManagerState of
+                Just state ->
+                    case state.selectedGroup of
+                        Just selectedGroup ->
+                            case state.selectedUser of
+                                Just selectedUser ->
+                                    ( {model | groupManagerState =
+                                           Just (drop_user_from_group state selectedGroup selectedUser)}
+                                    , Cmd.none)
+                                _ -> ( model
+                                     , alert "No user selected")
+                        _ -> ( model
+                             , alert "No group selected")
+                _ -> ( model
+                     , alert "state uninited")                                    
+
+                                        
 disallow_permission state old_group permission 
     = let group = { old_group | permissions =
                         (  old_group.permissions

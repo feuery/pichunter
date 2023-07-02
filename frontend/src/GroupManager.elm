@@ -14,19 +14,25 @@ list_diff a b =
 userDetails user =
     div [] [ text (Debug.toString user)]
 
+all_users users =
+    div [] [ h5 [] [text "All users"]
+           , select [ multiple True
+                    , onInput AdminUserSelected]
+               (List.map (\user ->
+                              (option [ value (String.fromInt user.id) ]
+                                   [ text (user.displayName ++ "(" ++ user.username ++ ")")]))
+                    users)
+           , button [ onClick AdminUserToGroup] [text "Move user to the selected group"]]
+        
 group_users groupstate group =
-    div [] [ h5 [] [text "Users"]
+    div [] [ h5 [] [text "Users of the group"]
            , select [ multiple True
                     , onInput AdminUserSelected]
                (List.map (\user ->
                               (option [ value (String.fromInt user.id) ]
                                    [ text (user.displayName ++ "(" ++ user.username ++ ")")]))
                     group.users)
-           , case groupstate.selectedUser of
-                 Just user ->
-                     div [] [ text (Debug.toString user) ]
-                 Nothing ->
-                     div [] []]
+           , button [ onClick AdminUserFromGroup] [ text "Drop user from the selected group"]]
 
 group_permissions group =
     div [] [ h5 [] [text "Group's abilities"]
@@ -57,7 +63,8 @@ group_permissions group =
                    
                     
 group_details group =
-    div [] [ text (Debug.toString group)]
+    div [] [ -- text (Debug.toString group)
+           ]
          
 groupmanager groupstate =
     case groupstate of
@@ -76,10 +83,11 @@ groupmanager groupstate =
                                    [ group_details selectedGroup
                                    , group_permissions selectedGroup]
                            _ -> div [] []]
-            ,  case state.selectedGroup of
-                   Just selectedGroup ->
-                       group_users state selectedGroup
-                   _ -> p [] []
+            , case state.selectedGroup of
+                  Just selectedGroup ->
+                      div [] [ group_users state selectedGroup
+                             , all_users (list_diff selectedGroup.all_users selectedGroup.users) ]
+                  _ -> p [] []
             , button [] [ text "Save groups"]
             , case state.selectedPermission of
                   Just permission ->

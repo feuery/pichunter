@@ -8,16 +8,18 @@ decodeUser =decodeUser24,707
 decodeAdministrativeUser =decodeAdministrativeUser32,1081
 decodePermission =decodePermission40,1469
 decodeGroup =decodeGroup45,1666
-decodeGroupTree =decodeGroupTree54,2138
+decodeGroupTree =decodeGroupTree55,2227
 
-src/Main.elm,248
+src/Main.elm,381
 viewStatePerUrl url =viewStatePerUrl23,585
 main =main37,1045
 init _ url key =init47,1239
 subscriptions _ =subscriptions60,1633
 handleSession model result =handleSession63,1685
-update msg model =update82,2260
-view model =view282,12293
+add_user_to_group state group user =add_user_to_group81,2218
+drop_user_from_group state group user =drop_user_from_group91,2620
+update msg model =update102,3103
+view model =view339,15074
 
 src/Pichunter_http.elm,199
 module Pichunter_httpPichunter_http1,0
@@ -39,7 +41,7 @@ type alias GroupGroup14,239
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/State.elm,1488
+src/State.elm,1588
 module StateState1,0
 type alias RegistrationForm =type11,187
 type alias RegistrationFormRegistrationForm11,187
@@ -77,6 +79,8 @@ type MsgMsg43,868
     | AdminDisallowAdminDisallow63,1593
     | AdminAllowAdminAllow64,1613
     | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility65,1630
+    | AdminUserToGroupAdminUserToGroup66,1673
+    | AdminUserFromGroupAdminUserFromGroup67,1696
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -93,16 +97,17 @@ type RouteRoute7,153
 routeParser =routeParser14,257
 url_to_route url =url_to_route21,454
 
-src/GroupManager.elm,404
+src/GroupManager.elm,440
 module GroupManagerGroupManager1,0
 list_diff a b =list_diff9,174
 userDetails user =userDetails14,275
-group_users groupstate group =group_users17,336
-group_permissions group =group_permissions31,917
-group_details group =group_details59,2340
-groupmanager groupstate =groupmanager62,2414
-authorizator view groupstate session =authorizator90,3741
-groupManagerView =groupManagerView101,4074
+all_users users =all_users17,336
+group_users groupstate group =group_users27,806
+group_permissions group =group_permissions37,1301
+group_details group =group_details65,2724
+groupmanager groupstate =groupmanager69,2813
+authorizator view groupstate session =authorizator98,4244
+groupManagerView =groupManagerView109,4577
 
 src/HomeScreen.elm,63
 module HomeScreenHomeScreen1,0

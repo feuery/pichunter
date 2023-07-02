@@ -16,5 +16,6 @@ type alias Group =
     , name: String
     , description: String
     , users: List User
+    , all_users: List User
     , permissions: List Permission
     , all_abilities: List Permission}

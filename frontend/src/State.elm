@@ -63,3 +63,5 @@ type Msg
     | AdminDisallow
     | AdminAllow
     | AdminSelectNonExistingAbility String
+    | AdminUserToGroup
+    | AdminUserFromGroup
