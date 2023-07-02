@@ -12,8 +12,26 @@ list_diff a b =
                         not (List.member aa b)))
 
 userDetails user =
-    div [] [ text (Debug.toString user)]
+    div [] [ label [ for "username" ] [ text "Username" ]
+           , input [ id "username"
+                   , disabled True
+                   , value user.username] []
+           , label [ for "displayname"] [ text "Display name" ]
+           , input [ id "username"
+                   , disabled True
+                   , value user.username] []
 
+           , case user.imgId of
+                 Just img_id ->
+                     img [src ("/api/pictures/" ++ img_id)] []
+                 _ ->
+                     p [] [ text "no image set up"]
+           , label [ for "activated" ] [ text "User activated?"]
+           , input [ id "activated" 
+                   , type_ "checkbox"
+                   , checked user.activated] []
+           ]
+        
 all_users users =
     div [] [ h5 [] [text "All users"]
            , select [ multiple True
@@ -32,7 +50,10 @@ group_users groupstate group =
                               (option [ value (String.fromInt user.id) ]
                                    [ text (user.displayName ++ "(" ++ user.username ++ ")")]))
                     group.users)
-           , button [ onClick AdminUserFromGroup] [ text "Drop user from the selected group"]]
+           , button [ onClick AdminUserFromGroup] [ text "Drop user from the selected group"]
+           , case groupstate.selectedUser of
+                 Just user -> userDetails user
+                 _ -> div [] []]
 
 group_permissions group =
     div [] [ h5 [] [text "Group's abilities"]

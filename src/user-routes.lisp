@@ -60,7 +60,11 @@
   (execute "INSERT INTO pichunter.groupmapping (UserID, GroupID)
 SELECT \"user\".ID, \"group\".ID
 FROM pichunter.user \"user\"
-JOIN pichunter.usergroup \"group\" ON 1=1;"))
+JOIN pichunter.usergroup \"group\" ON 1=1;")
+  (execute 
+"-- at this point, there is only one row in the pichunter.user
+UPDATE pichunter.user
+SET activated = true;"))
 
 (defroute "post" "/register"
     env  
@@ -115,7 +119,7 @@ JOIN pichunter.usergroup \"group\" ON 1=1;"))
 	    (let ((user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
 				    (:dao user :single)))
 		  (user-json (clean-postmodern-rubbish-json
-			      (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities
+			      (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
 FROM pichunter.user \"user\"
 JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".username = $1 AND \"user\".password = $2
@@ -137,7 +141,7 @@ GROUP BY \"user\".id" username (sha-512 password)
     (if (gethash :logged-in-username session)
 	(with-db
 	    (let ((user (clean-postmodern-rubbish-json
-			 (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities
+			 (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
 FROM pichunter.user \"user\"
 JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".id = $1
@@ -181,7 +185,8 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
    (imgId :accessor imgId
 	  :initarg :imgId
 	  :json-type :string
-	  :json-key "imgId"))
+	  :json-key "imgId")
+   (activated? :accessor activated? :initarg :activated? :json-type :any :json-key "activated?"))
   (:metaclass json-serializable-class))
 
 (defclass group-response ()
@@ -203,7 +208,8 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 			      img-id)
 		   :username (getf user :username)
 		   :displayname (getf user :displayName )
-		   :id (getf user :user-id))))
+		   :id (getf user :user-id)
+		   :activated? (getf user :activated))))
 
 ;; FIXME add authentication
 (defroute "get" "/api/grouptree"
@@ -217,6 +223,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 				       (:as :permission.action :action)
 				       (:as :user.id :user-id)
 				       (:as :user.username :username)
+				       (:as :user.activated :activated)
 				       (:as :display-name :displayName)
 				       (:as :img_id :imgId)
 				       (:as "[]" :abilities)
@@ -238,6 +245,7 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 					      :from :pichunter.permission)
 				     :plists))
 	       (all-users (query (:select (:as :user.id :user-id)
+					  (:as :user.activated :activated)
 					  (:as :user.username :username)
 					  (:as :display-name :displayName)
 					  (:as :img_id :imgId)

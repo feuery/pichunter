@@ -28,6 +28,7 @@ decodeUser =
         |> decodeApply (Decode.field "displayName" Decode.string)
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
+        |> decodeApply (Decode.field "activated?" Decode.bool)
 
 decodeAdministrativeUser =
     Decode.succeed User
@@ -36,6 +37,7 @@ decodeAdministrativeUser =
         |> decodeApply (Decode.field "displayName" Decode.string)
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
+        |> decodeApply (Decode.field "activated?" Decode.bool)
 
 decodePermission =
     Decode.succeed Permission

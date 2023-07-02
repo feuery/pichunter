@@ -5,10 +5,10 @@ decodeApply value partial =decodeApply9,201
 encodeRegistration state =encodeRegistration12,284
 encodeLogin state =encodeLogin19,561
 decodeUser =decodeUser24,707
-decodeAdministrativeUser =decodeAdministrativeUser32,1081
-decodePermission =decodePermission40,1469
-decodeGroup =decodeGroup45,1666
-decodeGroupTree =decodeGroupTree55,2227
+decodeAdministrativeUser =decodeAdministrativeUser33,1144
+decodePermission =decodePermission42,1595
+decodeGroup =decodeGroup47,1792
+decodeGroupTree =decodeGroupTree57,2353
 
 src/Main.elm,381
 viewStatePerUrl url =viewStatePerUrl23,585
@@ -33,10 +33,10 @@ src/User.elm,212
 module UserUser1,0
 type alias User =type3,27
 type alias UserUser3,27
-type alias Permission =type10,165
-type alias PermissionPermission10,165
-type alias Group =type14,239
-type alias GroupGroup14,239
+type alias Permission =type11,187
+type alias PermissionPermission11,187
+type alias Group =type15,261
+type alias GroupGroup15,261
 
 src/Header.elm,25
 module HeaderHeader1,0
@@ -97,17 +97,17 @@ type RouteRoute7,153
 routeParser =routeParser14,257
 url_to_route url =url_to_route21,454
 
-src/GroupManager.elm,440
+src/GroupManager.elm,443
 module GroupManagerGroupManager1,0
 list_diff a b =list_diff9,174
 userDetails user =userDetails14,275
-all_users users =all_users17,336
-group_users groupstate group =group_users27,806
-group_permissions group =group_permissions37,1301
-group_details group =group_details65,2724
-groupmanager groupstate =groupmanager69,2813
-authorizator view groupstate session =authorizator98,4244
-groupManagerView =groupManagerView109,4577
+all_users users =all_users35,1058
+group_users groupstate group =group_users45,1528
+group_permissions group =group_permissions58,2147
+group_details group =group_details86,3570
+groupmanager groupstate =groupmanager90,3659
+authorizator view groupstate session =authorizator119,5090
+groupManagerView =groupManagerView130,5423
 
 src/HomeScreen.elm,63
 module HomeScreenHomeScreen1,0
