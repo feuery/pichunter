@@ -311,7 +311,14 @@ update msg model =
                         _ -> ( model
                              , alert "No group selected")
                 _ -> ( model
-                     , alert "state uninited")                                    
+                     , alert "state uninited")
+        SaveGroupManagerState ->
+            case model.groupManagerState of
+                Just state ->            
+                    ( model
+                    , saveGroupTree state.loadedGroups)
+                _ -> ( model
+                     , alert "group mgr state uninited")
 
                                         
 disallow_permission state old_group permission 

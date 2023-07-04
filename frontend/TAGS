@@ -1,14 +1,19 @@
 
-src/Pichunter_json.elm,390
+src/Pichunter_json.elm,622
 module Pichunter_jsonPichunter_json1,0
-decodeApply value partial =decodeApply9,201
-encodeRegistration state =encodeRegistration12,284
-encodeLogin state =encodeLogin19,561
-decodeUser =decodeUser24,707
-decodeAdministrativeUser =decodeAdministrativeUser33,1144
-decodePermission =decodePermission42,1595
-decodeGroup =decodeGroup47,1792
-decodeGroupTree =decodeGroupTree57,2353
+decodeApply value partial =decodeApply10,239
+encodeMaybe valueEncoder maybeValue =encodeMaybe13,322
+encodeRegistration state =encodeRegistration20,488
+encodeLogin state =encodeLogin27,765
+encodeUser user =encodeUser32,911
+decodeUser =decodeUser40,1223
+decodeAdministrativeUser =decodeAdministrativeUser49,1660
+encodePermission permission =encodePermission58,2111
+decodePermission =decodePermission63,2302
+encodeGroup group =encodeGroup68,2499
+decodeGroup =decodeGroup76,2815
+decodeGroupTree =decodeGroupTree86,3376
+encodeGroupTree =encodeGroupTree87,3418
 
 src/Main.elm,381
 viewStatePerUrl url =viewStatePerUrl23,585
@@ -19,15 +24,16 @@ handleSession model result =handleSession63,1685
 add_user_to_group state group user =add_user_to_group81,2218
 drop_user_from_group state group user =drop_user_from_group91,2620
 update msg model =update102,3103
-view model =view339,15074
+view model =view346,15327
 
-src/Pichunter_http.elm,199
+src/Pichunter_http.elm,243
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister7,121
 login state =login13,312
 checkSession =checkSession19,492
 logout =logout24,618
 loadGroupTree =loadGroupTree29,724
+saveGroupTree groups =saveGroupTree33,859
 
 src/User.elm,212
 module UserUser1,0
@@ -41,7 +47,7 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/State.elm,1588
+src/State.elm,1646
 module StateState1,0
 type alias RegistrationForm =type11,187
 type alias RegistrationFormRegistrationForm11,187
@@ -81,6 +87,7 @@ type MsgMsg43,868
     | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility65,1630
     | AdminUserToGroupAdminUserToGroup66,1673
     | AdminUserFromGroupAdminUserFromGroup67,1696
+    | SaveGroupManagerStateSaveGroupManagerState68,1721
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -106,8 +113,8 @@ group_users groupstate group =group_users45,1528
 group_permissions group =group_permissions58,2147
 group_details group =group_details86,3570
 groupmanager groupstate =groupmanager90,3659
-authorizator view groupstate session =authorizator119,5090
-groupManagerView =groupManagerView130,5423
+authorizator view groupstate session =authorizator119,5121
+groupManagerView =groupManagerView130,5454
 
 src/HomeScreen.elm,63
 module HomeScreenHomeScreen1,0

@@ -1,7 +1,8 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :hash-keys :slurp :if-let :when-let :with-db :take :slurp-string-body :sha-512))
+  (:export :hash-keys :slurp :if-let :when-let :with-db :take :slurp-string-body :sha-512 :encode-to-json)
+  (:import-from :json-mop :encode))
 
 (in-package pichunter.std)
 
@@ -56,3 +57,7 @@
   (ironclad:byte-array-to-hex-string
     (ironclad:digest-sequence :sha512
                               (ironclad:ascii-string-to-byte-array str))))
+
+(defun encode-to-json (obj)
+  (with-output-to-string (s)
+    (encode obj s)))

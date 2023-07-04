@@ -1,6 +1,7 @@
 module Pichunter_json exposing (..)
 
 import Json.Encode as Encode
+import Json.Encode.Extra as Enc_Extra
 import Json.Decode as Decode
 
 import User exposing (..)
@@ -8,6 +9,13 @@ import User exposing (..)
 decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
 decodeApply value partial =
     Decode.andThen (\p -> Decode.map p value) partial
+
+encodeMaybe valueEncoder maybeValue =
+    case maybeValue of
+        Just value ->
+            valueEncoder value
+        Nothing ->
+            Encode.null        
 
 encodeRegistration state =
     Encode.object
@@ -21,6 +29,14 @@ encodeLogin state =
         [ ("username", Encode.string state.username)
         , ("password", Encode.string state.password)]
 
+encodeUser user =
+    Encode.object
+        [ ("username", Encode.string user.username)
+        , ("id", Encode.int user.id)
+        , ("displayName", Encode.string user.displayName)
+        , ("imgId", Enc_Extra.maybe Encode.string user.imgId)
+        , ("activated?", Encode.bool user.activated)]
+            
 decodeUser =
     Decode.succeed User
         |> decodeApply (Decode.field "username" Decode.string)
@@ -39,10 +55,23 @@ decodeAdministrativeUser =
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
         |> decodeApply (Decode.field "activated?" Decode.bool)
 
+encodePermission permission =
+    Encode.object 
+        [ ("id", Enc_Extra.maybe Encode.int permission.id)
+        , ("action", Enc_Extra.maybe Encode.string permission.action)]
+           
 decodePermission =
     Decode.succeed Permission
         |> decodeApply (Decode.field "id" (Decode.maybe Decode.int))
         |> decodeApply (Decode.field "action" (Decode.maybe (Decode.string)))
+
+encodeGroup group =
+    Encode.object
+        [ ("id", Encode.int group.id)
+        , ("name", Encode.string group.name)
+        , ("description", Encode.string group.description)
+        , ("users", Encode.list encodeUser group.users)
+        , ("permissions", Encode.list encodePermission group.permissions)]    
 
 decodeGroup =
     Decode.succeed Group
@@ -55,3 +84,4 @@ decodeGroup =
         |> decodeApply (Decode.field "all-abilities" (Decode.list decodePermission))
 
 decodeGroupTree = Decode.list decodeGroup
+encodeGroupTree = Encode.list encodeGroup

@@ -109,7 +109,7 @@ groupmanager groupstate =
                       div [] [ group_users state selectedGroup
                              , all_users (list_diff selectedGroup.all_users selectedGroup.users) ]
                   _ -> p [] []
-            , button [] [ text "Save groups"]
+            , button [ onClick SaveGroupManagerState ] [ text "Save groups"]
             , case state.selectedPermission of
                   Just permission ->
                       div [] [text (Debug.toString permission)]

@@ -65,3 +65,4 @@ type Msg
     | AdminSelectNonExistingAbility String
     | AdminUserToGroup
     | AdminUserFromGroup
+    | SaveGroupManagerState

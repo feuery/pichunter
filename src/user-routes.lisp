@@ -211,82 +211,94 @@ GROUP BY \"user\".id" (gethash :logged-in-user-id session)
 		   :id (getf user :user-id)
 		   :activated? (getf user :activated))))
 
+(defparameter aaaaa nil)
+
+(defroute "post" "/api/grouptree"
+    env
+  (with-db
+      (destructuring-bind (&key raw-body &allow-other-keys) env
+	(let* ((session (getf env :lack.session))
+	       (body (slurp-string-body raw-body))
+	       (_ (format t "body: ~a~%" body))
+	       (_ (break))
+	       (groups (json-to-clos body 'group-response)))
+	  (setf aaaaa groups)
+	  `(204 nil nil)))))
+
+      
 ;; FIXME add authentication
 (defroute "get" "/api/grouptree"
     env
   (with-db
-      (with-transaction ()
-	(let* ((groups (query (:select (:as :usergroup.id :group-id)
-				       (:as :usergroup.name :group-name)
-				       (:as :usergroup.description :group-description)
-				       (:as :permission.id :permission-id)
-				       (:as :permission.action :action)
-				       (:as :user.id :user-id)
-				       (:as :user.username :username)
-				       (:as :user.activated :activated)
-				       (:as :display-name :displayName)
-				       (:as :img_id :imgId)
-				       (:as "[]" :abilities)
-				       :from :pichunter.usergroup
-				       
-				       :join :pichunter.groupmapping 
-				       :on (:= :groupmapping.groupid :usergroup.id)
-				       
-				       :join :pichunter.user
-				       :on (:= :groupmapping.userid :user.id)
+      (let* ((groups (query (:select (:as :usergroup.id :group-id)
+				     (:as :usergroup.name :group-name)
+				     (:as :usergroup.description :group-description)
+				     (:as :permission.id :permission-id)
+				     (:as :permission.action :action)
+				     (:as :user.id :user-id)
+				     (:as :user.username :username)
+				     (:as :user.activated :activated)
+				     (:as :display-name :displayName)
+				     (:as :img_id :imgId)
+				     (:as "[]" :abilities)
+				     :from :pichunter.usergroup
+				     
+				     :join :pichunter.groupmapping 
+				     :on (:= :groupmapping.groupid :usergroup.id)
+				     
+				     :join :pichunter.user
+				     :on (:= :groupmapping.userid :user.id)
 
-				       :left-join :pichunter.grouppermission
-				       :on (:= :grouppermission.groupid :usergroup.id)
+				     :left-join :pichunter.grouppermission
+				     :on (:= :grouppermission.groupid :usergroup.id)
 
-				       :left-join :pichunter.permission
-				       :on (:= :grouppermission.permissionid :permission.id))
-			      :plists))
-	       (all-abilities (query (:select :action :id
-					      :from :pichunter.permission)
-				     :plists))
-	       (all-users (query (:select (:as :user.id :user-id)
-					  (:as :user.activated :activated)
-					  (:as :user.username :username)
-					  (:as :display-name :displayName)
-					  (:as :img_id :imgId)
-				  :from :pichunter.user)
-				 :plists))
-	       (actual-groups (remove-duplicates
-			       (mapcar (lambda (g)
-					 (make-instance 'group-response
-							:all-users (mapcar #'user-plist->user-response all-users)
-							:all-abilities (mapcar (lambda (permission)
-										(make-instance 'permission-response
-											       :action (getf permission :action )
-											       :id (getf permission :id)))
-									       all-abilities)
-							:description (getf g :group-description)
-							:name (getf g :group-name)
-							:id (getf g :group-id)
-							:permissions (remove-duplicates
-								      (mapcar (lambda (permission)
-										(make-instance 'permission-response
-											       :action (getf permission :action )
-											       :id (getf permission :permission-id)))
-									      groups)
-								      :test (lambda (a b)
-									      (equalp
-									       (permission-id a)
-									       (permission-id b))))
-							:users (remove-duplicates
-								(mapcar #'user-plist->user-response
-									groups)
-								:test (lambda (a b)
-									(equalp
-									 (user-id a)
-									 (user-id b))))))
-				       groups)
-					 :test (lambda (a b)
-						 (equalp (group-id a)
-							 (group-id b))))))
+				     :left-join :pichunter.permission
+				     :on (:= :grouppermission.permissionid :permission.id))
+			    :plists))
+	     (all-abilities (query (:select :action :id
+					    :from :pichunter.permission)
+				   :plists))
+	     (all-users (query (:select (:as :user.id :user-id)
+					(:as :user.activated :activated)
+					(:as :user.username :username)
+					(:as :display-name :displayName)
+					(:as :img_id :imgId)
+					:from :pichunter.user)
+			       :plists))
+	     (actual-groups (remove-duplicates
+			     (mapcar (lambda (g)
+				       (make-instance 'group-response
+						      :all-users (mapcar #'user-plist->user-response all-users)
+						      :all-abilities (mapcar (lambda (permission)
+									       (make-instance 'permission-response
+											      :action (getf permission :action )
+											      :id (getf permission :id)))
+									     all-abilities)
+						      :description (getf g :group-description)
+						      :name (getf g :group-name)
+						      :id (getf g :group-id)
+						      :permissions (remove-duplicates
+								    (mapcar (lambda (permission)
+									      (make-instance 'permission-response
+											     :action (getf permission :action )
+											     :id (getf permission :permission-id)))
+									    groups)
+								    :test (lambda (a b)
+									    (equalp
+									     (permission-id a)
+									     (permission-id b))))
+						      :users (remove-duplicates
+							      (mapcar #'user-plist->user-response
+								      groups)
+							      :test (lambda (a b)
+								      (equalp
+								       (user-id a)
+								       (user-id b))))))
+				     groups)
+			     :test (lambda (a b)
+				     (equalp (group-id a)
+					     (group-id b))))))
 
-	  `(200 (:content-type "application/json"
-		 :charset "utf-8")
-		(,(with-output-to-string (s)
-		    (encode  actual-groups
-			    s))))))))
+	`(200 (:content-type "application/json"
+	       :charset "utf-8")
+	      (,(encode-to-json actual-groups))))))

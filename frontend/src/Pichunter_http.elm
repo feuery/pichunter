@@ -30,3 +30,8 @@ loadGroupTree =
     Http.get
         { url = "/api/grouptree"
         , expect = Http.expectJson GroupTreeResult Json.decodeGroupTree}
+saveGroupTree groups =
+    Http.post
+        { url = "/api/grouptree"
+        , body = Http.jsonBody <| Json.encodeGroupTree groups
+        , expect = Http.expectWhatever DummyResponse}
