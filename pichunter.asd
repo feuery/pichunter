@@ -35,6 +35,7 @@
   :author "Ilpo Lehtinen"
   :license "LLGPL"
   :depends-on ("pichunter"
+	       "cl-strings"
                "rove")
   :components ((:module "tests"
                 :components

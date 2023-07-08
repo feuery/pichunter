@@ -1,12 +1,37 @@
 (defpackage pichunter/tests/main
   (:use :cl
         :postmodern
+	:binding-arrows
 	:pichunter.std
         :pichunter.defclass
-        :rove))
+        :rove)
+    (:shadowing-import-from :cl-strings :replace-all))
 (in-package :pichunter/tests/main)
 
 ;; NOTE: To run this test file, execute `(asdf:test-system :pichunter)' in your Lisp.
+
+(defun set-prop (obj k v)
+  (cond ((fset:map? obj)
+	 (fset:with obj k v))
+	((listp obj)
+	 (setf (nth k obj) v)
+	 obj)))
+
+(defun get-prop (obj key)
+  (cond ((fset:map? obj)
+	 (fset:lookup obj key))
+	((listp obj)
+	 (nth key obj))
+	((hash-table-p obj)
+	 (gethash key obj))
+	(t
+	 (format t "~a is neither hashtable, list nor fset map~%" obj)
+	 (assert (or (fset:map? obj)
+		     (hash-table-p obj)
+		     (listp obj))))))
+
+(defun update-prop (obj key fn)
+  (set-prop obj key (funcall fn (get-prop obj key))))
 
 
 (deftest defclass*-testing
@@ -19,8 +44,7 @@
     (testing "if pichunter.defclass serialization is symmetric"
       (ok 
        (equalp obj
-	       (alist->obj 'luokka
-			   (let ((yason:*parse-object-as* :alist))
+	       (alist->obj (let ((yason:*parse-object-as* :alist))
 			     (yason:parse 
 			      (with-output-to-string (s)
 				(yason:encode-alist
@@ -45,7 +69,14 @@
 		  ("TYPE" . "NON-SERIALIZABLES"))
 	     ("B" . "sdf")
 	     ("TYPE" . "NON-SERIALIZABLES"))
-	   (obj->alist obj2))))))
+	   (obj->alist obj2)))))
+  (testing "recursive alist->obj"
+    (let* ((object (make-non-serializables :b 44 :a (list 1 2 3)))
+	   (obj2 (make-non-serializables :a object :b "sdf")))
+      (ok (equalp (-> obj2
+		    (update-prop "A" (lambda (o) (fset:less o "DDD")))
+		    (fset:less "DDD"))
+		  (alist->obj (obj->alist obj2)))))))
 
 
 
@@ -80,11 +111,11 @@
 	  (execute (:insert-into 'pichunter_test.test-object
 		    :set :name name :age age)))
 	
-	(let ((instance2 (alist->obj 'test-object
-				     (query (:select :name :age
+	(let ((instance2 (alist->obj (query (:select :name :age
 					     :from 'pichunter-test.test-object
 					     :where (:= :age 666)) 
-					    :alist))))
+					    :alist)
+				     :type 'test-object )))
 	  (ok
 	   (equalp instance
 		   instance2)))))))

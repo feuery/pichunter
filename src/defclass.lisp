@@ -223,17 +223,36 @@
 	       (fset:convert 'fset:map ,obj-sym)
 	       ,obj-sym)))))
 
-(defun alist->obj (expected-type alist)
-  (fset:with
-   (fset:with (->> alist
-		(mapcar (lambda (cell)
-			  (destructuring-bind (k . v) cell
-			    (if (stringp k)
-				(cons k v)
-				(cons (symbol-name k) v)))))
-		(fset:convert 'fset:map))
-	      "TYPE" (prin1-to-string expected-type))
-   "NONSERIALIZABLES" (fset:lookup nonserializables (prin1-to-string expected-type))))
+(defun alistp (alist)
+  (and (listp alist)           
+       (every #'consp alist)))
+
+(defun alist->obj (alist &key (type))
+  (if (not (alistp alist))
+      alist
+      ;; database doesn't save the type information
+      (let* ((expected-type (or type
+				(cdr (assoc "TYPE" alist :test #'string=))))
+	     (expected-type (if (symbolp expected-type)
+				(prin1-to-string expected-type)
+				expected-type)))
+	(fset:with
+	 (fset:with (->> alist
+		      (mapcar (lambda (cell)
+				(destructuring-bind (k . v) cell
+				  (let ((k (if (stringp k)
+					       k
+					       (symbol-name k)))
+					(v (cond ((alistp v)
+						  (alist->obj v))
+
+						 ((listp v)
+						  (mapcar #'alist->obj v))
+						 (t v))))
+				    (cons k v)))))
+		      (fset:convert 'fset:map))
+		    "TYPE" expected-type)
+	 "NONSERIALIZABLES" (fset:lookup nonserializables expected-type)))))
   
 
 (defun obj->alist (obj)
