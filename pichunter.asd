@@ -11,6 +11,8 @@
                "clack"
 	       "lack"
 	       "circular-streams"
+	       "binding-arrows"
+	       "fset"
 	       "http-body"
                "cl-json"
 	       "trivial-utf-8"
@@ -18,6 +20,7 @@
   :components ((:module "src"
                 :components
                 ((:file "std")
+		 (:file "defclass")
 		 (:file "migrations")
 		 (:file "migration-list")
 		 (:file "decorators")
