@@ -1,8 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :hash-keys :slurp :if-let :when-let :with-db :take :slurp-string-body :sha-512 :encode-to-json)
-  (:import-from :json-mop :encode))
+  (:export :hash-keys :slurp :if-let :when-let :with-db :take :sha-512))
 
 (in-package pichunter.std)
 
@@ -15,13 +14,6 @@
     (let ((data (make-string (file-length stream))))
       (read-sequence data stream)
       data)))
-
-(defun slurp-string-body (raw-body)
-  ;; read-line does something completely moronic that makes valid-utf-8 look bad on the lisp side
-  (trivial-utf-8:utf-8-bytes-to-string 
-   (loop for byte = (read-byte raw-body nil)
-	 while byte
-	 collect byte)))
 
 (defmacro when-let (bindings &rest body)
   (let ((symbol (first bindings))
@@ -40,7 +32,7 @@
 	   ,false-body))))
 
 (defun take (n lst &optional acc)
-  "Returns a lazy sequence of the first n items from the given list lst."
+  "Returns a sequence of the first n items from the given list lst."
   (labels ((take-tailrec (n lst acc)
              (if (or (zerop n) (endp lst))
                  (reverse acc)
@@ -57,7 +49,3 @@
   (ironclad:byte-array-to-hex-string
     (ironclad:digest-sequence :sha512
                               (ironclad:ascii-string-to-byte-array str))))
-
-(defun encode-to-json (obj)
-  (with-output-to-string (s)
-    (encode obj s)))

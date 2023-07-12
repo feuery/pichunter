@@ -6,13 +6,11 @@
 
 (in-package pichunter.decorators)
 
-;; (defun @json (next)
-;;   (setf (hunchentoot:content-type*) "application/json")
-;;   (funcall next))
+(defun @json (next)
+  (setf (hunchentoot:content-type*) "application/json")
+  (funcall next))
 
-;; (defun @transaction (next)
-;;   (with-db 
-;;       (with-transaction ()
-;; 	(funcall next))))
-
-(defparameter lol 123)
+(defun @transaction (next)
+  (with-db 
+      (with-transaction ()
+	(funcall next))))
