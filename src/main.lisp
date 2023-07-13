@@ -10,6 +10,8 @@
 (defparameter *js-location* nil)
 (defparameter *css-location* nil)
 
+(setf hunchentoot:*catch-errors-p* nil)
+
 (cond ((string= (machine-instance)
 		"roland")
        (setf *js-location* #P"/home/feuer/common-lisp/pichunter/frontend/elm.js")

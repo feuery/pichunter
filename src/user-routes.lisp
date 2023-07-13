@@ -6,8 +6,6 @@
 
 (in-package :pichunter.user-routes)
 
-(setf hunchentoot:*catch-errors-p* nil)
-
 (defclass user ()
   ((username :initarg username
 
@@ -121,48 +119,6 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
   (setf (hunchentoot:return-code*) 204)
   "success")
 
-;; (defclass permission-response ()
-;;   ((id :accessor permission-id :initarg :id :json-type :any :json-key "id")
-;;    (action :accessor permission-action :initarg :action :json-type :any :json-key "action"))
-;;   (:metaclass json-serializable-class))
-
-;; (defclass user-response (login-request)
-;;   ((username
-;;     :accessor username
-;;     :initarg :username
-;;     :json-type :string
-;;     :json-key "username")
-;;    (displayname
-;;     :accessor displayname
-;;     :initarg :displayname
-;;     :json-type :string
-;;     :json-key "displayName")
-;;    (id
-;;     :accessor user-id
-;;     :initarg :id
-;;     :json-type :number
-;;     :json-key "id")
-;;    (abilities :accessor abilities
-;; 	      :initarg :abilities
-;; 	      :json-type :any
-;; 	      :json-key "abilities")
-;;    (imgId :accessor imgId
-;; 	  :initarg :imgId
-;; 	  :json-type :string
-;; 	  :json-key "imgId")
-;;    (activated? :accessor activated? :initarg :activated? :json-type :any :json-key "activated?"))
-;;   (:metaclass json-serializable-class))
-
-;; (defclass group-response ()
-;;   ((id :accessor group-id :initarg :id :json-type :number :json-key "id")
-;;    (name :accessor group-name :initarg :name :json-type :string :json-key "name")
-;;    (description :accessor group-description :initarg :description :json-type :string :json-key "description")
-;;    (permissions :accessor group-permissions :initarg :permissions :json-type (:list permission-response) :json-key "permissions")
-;;    (all-abilities :accessor all-abilities :initarg :all-abilities :json-type :any :json-key "all-abilities")
-;;    (users :accessor group-users :initarg :users :json-type (:list user-response) :json-key "users")
-;;    (all-users :accessor all-users :initarg :all-users :json-type (:list user-response) :json-key "all-users"))
-;;   (:metaclass json-serializable-class))
-
 (defun user-plist->user-response (user)
   (let ((img-id (getf user :imgId))
 	(hashmap (make-hash-table :test 'equal :size 6)))
@@ -176,19 +132,56 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
     (setf (gethash "activated?" hashmap) (getf user :activated))
     hashmap))
 
-;; (defparameter aaaaa nil)
+(defun save-user (group-id user)
+  (let ((id (gethash "id" user))
+	(displayName (gethash "displayName" user))
+	(activated? (gethash "activated?" user)))
+    (execute (:update 'pichunter.user
+	      :set 'display_name displayName
+	      'activated activated?
+	      :where (:= 'id id)))
+    (execute (:insert-into 'pichunter.groupmapping
+	      :set 'UserID id 'GroupID group-id))))
 
-;; (defroute "post" "/api/grouptree"
-;;     env
-;;   (with-db
-;;       (destructuring-bind (&key raw-body &allow-other-keys) env
-;; 	(let* ((session (getf env :lack.session))
-;; 	       (body (slurp-string-body raw-body))
-;; 	       (_ (format t "body: ~a~%" body))
-;; 	       (_ (break))
-;; 	       (groups (json-to-clos body 'group-response)))
-;; 	  (setf aaaaa groups)
-;; 	  `(204 nil nil)))))
+(defun save-permission (group-id permission)
+  (execute (:insert-into 'pichunter.GroupPermission
+	    :set 'PermissionID (gethash "id" permission)
+	         'GroupID group-id)))
+
+(defun save-group (group)
+  (let ((id (gethash "id" group))
+	(name (gethash "name" group))
+	(users (remove-duplicates
+		(coerce (gethash "users" group) 'list)
+		:test (lambda (a b)
+			      (equalp (gethash "id" a)
+				      (gethash "id" b)))))
+	(description (gethash "description" group))
+	(permissions (remove-duplicates
+		      (->> (coerce (gethash "permissions" group) 'list)
+		       (remove-if (lambda (perm)
+				    (equalp 'NULL
+					    (gethash "id" perm)))))
+		      :test (lambda (a b)
+			      (equalp (gethash "id" a)
+				      (gethash "id" b))))))
+    (execute (:update 'pichunter.usergroup
+	      :set 'name name
+	           'description description
+		   :where (:= 'id id)))
+    (execute (:delete-from 'pichunter.groupmapping :where (:= 'GroupID id)))
+    (execute (:delete-from 'pichunter.GroupPermission :where (:= 'GroupID id)))
+    (dolist (user users)
+      (save-user id user))
+    (dolist (permission permissions)
+	(save-permission id permission))))
+	      
+
+(defroute grouptree-saver ("/api/grouptree" :method :post :decorators (@transaction @json)) ()
+  (let ((body-params (parse (hunchentoot:raw-post-data :force-text t))))
+    (dolist (group (coerce body-params 'list))
+      (save-group group))
+    "{\"success\": true}"))
 
 (defun transform-permission (row)
   (let ((hashmap (make-hash-table :test 'equal :size 2)))
