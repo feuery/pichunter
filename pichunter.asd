@@ -17,7 +17,6 @@
 		 (:file "migrations")
 		 (:file "migration-list")
 		 (:file "decorators")
-		 (:file "routes")
 		 (:file "user-routes")
 		 (:file "file-handler")
 		 (:file "main"))))
