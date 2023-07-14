@@ -42,7 +42,7 @@
 
 (defun get-frontend ()
   (let ((script (slurp *js-location*)))
-    (format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script (js-helper-script))))
+    (format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"/site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script (js-helper-script))))
 
 
 (defroute root-grmgr ("/admin/usersgroups" :method :get) ()
