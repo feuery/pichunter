@@ -12,25 +12,30 @@ list_diff a b =
                         not (List.member aa b)))
 
 userDetails user =
-    div [] [ label [ for "username" ] [ text "Username" ]
-           , input [ id "username"
-                   , disabled True
-                   , value user.username] []
-           , label [ for "displayname"] [ text "Display name" ]
-           , input [ id "username"
-                   , disabled True
-                   , value user.username] []
-
-           , case user.imgId of
-                 Just img_id ->
-                     img [src ("/api/pictures/" ++ img_id)] []
-                 _ ->
-                     p [] [ text "no image set up"]
-           , label [ for "activated" ] [ text "User activated?"]
-           , input [ id "activated" 
-                   , type_ "checkbox"
-                   , checked user.activated] []
-           ]
+    div []
+        [ h5 [] [ text "User details"]
+        , div [class "userdetails" ]
+            [ label [ id "username_lbl"
+                    , for "username" ] [ text "Username" ]
+            , input [ id "username"
+                    , disabled True
+                    , value user.username] []
+            , label [ id "displayname_lbl"
+                    , for "displayname"] [ text "Display name" ]
+            , input [ id "displayname"
+                    , disabled True
+                    , value user.displayName] []
+                
+            , case user.imgId of
+                  Just img_id ->
+                      img [src ("/api/pictures/" ++ img_id)] []
+                  _ ->
+                      p [] [ text "no image set up"]
+            , label [ for "activated"
+                    , id "activated_lbl"] [ text "User activated?"]
+            , input [ id "activated" 
+                    , type_ "checkbox"
+                    , checked user.activated] []]]
         
 all_users users =
     div [] [ h5 [] [text "All users"]
@@ -50,43 +55,47 @@ group_users groupstate group =
                               (option [ value (String.fromInt user.id) ]
                                    [ text (user.displayName ++ "(" ++ user.username ++ ")")]))
                     group.users)
-           , button [ onClick AdminUserFromGroup] [ text "Drop user from the selected group"]
-           , case groupstate.selectedUser of
-                 Just user -> userDetails user
-                 _ -> div [] []]
+           , button [ onClick AdminUserFromGroup] [ text "Drop user from the selected group"]]
 
+user_container state selectedGroup =
+    div [ class "group_container" ]
+        [ group_users state selectedGroup
+        , div [] [text ""]
+        , all_users (list_diff selectedGroup.all_users selectedGroup.users) ]
+        
 group_permissions group =
-    div [] [ h5 [] [text "Group's abilities"]
-           , (select [ multiple True
-                     , onInput AdminSelectExistingAbility]
-                  ( group.permissions
-                  |> List.filter (\g -> g.id /= Nothing)
-                  |> List.map (\g ->
-                                   let id = (Maybe.withDefault -1 g.id) in
-                                   (option [ value (String.fromInt id)]
-                                        [ text (Maybe.withDefault "" g.action) ]))))
-              
-           , button [ onClick AdminDisallow ] [ text "disallow group to" ]
-
-               
-           , h5 [] [text "Group can't do: "]
-           , let all_abilities = group.all_abilities
-                 group_abilities = group.permissions in 
-                 (select [ multiple True
-                         , onInput AdminSelectNonExistingAbility ]
-                  (  list_diff all_abilities group_abilities
-                  |> List.filter (\perm -> perm.id /= Nothing)
-                  |> List.map (\permission ->
-                                  let id = (Maybe.withDefault -1 permission.id) in
-                                  option [ value (String.fromInt id) ]
-                                  [ text (Maybe.withDefault "" permission.action)])))
-           , button [ onClick AdminAllow ] [ text "allow group to" ]]
+    div [ class "group_container" ]
+        [ div [] [ h5 [] [text "Group's abilities"]
+                 , (select [ multiple True
+                           , onInput AdminSelectExistingAbility]
+                        ( group.permissions
+                        |> List.filter (\g -> g.id /= Nothing)
+                        |> List.map (\g ->
+                                         let id = (Maybe.withDefault -1 g.id) in
+                                         (option [ value (String.fromInt id)]
+                                              [ text (Maybe.withDefault "" g.action) ]))))]
+                                                  
+        , button [ onClick AdminDisallow ] [ text "disallow group to" ]
+        
+        , let all_abilities = group.all_abilities
+              group_abilities = group.permissions in
+          div []
+              [  h5 [] [text "Group can't do: "]
+              , (select [ multiple True
+                        , onInput AdminSelectNonExistingAbility ]
+                     (  list_diff all_abilities group_abilities
+                     |> List.filter (\perm -> perm.id /= Nothing)
+                     |> List.map (\permission ->
+                                      let id = (Maybe.withDefault -1 permission.id) in
+                                      option [ value (String.fromInt id) ]
+                                      [ text (Maybe.withDefault "" permission.action)])))]
+        , button [ onClick AdminAllow ] [ text "allow group to" ]]
                    
                     
 group_details group =
     div [] [ -- text (Debug.toString group)
            ]
-         
+        
 groupmanager groupstate =
     case groupstate of
         Just state ->
@@ -98,22 +107,25 @@ groupmanager groupstate =
                                           (option [ value (String.fromInt group.id)]
                                                [ text group.name ]))
                                 groups)
-                     , case state.selectedGroup of
-                           Just selectedGroup ->
-                               div []
-                                   [ group_details selectedGroup
-                                   , group_permissions selectedGroup]
-                           _ -> div [] []]
-            , case state.selectedGroup of
-                  Just selectedGroup ->
-                      div [] [ group_users state selectedGroup
-                             , all_users (list_diff selectedGroup.all_users selectedGroup.users) ]
-                  _ -> p [] []
+                     , ul [ class "groupmanager" ]
+                         [ li [] [ case state.selectedGroup of
+                                       Just selectedGroup -> group_details selectedGroup
+                                       _ -> div [] []]
+                         , li [] [ case state.selectedGroup of
+                                       Just selectedGroup -> group_permissions selectedGroup
+                                       _ -> div [] []]
+                         , li [] [ case state.selectedGroup of
+                                       Just selectedGroup -> user_container state selectedGroup
+                                       _ -> p [] []]]]
+            ,  case state.selectedUser of
+                   Just user -> userDetails user
+                   _ -> div [] []
             , button [ onClick SaveGroupManagerState ] [ text "Save groups"]
-            , case state.selectedPermission of
-                  Just permission ->
-                      div [] [text (Debug.toString permission)]
-                  _ -> div [] [text "no permission selected"]]
+            -- , case state.selectedPermission of
+            --       Just permission ->
+            --           div [] [text (Debug.toString permission)]
+            --       _ -> div [] [text "no permission selected"]
+            ]
         Nothing -> [ div [] [ text "Manager state is uninitialized" ]]
 
 authorizator view groupstate session =
@@ -128,3 +140,5 @@ authorizator view groupstate session =
                 
 
 groupManagerView = authorizator groupmanager
+
+

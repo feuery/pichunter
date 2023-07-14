@@ -39,3 +39,32 @@ body {
     display: inline-block;
     margin: 2px;
 }
+
+.groupmanager {
+    list-style: none;
+}
+
+.group_container {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.group_container > :nth-child(3){
+    margin-left: 5%;
+}
+
+.userdetails {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+
+.userdetails input {
+    grid-colum: 2;
+}
+
+.userdetails label {
+    grid-column: 1;
+}
