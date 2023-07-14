@@ -1,13 +1,33 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :hash-keys :slurp :if-let :when-let :with-db :take :sha-512))
+  (:export :hash-keys :slurp :slurp-bytes :if-let :when-let :with-db :take :sha-512))
 
 (in-package pichunter.std)
 
 (defmacro with-db (&rest body)
   `(with-connection '("pichunter" "pichunter" "TESTIPASSU" "localhost" :pooled-p t)
      ,@body))
+
+;; https://www.n16f.net/blog/reading-files-faster-in-common-lisp/
+(defun slurp-bytes (path)
+  (declare (type (or pathname string) path))
+  (let ((data (make-array 0 :element-type '(unsigned-byte 8) :adjustable t))
+        (block-size 4096)
+        (offset 0))
+    (with-open-file (file path :element-type '(unsigned-byte 8))
+      (loop
+        (let* ((capacity (array-total-size data))
+               (nb-left (- capacity offset)))
+          (when (< nb-left block-size)
+            (let ((new-length (max (+ capacity (- block-size nb-left))
+                                   (floor (* capacity 3) 2))))
+              (setf data (adjust-array data new-length)))))
+        (let ((end (read-sequence data file :start offset)))
+          (when (= end offset)
+            (return-from slurp-bytes (adjust-array data end)))
+          (setf offset end))))))
+
 
 (defun slurp (path)
   (with-open-file (stream path)
