@@ -187,7 +187,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
   (let ((hashmap (make-hash-table :test 'equal :size 2)))
     
     (setf (gethash "action" hashmap) (getf row :action))
-    (setf (gethash "id" hashmap) (getf row :id))
+    (setf (gethash "id" hashmap) (getf row :permission-id))
     hashmap))
 
 (defroute grouptree-getter ("/api/grouptree" :method :get :decorators (@json @transaction)) ()
@@ -216,7 +216,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
 				   :left-join :pichunter.permission
 				   :on (:= :grouppermission.permissionid :permission.id))
 			  :plists))
-	   (all-abilities (->> (query (:select :action :id
+	   (all-abilities (->> (query (:select :action (:as :id :permission-id)
 					       :from :pichunter.permission)
 				      :plists)
 			    (mapcar #'transform-permission)))
@@ -245,15 +245,33 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
 				       (setf (gethash "name" hashmap) (getf g :group-name))
 				       (setf (gethash "id" hashmap) (getf g :group-id))
 				       (setf (gethash "permissions" hashmap) (remove-duplicates
-									      (mapcar #'transform-permission
-										      groups)
+									      (->>
+										groups
+										(remove-if
+										       (lambda (r)
+											 (equalp
+											  (getf r :permission-id)
+											  :NULL)))
+										(remove-if-not 
+										 (lambda (r)
+										   (equalp
+										    (getf r :group-id)
+										    (getf g :group-id))))
+										(mapcar #'transform-permission))
 									      :test (lambda (a b)
 										      (equalp
 										       (gethash "id" a)
 										       (gethash "id" b)))))
 				       (setf (gethash "users" hashmap) (remove-duplicates
-									(mapcar #'user-plist->user-response
-										groups)
+									(->>
+									  groups
+									  (remove-if-not 
+										 (lambda (r)
+										   (equalp
+										    (getf r :group-id)
+										    (getf g :group-id))))
+									  (mapcar #'user-plist->user-response))
+									
 									:test (lambda (a b)
 										(equalp
 										 (gethash "id" a)

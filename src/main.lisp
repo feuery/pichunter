@@ -39,9 +39,16 @@
 (defun js-helper-script ()
   (slurp (pathname (format nil "/~{~a/~}pichunter-helper.js" (cdr (pathname-directory *js-location*))))))
 
-(defroute root ("/" :method :get) ()
+
+(defun get-frontend ()
   (let ((script (slurp *js-location*)))
     (format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script (js-helper-script))))
+
+
+(defroute root-grmgr ("/admin/usersgroups" :method :get) ()
+  (get-frontend))
+(defroute root ("/" :method :get) ()
+  (get-frontend))
 
 (defroute get-picture-route ("/api/pictures/:guid" :method :get) (&get guid)
   (get-picture guid))
