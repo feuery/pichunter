@@ -24,15 +24,31 @@
   (format t "get-picture-route ~a~%" guid)
   (get-picture guid))
 
+;; https://gis.stackexchange.com/a/273402
+(defun coordinate->number (coord)
+  (float (+ (first coord)
+	    (/ (second coord) 60)
+	    (/ (third coord) 3600))))
+
 (defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction)) (&post file)
   (destructuring-bind (tmp-file filename mime) file
     (let ((bytes (slurp-bytes tmp-file)))
-      (execute "insert into pichunter.pictures (filename, mime, data) values ($1, $2, $3)"
+      
+      (let* ((exif (zpb-exif:make-exif tmp-file))
+	     (gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif)))
+	     (latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
+	     (latitude-number (coordinate->number latitude))
+	     (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
+	     (longitude-number (coordinate->number longitude)))
+
+	(format t "latitude: ~a~%longitude: ~a~%"
+		latitude-number
+		longitude-number)
+
+	(execute "insert into pichunter.pictures (filename, mime, latitude, longitude, data) values ($1, $2, $3, $4, $5)"
 	       filename
 	       mime
-	       bytes)
+	       latitude-number
+	       longitude-number
+	       bytes))
       "{\"success\": false}")))
-
-
-
-

@@ -16,6 +16,8 @@ import HomeScreen exposing (homeScreen)
 import RegistrationScreen exposing (registrationScreen)
 import Header exposing (topbar)
 import GroupManager exposing (groupManagerView)
+import MediaManager exposing (mediaManagerView)
+import File exposing (mime)
 
 port alert : String -> Cmd msg
 
@@ -29,8 +31,9 @@ viewStatePerUrl url =
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
               ManageUsersGroups -> [ checkSession
-                                   , loadGroupTree
-                                   ]
+                                   , loadGroupTree]
+              ManageMedia -> [ checkSession
+                             , getPictureIds]
               NotFound -> [checkSession])
         
 main : Program () Model Msg
@@ -52,6 +55,7 @@ init _ url key =
                                _ -> Nothing)
               (LoginForm "" "")
               LoggedOut
+              Nothing
               Nothing
         , Cmd.batch cmds )
         
@@ -319,6 +323,26 @@ update msg model =
                     , saveGroupTree state.loadedGroups)
                 _ -> ( model
                      , alert "group mgr state uninited")
+        GotInputFiles files ->
+            if List.all (\file -> String.startsWith "image" (mime file)) files then
+                ( model
+                , Cmd.batch (List.map (\file -> postPicture file) files))
+            else
+                ( model
+                , alert ("Expected images, got " ++ (String.join ", " (List.map mime files))))
+        UploadedImage result ->
+            ( model
+            , alert (Debug.toString result))
+        GotPictureIds result ->
+            case result of
+                Ok list_of_ids ->
+                    ( { model
+                          | mediaManagerState = Just ( MediaManagerState list_of_ids)}
+                    , Cmd.none)
+                Err error ->
+                    ( model
+                    , alert ("Error: " ++ (Debug.toString error)))
+                    
 
                                         
 disallow_permission state old_group permission 
@@ -351,4 +375,8 @@ view model =
                  Home -> homeScreen
                  RegisterScreen -> registrationScreen model.registrationFormState
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
+                 ManageMedia ->
+                  case model.mediaManagerState of
+                      Just state -> mediaManagerView state model.session
+                      Nothing -> [ div [] [ text "Media manager hasn't loaded"]]
                  _ -> [div [] [ text "Hello World!" ]])}

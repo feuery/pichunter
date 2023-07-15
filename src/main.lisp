@@ -34,7 +34,26 @@
 
 (defun get-frontend ()
   (let ((script (slurp *js-location*)))
-    (format nil "<!DOCTYPE html>~%<html> <head> <meta charset=\"utf-8\" /> <link href=\"/site.css\" rel=\"stylesheet\"/> <script> ~A </script> </head> <body> <div id=\"app\" /> <script> ~A </script> </body> </html>" script (js-helper-script))))
+    (format nil "<!DOCTYPE html>~%
+<html>
+  <head>
+    <meta charset=\"utf-8\" />
+    <link href=\"/site.css\" rel=\"stylesheet\"/>
+    <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" integrity=\"sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=\" crossorigin=\"\"/>
+    <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"> </script>
+
+    <script> ~A
+    </script>
+  </head>
+  <body>
+    <div id=\"app\" />
+    <script> ~A </script>
+  </body>
+</html>" script (js-helper-script))))
+
+
+
+ 
 
 
 (defroute root-mdmgr ("/admin/media" :method :get) ()

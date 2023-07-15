@@ -35,3 +35,13 @@ saveGroupTree groups =
         { url = "/api/grouptree"
         , body = Http.jsonBody <| Json.encodeGroupTree groups
         , expect = Http.expectWhatever DummyResponse}
+
+postPicture pictureFile = Http.post 
+                          { url = "/api/pictures"
+                          , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
+                          -- , expect = Http.expectJson UploadedImage Image.imageResponseDecoder }
+                          , expect = Http.expectWhatever UploadedImage}
+
+getPictureIds = Http.get
+                { url = "/api/pictures"
+                , expect = Http.expectJson GotPictureIds Json.decodePicturelistResponse}

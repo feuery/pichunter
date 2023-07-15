@@ -5,6 +5,7 @@ import Json.Encode.Extra as Enc_Extra
 import Json.Decode as Decode
 
 import User exposing (..)
+import Image exposing (ImageMetadata)
 
 decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
 decodeApply value partial =
@@ -85,3 +86,11 @@ decodeGroup =
 
 decodeGroupTree = Decode.list decodeGroup
 encodeGroupTree = Encode.list encodeGroup
+
+decodeImageMetadata = Decode.succeed ImageMetadata
+                      |> decodeApply (Decode.field "id" Decode.string)
+                      |> decodeApply (Decode.field "filename" Decode.string)
+                      |> decodeApply (Decode.field "latitude" Decode.float)
+                      |> decodeApply (Decode.field "longitude" Decode.float)
+                         
+decodePicturelistResponse = Decode.list decodeImageMetadata

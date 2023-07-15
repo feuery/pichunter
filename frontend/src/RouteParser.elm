@@ -8,7 +8,8 @@ type Route
     = Home 
     | RegisterScreen
     | LoggedInHome
-    | ManageUsersGroups 
+    | ManageUsersGroups
+    | ManageMedia
     | NotFound
 
 routeParser =
@@ -16,6 +17,7 @@ routeParser =
         [ map Home top
         , map RegisterScreen (s "register")
         , map ManageUsersGroups (s "admin" </> (s "usersgroups"))
+        , map ManageMedia (s "admin" </> (s "media"))
         , map LoggedInHome (s "home")]
 
 url_to_route url =

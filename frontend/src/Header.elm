@@ -12,7 +12,7 @@ topbar session loginstate
               LoggedIn usr -> [ span [ id "topbar_welcome" ] [ text ("Welcome, " ++ usr.displayName)]
                               , ul [ id "topbar_tools"]
                                   [ li [] [ a [href "/admin/usersgroups"] [ text "Handle users and groups"]]
-                                  , li [] [ a [href "#"] [ text "Handle media"]]]
+                                  , li [] [ a [href "/admin/media"] [ text "Handle media"]]]
                                       
                               , button [ onClick Logout
                                        , id "logout_btn" ] [ text "Log out"]]

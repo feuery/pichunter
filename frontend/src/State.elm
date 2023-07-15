@@ -7,6 +7,7 @@ import Browser
 import RouteParser exposing (..)
 import Browser.Navigation as Nav
 import User exposing (..)
+import Image exposing (ImageMetadata)
 
 type alias RegistrationForm =
     { displayname: String
@@ -26,6 +27,9 @@ type alias GroupManagerState =
     , selectedUser: Maybe User
     , selectedPermission: Maybe Permission
     , loadedGroups: List Group}
+
+type alias MediaManagerState =
+    { known_metadata: List ImageMetadata }
     
 type alias Model =
     { route: Route
@@ -34,7 +38,7 @@ type alias Model =
     , loginState: LoginForm
     , session: Session
     , groupManagerState: Maybe GroupManagerState
-    }
+    , mediaManagerState: Maybe MediaManagerState }
 
 type Nth
     = First
@@ -66,3 +70,6 @@ type Msg
     | AdminUserToGroup
     | AdminUserFromGroup
     | SaveGroupManagerState
+    | GotInputFiles (List File)
+    | UploadedImage (Result Http.Error ())
+    | GotPictureIds (Result Http.Error (List ImageMetadata))

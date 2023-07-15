@@ -68,3 +68,12 @@ body {
 .userdetails label {
     grid-column: 1;
 }
+
+.manager-image-container img {
+    width: 25%;
+    margin: 10px;
+}
+
+.map {
+    width: 50%;
+}

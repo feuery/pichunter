@@ -10,6 +10,7 @@
 	       "hunchentoot"
 	       "com.inuoe.jzon"
 	       "easy-routes"
+	       "zpb-exif"
                "str")
   :components ((:module "src"
                 :components
@@ -19,6 +20,7 @@
 		 (:file "decorators")
 		 (:file "user-routes")
 		 (:file "file-handler")
+		 (:file "media-routes")
 		 (:file "main"))))
   :description ""
   :in-order-to ((test-op (test-op "pichunter/tests"))))

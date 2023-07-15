@@ -12,16 +12,17 @@ groupmanager groupstate =groupmanager99,4148
 authorizator view groupstate session =authorizator131,5852
 groupManagerView =groupManagerView142,6185
 
-src/RouteParser.elm,313
+src/RouteParser.elm,350
 module RouteParserRouteParser1,0
 type RouteRoute7,153
     = HomeHome8,164
     | RegisterScreenRegisterScreen9,176
     | LoggedInHomeLoggedInHome10,197
     | ManageUsersGroupsManageUsersGroups11,216
-    | NotFoundNotFound12,241
-routeParser =routeParser14,257
-url_to_route url =url_to_route21,454
+    | ManageMediaManageMedia12,240
+    | NotFoundNotFound13,258
+routeParser =routeParser15,274
+url_to_route url =url_to_route23,525
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -32,31 +33,33 @@ module HomeScreenHomeScreen1,0
 homeScreen =homeScreen9,182
 
 src/Main.elm,381
-viewStatePerUrl url =viewStatePerUrl23,585
-main =main37,1045
-init _ url key =init47,1239
-subscriptions _ =subscriptions60,1633
-handleSession model result =handleSession63,1685
-add_user_to_group state group user =add_user_to_group81,2218
-drop_user_from_group state group user =drop_user_from_group91,2620
-update msg model =update102,3103
-view model =view346,15327
+viewStatePerUrl url =viewStatePerUrl25,661
+main =main40,1175
+init _ url key =init50,1369
+subscriptions _ =subscriptions64,1785
+handleSession model result =handleSession67,1837
+add_user_to_group state group user =add_user_to_group85,2370
+drop_user_from_group state group user =drop_user_from_group95,2772
+update msg model =update106,3255
+view model =view370,16312
 
-src/Pichunter_json.elm,622
+src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
-decodeApply value partial =decodeApply10,239
-encodeMaybe valueEncoder maybeValue =encodeMaybe13,322
-encodeRegistration state =encodeRegistration20,488
-encodeLogin state =encodeLogin27,765
-encodeUser user =encodeUser32,911
-decodeUser =decodeUser40,1223
-decodeAdministrativeUser =decodeAdministrativeUser49,1660
-encodePermission permission =encodePermission58,2111
-decodePermission =decodePermission63,2302
-encodeGroup group =encodeGroup68,2499
-decodeGroup =decodeGroup76,2815
-decodeGroupTree =decodeGroupTree86,3376
-encodeGroupTree =encodeGroupTree87,3418
+decodeApply value partial =decodeApply11,277
+encodeMaybe valueEncoder maybeValue =encodeMaybe14,360
+encodeRegistration state =encodeRegistration21,526
+encodeLogin state =encodeLogin28,803
+encodeUser user =encodeUser33,949
+decodeUser =decodeUser41,1261
+decodeAdministrativeUser =decodeAdministrativeUser50,1698
+encodePermission permission =encodePermission59,2149
+decodePermission =decodePermission64,2340
+encodeGroup group =encodeGroup69,2537
+decodeGroup =decodeGroup77,2853
+decodeGroupTree =decodeGroupTree87,3414
+encodeGroupTree =encodeGroupTree88,3456
+decodeImageMetadata =decodeImageMetadata90,3499
+decodePicturelistResponse =decodePicturelistResponse96,3877
 
 src/User.elm,212
 module UserUser1,0
@@ -70,7 +73,7 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/Pichunter_http.elm,243
+src/Pichunter_http.elm,327
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister7,121
 login state =login13,312
@@ -78,45 +81,64 @@ checkSession =checkSession19,492
 logout =logout24,618
 loadGroupTree =loadGroupTree29,724
 saveGroupTree groups =saveGroupTree33,859
+postPicture pictureFile =postPicture39,1046
+getPictureIds =getPictureIds45,1396
 
-src/State.elm,1646
+src/Image.elm,104
+module ImageImage1,0
+type alias ImageMetadata =type3,28
+type alias ImageMetadataImageMetadata3,28
+
+src/MediaManager.elm,199
+module MediaManagerMediaManager1,0
+image_list mediastate =image_list13,285
+filesDecoder =filesDecoder25,850
+mediamanager state =mediamanager28,920
+mediaManagerView =mediaManagerView34,1190
+
+src/State.elm,1876
 module StateState1,0
-type alias RegistrationForm =type11,187
-type alias RegistrationFormRegistrationForm11,187
-type Session =type17,320
-type SessionSession17,320
-    | LoggedOutLoggedOut18,349
-type alias LoginForm =type20,370
-type alias LoginFormLoginForm20,370
-type alias GroupManagerState =type24,442
-type alias GroupManagerStateGroupManagerState24,442
-type alias Model =type30,617
-type alias ModelModel30,617
-type NthNth39,833
-    = FirstFirst40,842
-    | SecondSecond41,854
-type MsgMsg43,868
-    = UrlChangedUrlChanged44,877
-    | LinkClickedLinkClicked45,902
-    | RegistrationDisplaynameRegistrationDisplayname46,939
-    | RegistrationUsernameRegistrationUsername47,976
-    | RegistrationPasswordRegistrationPassword48,1010
-    | SendRegistrationSendRegistration49,1048
-    | DummyResponseDummyResponse50,1088
-    | LoginResultLoginResult51,1131
-    | LoginUsernameLoginUsername52,1174
-    | LoginPasswordLoginPassword53,1201
-    | LoginLogin54,1228
-    | LogoutLogout55,1250
-    | LogoutResultLogoutResult56,1263
-    | SessionResultSessionResult57,1305
-    | GroupTreeResultGroupTreeResult58,1350
-    | AdminGroupSelectedAdminGroupSelected60,1490
-    | AdminUserSelectedAdminUserSelected61,1522
-    | AdminSelectExistingAbilityAdminSelectExistingAbility62,1553
-    | AdminDisallowAdminDisallow63,1593
-    | AdminAllowAdminAllow64,1613
-    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility65,1630
-    | AdminUserToGroupAdminUserToGroup66,1673
-    | AdminUserFromGroupAdminUserFromGroup67,1696
-    | SaveGroupManagerStateSaveGroupManagerState68,1721
+type alias RegistrationForm =type12,225
+type alias RegistrationFormRegistrationForm12,225
+type Session =type18,358
+type SessionSession18,358
+    | LoggedOutLoggedOut19,387
+type alias LoginForm =type21,408
+type alias LoginFormLoginForm21,408
+type alias GroupManagerState =type25,480
+type alias GroupManagerStateGroupManagerState25,480
+type alias MediaManagerState =type31,651
+type alias MediaManagerStateMediaManagerState31,651
+type alias Model =type34,730
+type alias ModelModel34,730
+type NthNth43,991
+    = FirstFirst44,1000
+    | SecondSecond45,1012
+type MsgMsg47,1026
+    = UrlChangedUrlChanged48,1035
+    | LinkClickedLinkClicked49,1060
+    | RegistrationDisplaynameRegistrationDisplayname50,1097
+    | RegistrationUsernameRegistrationUsername51,1134
+    | RegistrationPasswordRegistrationPassword52,1168
+    | SendRegistrationSendRegistration53,1206
+    | DummyResponseDummyResponse54,1246
+    | LoginResultLoginResult55,1289
+    | LoginUsernameLoginUsername56,1332
+    | LoginPasswordLoginPassword57,1359
+    | LoginLogin58,1386
+    | LogoutLogout59,1408
+    | LogoutResultLogoutResult60,1421
+    | SessionResultSessionResult61,1463
+    | GroupTreeResultGroupTreeResult62,1508
+    | AdminGroupSelectedAdminGroupSelected64,1648
+    | AdminUserSelectedAdminUserSelected65,1680
+    | AdminSelectExistingAbilityAdminSelectExistingAbility66,1711
+    | AdminDisallowAdminDisallow67,1751
+    | AdminAllowAdminAllow68,1771
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility69,1788
+    | AdminUserToGroupAdminUserToGroup70,1831
+    | AdminUserFromGroupAdminUserFromGroup71,1854
+    | SaveGroupManagerStateSaveGroupManagerState72,1879
+    | GotInputFilesGotInputFiles73,1907
+    | UploadedImageUploadedImage74,1939
+    | GotPictureIdsGotPictureIds75,1982
