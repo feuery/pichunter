@@ -41,7 +41,7 @@ handleSession model result =handleSession68,1911
 add_user_to_group state group user =add_user_to_group86,2444
 drop_user_from_group state group user =drop_user_from_group96,2846
 update msg model =update107,3329
-view model =view374,16660
+view model =view381,16918
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -73,16 +73,17 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/Pichunter_http.elm,327
+src/Pichunter_http.elm,368
 module Pichunter_httpPichunter_http1,0
-doRegister state =doRegister7,121
-login state =login13,312
-checkSession =checkSession19,492
-logout =logout24,618
-loadGroupTree =loadGroupTree29,724
-saveGroupTree groups =saveGroupTree33,859
-postPicture pictureFile =postPicture39,1046
-getPictureIds =getPictureIds45,1396
+doRegister state =doRegister8,146
+login state =login14,337
+checkSession =checkSession20,517
+logout =logout25,643
+loadGroupTree =loadGroupTree30,749
+saveGroupTree groups =saveGroupTree34,884
+postPicture pictureFile =postPicture40,1071
+getPictureIds =getPictureIds46,1421
+removePicture id =removePicture50,1576
 
 src/Image.elm,104
 module ImageImage1,0
@@ -93,11 +94,11 @@ src/MediaManager.elm,255
 module MediaManagerMediaManager1,0
 map_id_to_element_id id =map_id_to_element_id13,285
 image_list mediastate =image_list15,346
-filesDecoder =filesDecoder34,1428
-mediamanager state =mediamanager37,1498
-mediaManagerView =mediaManagerView43,1772
+filesDecoder =filesDecoder33,1400
+mediamanager state =mediamanager36,1470
+mediaManagerView =mediaManagerView42,1744
 
-src/State.elm,1876
+src/State.elm,1960
 module StateState1,0
 type alias RegistrationForm =type12,225
 type alias RegistrationFormRegistrationForm12,225
@@ -143,3 +144,5 @@ type MsgMsg47,1026
     | GotInputFilesGotInputFiles73,1907
     | UploadedImageUploadedImage74,1939
     | GotPictureIdsGotPictureIds75,1982
+    | RemovePictureRemovePicture76,2043
+    | RemovalResultRemovalResult77,2077

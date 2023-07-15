@@ -27,8 +27,7 @@ image_list mediastate =
                                           , div [ id map_id
                                                 , class "map" ] []
                                           , div [ class "mediamanager_toolbox"]
-                                              [ button [] [text "lolz"]
-                                              , button [] [text "lolz2"]]] ]]))]
+                                              [ button [ onClick (RemovePicture meta) ] [text "Remove this picture"]]] ]]))]
 
 filesDecoder : D.Decoder (List File)
 filesDecoder =

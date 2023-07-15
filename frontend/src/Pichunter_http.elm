@@ -3,6 +3,7 @@ module Pichunter_http exposing (..)
 import Http exposing (..)
 import State exposing (..)
 import Pichunter_json as Json
+import Json.Decode as D 
 
 doRegister state =
     Http.post
@@ -45,3 +46,13 @@ postPicture pictureFile = Http.post
 getPictureIds = Http.get
                 { url = "/api/pictures"
                 , expect = Http.expectJson GotPictureIds Json.decodePicturelistResponse}
+
+removePicture id = Http.request
+                   { url = "/api/pictures/" ++ id
+                   , method = "DELETE"
+                   , headers = []
+                   , body = Http.emptyBody
+                   , timeout = Nothing
+                   , tracker = Nothing
+                   , expect = Http.expectJson RemovalResult D.bool}
+                   

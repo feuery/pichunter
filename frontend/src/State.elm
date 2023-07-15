@@ -73,3 +73,5 @@ type Msg
     | GotInputFiles (List File)
     | UploadedImage (Result Http.Error ())
     | GotPictureIds (Result Http.Error (List ImageMetadata))
+    | RemovePicture ImageMetadata
+    | RemovalResult (Result Http.Error Bool)

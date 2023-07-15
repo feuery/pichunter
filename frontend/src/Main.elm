@@ -333,7 +333,7 @@ update msg model =
                 , alert ("Expected images, got " ++ (String.join ", " (List.map mime files))))
         UploadedImage result ->
             ( model
-            , alert (Debug.toString result))
+            , getPictureIds)
         GotPictureIds result ->
             case result of
                 Ok list_of_ids ->
@@ -346,6 +346,13 @@ update msg model =
                 Err error ->
                     ( model
                     , alert ("Error: " ++ (Debug.toString error)))
+        RemovePicture metadata ->
+            ( model
+            , removePicture metadata.id)
+        RemovalResult result ->
+            case result of
+                Ok success -> (model, getPictureIds)
+                Err error -> (model, alert (Debug.toString error))
                     
 
                                         

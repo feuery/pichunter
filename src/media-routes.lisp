@@ -16,4 +16,9 @@
   (stringify
    (query (:select 'id 'filename 'latitude 'longitude :from 'pichunter.pictures) :array-hash)))
 
+(defroute delete-picture ("/api/pictures/:guid" :method :delete :decorators (@json @transaction)) ()
+  (execute (:delete-from 'pichunter.pictures :where (:= :id guid)))
+  "true")
+						
+
     
