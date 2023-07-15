@@ -13,27 +13,31 @@ import GroupManager exposing (authorizator)
 map_id_to_element_id id = "map"++(String.replace "-" "" id)
 
 image_list mediastate =
-    details []
-        [ summary [] [ text "Images known to the system: " ]
-        , div [ class "manager-image-container" ]
-            (  mediastate.known_metadata
-            |> List.map (\meta ->
-                             let map_id = map_id_to_element_id meta.id in
-                             [ h3 [] [ text meta.filename ]
-                             , img [ src ("/api/pictures/" ++ meta.id) ] []
-                             , div [] [ h5 [] [ text ((String.fromFloat meta.latitude) ++ ", " ++ (String.fromFloat meta.longitude))]
-                                      , div [ id map_id
-                                            , class "map" ] [ ]]])
-            |> List.concat)]
+    div [] [ h3 [] [ text "Images known to the system: " ]
+           , ul [ class "manager-image-container" ]
+               (  mediastate.known_metadata
+               |> List.map (\meta ->
+                                let map_id = map_id_to_element_id meta.id in
+                                li []
+                                [ details []
+                                      [summary [] [ h5 [] [ text meta.filename ]]
+                                      , div [ class "grid-container" ]
+                                          [ img [ class "picture"
+                                                , src ("/api/pictures/" ++ meta.id) ] []
+                                          , div [ id map_id
+                                                , class "map" ] []
+                                          , div [ class "mediamanager_toolbox"]
+                                              [ button [] [text "lolz"]
+                                              , button [] [text "lolz2"]]] ]]))]
 
 filesDecoder : D.Decoder (List File)
 filesDecoder =
   D.at ["target","files"] (D.list File.decoder)
       
-mediamanager state = [ input [ type_ "file"
-                               , multiple False
-                               , on "change" (D.map GotInputFiles filesDecoder)] []
-                       , text "Manageroin mediaa "
-                     , image_list state ]
+mediamanager state = [ image_list state
+                     , h3 [] [ text "Input new pictures: "]
+                     , input [ type_ "file"
+                             , multiple False
+                             , on "change" (D.map GotInputFiles filesDecoder)] []]
 
 mediaManagerView = authorizator mediamanager
