@@ -33,15 +33,15 @@ module HomeScreenHomeScreen1,0
 homeScreen =homeScreen9,182
 
 src/Main.elm,381
-viewStatePerUrl url =viewStatePerUrl25,661
-main =main40,1175
-init _ url key =init50,1369
-subscriptions _ =subscriptions64,1785
-handleSession model result =handleSession67,1837
-add_user_to_group state group user =add_user_to_group85,2370
-drop_user_from_group state group user =drop_user_from_group95,2772
-update msg model =update106,3255
-view model =view370,16312
+viewStatePerUrl url =viewStatePerUrl26,735
+main =main41,1249
+init _ url key =init51,1443
+subscriptions _ =subscriptions65,1859
+handleSession model result =handleSession68,1911
+add_user_to_group state group user =add_user_to_group86,2444
+drop_user_from_group state group user =drop_user_from_group96,2846
+update msg model =update107,3329
+view model =view374,16660
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -89,12 +89,13 @@ module ImageImage1,0
 type alias ImageMetadata =type3,28
 type alias ImageMetadataImageMetadata3,28
 
-src/MediaManager.elm,199
+src/MediaManager.elm,255
 module MediaManagerMediaManager1,0
-image_list mediastate =image_list13,285
-filesDecoder =filesDecoder25,850
-mediamanager state =mediamanager28,920
-mediaManagerView =mediaManagerView34,1190
+map_id_to_element_id id =map_id_to_element_id13,285
+image_list mediastate =image_list15,346
+filesDecoder =filesDecoder30,1105
+mediamanager state =mediamanager33,1175
+mediaManagerView =mediaManagerView39,1445
 
 src/State.elm,1876
 module StateState1,0

@@ -20,6 +20,7 @@ import MediaManager exposing (mediaManagerView)
 import File exposing (mime)
 
 port alert : String -> Cmd msg
+port initializeMaps : List (String, Float, Float) -> Cmd msg             
 
 viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
 viewStatePerUrl url =
@@ -338,7 +339,10 @@ update msg model =
                 Ok list_of_ids ->
                     ( { model
                           | mediaManagerState = Just ( MediaManagerState list_of_ids)}
-                    , Cmd.none)
+                    , initializeMaps (List.map (\meta ->
+                                                    ( MediaManager.map_id_to_element_id meta.id
+                                                    , meta.latitude
+                                                    , meta.longitude)) list_of_ids))
                 Err error ->
                     ( model
                     , alert ("Error: " ++ (Debug.toString error)))
