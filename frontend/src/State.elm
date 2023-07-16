@@ -30,6 +30,9 @@ type alias GroupManagerState =
 
 type alias MediaManagerState =
     { known_metadata: List ImageMetadata }
+
+type alias GameState =
+    { next_pic: ImageMetadata }
     
 type alias Model =
     { route: Route
@@ -38,7 +41,8 @@ type alias Model =
     , loginState: LoginForm
     , session: Session
     , groupManagerState: Maybe GroupManagerState
-    , mediaManagerState: Maybe MediaManagerState }
+    , mediaManagerState: Maybe MediaManagerState
+    , gameState: Maybe GameState }
 
 type Nth
     = First
@@ -75,3 +79,5 @@ type Msg
     | GotPictureIds (Result Http.Error (List ImageMetadata))
     | RemovePicture ImageMetadata
     | RemovalResult (Result Http.Error Bool)
+    | GotNextPicForGame (Result Http.Error ImageMetadata)
+    | MapClicked Float

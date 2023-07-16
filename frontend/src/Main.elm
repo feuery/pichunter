@@ -5,9 +5,9 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
-
 import Http
 import Url
+import File exposing (mime)
 
 import State exposing (..)
 import Pichunter_http exposing (..)
@@ -17,10 +17,14 @@ import RegistrationScreen exposing (registrationScreen)
 import Header exposing (topbar)
 import GroupManager exposing (groupManagerView)
 import MediaManager exposing (mediaManagerView)
-import File exposing (mime)
+import Game exposing (gameview)
+
 
 port alert : String -> Cmd msg
-port initializeMaps : List (String, Float, Float) -> Cmd msg             
+port initializeAdminMaps : List (String, Float, Float) -> Cmd msg
+port initGameMap : (String, Float, Float) -> Cmd msg
+
+port mapClicked : (Float -> msg) -> Sub msg
 
 viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
 viewStatePerUrl url =
@@ -31,6 +35,8 @@ viewStatePerUrl url =
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
+              Play -> [ checkSession
+                      , getNextForGame ]
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
               ManageMedia -> [ checkSession
@@ -58,12 +64,13 @@ init _ url key =
               LoggedOut
               Nothing
               Nothing
+              Nothing
         , Cmd.batch cmds )
         
       
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.batch 
-                  [ ]
+                  [ mapClicked MapClicked]
 
 handleSession model result =
     case result of
@@ -339,7 +346,7 @@ update msg model =
                 Ok list_of_ids ->
                     ( { model
                           | mediaManagerState = Just ( MediaManagerState list_of_ids)}
-                    , initializeMaps (List.map (\meta ->
+                    , initializeAdminMaps (List.map (\meta ->
                                                     ( MediaManager.map_id_to_element_id meta.id
                                                     , meta.latitude
                                                     , meta.longitude)) list_of_ids))
@@ -353,6 +360,18 @@ update msg model =
             case result of
                 Ok success -> (model, getPictureIds)
                 Err error -> (model, alert (Debug.toString error))
+        GotNextPicForGame result ->
+            case result of
+                Ok meta ->
+                    ( { model | gameState = Just (GameState meta) }
+                    , initGameMap ( MediaManager.map_id_to_element_id meta.id
+                                  , meta.latitude
+                                  , meta.longitude))
+                Err error ->
+                    (model, alert (Debug.toString error))
+        MapClicked distance ->
+            ( model
+            , alert ("Your answer differed by " ++ (String.fromFloat distance) ++ " meters"))
                     
 
                                         
@@ -383,8 +402,12 @@ view model =
     , body = (topbar model.session model.loginState)
              ::
              (case model.route of
-                 Home -> homeScreen
+                 Home -> homeScreen model.session
                  RegisterScreen -> registrationScreen model.registrationFormState
+                 Play -> case model.gameState of
+                             Just state -> gameview model.session state
+                             Nothing -> [ div [] [ text "Game is uninitialized!" ]]
+                 NotFound -> [ div [] [ text "Not found!" ] ]
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  ManageMedia ->
                   case model.mediaManagerState of

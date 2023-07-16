@@ -128,10 +128,10 @@ groupmanager groupstate =
             ]
         Nothing -> [ div [] [ text "Manager state is uninitialized" ]]
 
-authorizator view groupstate session =
+authorizator view ability groupstate session =
     case session of
         LoggedIn user ->
-            if List.member "can-admin" user.abilities then
+            if List.member ability user.abilities then
                 view groupstate
             else [ div [] [ text "you need \"can-admin\" ability" ] ]
         LoggedOut ->
@@ -139,6 +139,4 @@ authorizator view groupstate session =
 
                 
 
-groupManagerView = authorizator groupmanager
-
-
+groupManagerView = authorizator groupmanager "can-admin"

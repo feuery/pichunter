@@ -7,13 +7,15 @@ import State exposing (..)
 
 topbar session loginstate
     = header [ class "login" ]
-       (  h2 [] [ text "Welcome to pichunter" ]
+       (  h2 [] [ a [ href "/" ] [text "Welcome to pichunter" ] ]
        :: (case session of
               LoggedIn usr -> [ span [ id "topbar_welcome" ] [ text ("Welcome, " ++ usr.displayName)]
-                              , ul [ id "topbar_tools"]
-                                  [ li [] [ a [href "/admin/usersgroups"] [ text "Handle users and groups"]]
-                                  , li [] [ a [href "/admin/media"] [ text "Handle media"]]]
-                                      
+                              , if List.member "can-admin" usr.abilities then
+                                    ul [ id "topbar_tools"]
+                                        [ li [] [ a [href "/admin/usersgroups"] [ text "Handle users and groups"]]
+                                        , li [] [ a [href "/admin/media"] [ text "Handle media"]]]
+                                else
+                                    div [] []
                               , button [ onClick Logout
                                        , id "logout_btn" ] [ text "Log out"]]
               LoggedOut -> [ label [for "username"] [text "Username"]

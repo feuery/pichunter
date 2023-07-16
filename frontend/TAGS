@@ -1,5 +1,5 @@
 
-src/GroupManager.elm,503
+src/GroupManager.elm,511
 module GroupManagerGroupManager1,0
 list_diff a b =list_diff9,174
 userDetails user =userDetails14,275
@@ -9,10 +9,10 @@ user_container state selectedGroup =user_container60,2261
 group_permissions group =group_permissions66,2490
 group_details group =group_details95,4060
 groupmanager groupstate =groupmanager99,4148
-authorizator view groupstate session =authorizator131,5852
-groupManagerView =groupManagerView142,6185
+authorizator view ability groupstate session =authorizator131,5852
+groupManagerView =groupManagerView142,6189
 
-src/RouteParser.elm,350
+src/RouteParser.elm,373
 module RouteParserRouteParser1,0
 type RouteRoute7,153
     = HomeHome8,164
@@ -20,28 +20,29 @@ type RouteRoute7,153
     | LoggedInHomeLoggedInHome10,197
     | ManageUsersGroupsManageUsersGroups11,216
     | ManageMediaManageMedia12,240
-    | NotFoundNotFound13,258
-routeParser =routeParser15,274
-url_to_route url =url_to_route23,525
+    | PlayPlay13,258
+    | NotFoundNotFound14,269
+routeParser =routeParser16,285
+url_to_route url =url_to_route25,566
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
 registrationScreen maybe_formState =registrationScreen11,278
 
-src/HomeScreen.elm,63
+src/HomeScreen.elm,71
 module HomeScreenHomeScreen1,0
-homeScreen =homeScreen9,182
+homeScreen session =homeScreen9,182
 
-src/Main.elm,381
-viewStatePerUrl url =viewStatePerUrl26,735
-main =main41,1249
-init _ url key =init51,1443
-subscriptions _ =subscriptions65,1859
-handleSession model result =handleSession68,1911
-add_user_to_group state group user =add_user_to_group86,2444
-drop_user_from_group state group user =drop_user_from_group96,2846
-update msg model =update107,3329
-view model =view381,16918
+src/Main.elm,382
+viewStatePerUrl url =viewStatePerUrl30,857
+main =main47,1449
+init _ url key =init57,1643
+subscriptions _ =subscriptions72,2081
+handleSession model result =handleSession75,2154
+add_user_to_group state group user =add_user_to_group93,2687
+drop_user_from_group state group user =drop_user_from_group103,3089
+update msg model =update114,3572
+view model =view400,17737
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -73,7 +74,7 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/Pichunter_http.elm,368
+src/Pichunter_http.elm,408
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister8,146
 login state =login14,337
@@ -84,11 +85,18 @@ saveGroupTree groups =saveGroupTree34,884
 postPicture pictureFile =postPicture40,1071
 getPictureIds =getPictureIds46,1421
 removePicture id =removePicture50,1576
+getNextForGame =getNextForGame59,1940
 
 src/Image.elm,104
 module ImageImage1,0
 type alias ImageMetadata =type3,28
 type alias ImageMetadataImageMetadata3,28
+
+src/Game.elm,161
+module GameGame1,0
+authorizator view session state =authorizator13,285
+actual_gameview session gamestate =actual_gameview20,461
+gameview =gameview31,959
 
 src/MediaManager.elm,255
 module MediaManagerMediaManager1,0
@@ -98,7 +106,7 @@ filesDecoder =filesDecoder33,1400
 mediamanager state =mediamanager36,1470
 mediaManagerView =mediaManagerView42,1744
 
-src/State.elm,1960
+src/State.elm,2120
 module StateState1,0
 type alias RegistrationForm =type12,225
 type alias RegistrationFormRegistrationForm12,225
@@ -111,38 +119,42 @@ type alias GroupManagerState =type25,480
 type alias GroupManagerStateGroupManagerState25,480
 type alias MediaManagerState =type31,651
 type alias MediaManagerStateMediaManagerState31,651
-type alias Model =type34,730
-type alias ModelModel34,730
-type NthNth43,991
-    = FirstFirst44,1000
-    | SecondSecond45,1012
-type MsgMsg47,1026
-    = UrlChangedUrlChanged48,1035
-    | LinkClickedLinkClicked49,1060
-    | RegistrationDisplaynameRegistrationDisplayname50,1097
-    | RegistrationUsernameRegistrationUsername51,1134
-    | RegistrationPasswordRegistrationPassword52,1168
-    | SendRegistrationSendRegistration53,1206
-    | DummyResponseDummyResponse54,1246
-    | LoginResultLoginResult55,1289
-    | LoginUsernameLoginUsername56,1332
-    | LoginPasswordLoginPassword57,1359
-    | LoginLogin58,1386
-    | LogoutLogout59,1408
-    | LogoutResultLogoutResult60,1421
-    | SessionResultSessionResult61,1463
-    | GroupTreeResultGroupTreeResult62,1508
-    | AdminGroupSelectedAdminGroupSelected64,1648
-    | AdminUserSelectedAdminUserSelected65,1680
-    | AdminSelectExistingAbilityAdminSelectExistingAbility66,1711
-    | AdminDisallowAdminDisallow67,1751
-    | AdminAllowAdminAllow68,1771
-    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility69,1788
-    | AdminUserToGroupAdminUserToGroup70,1831
-    | AdminUserFromGroupAdminUserFromGroup71,1854
-    | SaveGroupManagerStateSaveGroupManagerState72,1879
-    | GotInputFilesGotInputFiles73,1907
-    | UploadedImageUploadedImage74,1939
-    | GotPictureIdsGotPictureIds75,1982
-    | RemovePictureRemovePicture76,2043
-    | RemovalResultRemovalResult77,2077
+type alias GameState =type34,726
+type alias GameStateGameState34,726
+type alias Model =type37,786
+type alias ModelModel37,786
+type NthNth47,1080
+    = FirstFirst48,1089
+    | SecondSecond49,1101
+type MsgMsg51,1115
+    = UrlChangedUrlChanged52,1124
+    | LinkClickedLinkClicked53,1149
+    | RegistrationDisplaynameRegistrationDisplayname54,1186
+    | RegistrationUsernameRegistrationUsername55,1223
+    | RegistrationPasswordRegistrationPassword56,1257
+    | SendRegistrationSendRegistration57,1295
+    | DummyResponseDummyResponse58,1335
+    | LoginResultLoginResult59,1378
+    | LoginUsernameLoginUsername60,1421
+    | LoginPasswordLoginPassword61,1448
+    | LoginLogin62,1475
+    | LogoutLogout63,1497
+    | LogoutResultLogoutResult64,1510
+    | SessionResultSessionResult65,1552
+    | GroupTreeResultGroupTreeResult66,1597
+    | AdminGroupSelectedAdminGroupSelected68,1737
+    | AdminUserSelectedAdminUserSelected69,1769
+    | AdminSelectExistingAbilityAdminSelectExistingAbility70,1800
+    | AdminDisallowAdminDisallow71,1840
+    | AdminAllowAdminAllow72,1860
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility73,1877
+    | AdminUserToGroupAdminUserToGroup74,1920
+    | AdminUserFromGroupAdminUserFromGroup75,1943
+    | SaveGroupManagerStateSaveGroupManagerState76,1968
+    | GotInputFilesGotInputFiles77,1996
+    | UploadedImageUploadedImage78,2028
+    | GotPictureIdsGotPictureIds79,2071
+    | RemovePictureRemovePicture80,2132
+    | RemovalResultRemovalResult81,2166
+    | GotNextPicForGameGotNextPicForGame82,2211
+    | MapClickedMapClicked83,2269

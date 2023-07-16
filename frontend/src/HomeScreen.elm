@@ -6,9 +6,15 @@ import Html.Events exposing (onInput, onClick)
 import State exposing (..)
 
           
-homeScreen =
+homeScreen session =
     [  p [] [ text "Pichunter is a game where you guess where on a map pictures have been taken"]
-    , p [] [ text "Register "
-           , a [ href "/register"] [ text "here"]
-           , text "!"]]
+    , case session of
+          LoggedIn user -> div []
+                           [ p [] [ text ("You're logged in, " ++ user.displayName) ]
+                           , p [] [ text "Play "
+                                  , a [ href "/play"] [ text "Here "]]]
+          LoggedOut ->
+              p [] [ text "Register "
+                   , a [ href "/register"] [ text "here"]
+                   , text "!"]]
     

@@ -56,3 +56,6 @@ removePicture id = Http.request
                    , tracker = Nothing
                    , expect = Http.expectJson RemovalResult D.bool}
                    
+getNextForGame = Http.get
+                 { url = "/api/next-picture"
+                 , expect = Http.expectJson GotNextPicForGame Json.decodeImageMetadata }

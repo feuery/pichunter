@@ -39,4 +39,4 @@ mediamanager state = [ image_list state
                              , multiple False
                              , on "change" (D.map GotInputFiles filesDecoder)] []]
 
-mediaManagerView = authorizator mediamanager
+mediaManagerView = authorizator mediamanager "can-admin"

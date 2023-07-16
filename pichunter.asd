@@ -21,6 +21,7 @@
 		 (:file "user-routes")
 		 (:file "file-handler")
 		 (:file "media-routes")
+		 (:file "game-routes")
 		 (:file "main"))))
   :description ""
   :in-order-to ((test-op (test-op "pichunter/tests"))))

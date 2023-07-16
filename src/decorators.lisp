@@ -2,7 +2,7 @@
   (:use :cl)
   (:import-from :pichunter.std :with-db)
   (:import-from :postmodern :with-transaction)
-  (:export :@json :@transaction))
+  (:export :@json :@transaction :@no-cache))
 
 (in-package pichunter.decorators)
 
@@ -14,3 +14,7 @@
   (with-db 
       (with-transaction ()
 	(funcall next))))
+
+(defun @no-cache (next)
+  (setf (hunchentoot:header-out "Cache-Control") "no-cache")
+  (funcall next))

@@ -56,10 +56,11 @@
 
  
 
-
 (defroute root-mdmgr ("/admin/media" :method :get) ()
   (get-frontend))
 (defroute root-grmgr ("/admin/usersgroups" :method :get) ()
+  (get-frontend))
+(defroute root-spela ("/play" :method :get) ()
   (get-frontend))
 (defroute root ("/" :method :get) ()
   (get-frontend))
