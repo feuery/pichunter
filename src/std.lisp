@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :hash-keys :slurp :slurp-bytes :if-let :when-let :with-db :take :sha-512))
+  (:export :drop :hash-keys :slurp :slurp-bytes :if-let :when-let :with-db :take :sha-512 :slurp-utf-8))
 
 (in-package pichunter.std)
 
@@ -28,9 +28,11 @@
             (return-from slurp-bytes (adjust-array data end)))
           (setf offset end))))))
 
+(defun slurp-utf-8 (path)
+  (trivial-utf-8:utf-8-bytes-to-string (slurp-bytes path)))
 
-(defun slurp (path)
-  (with-open-file (stream path)
+(defun slurp (path &key (external-format :default))
+  (with-open-file (stream path :external-format external-format)
     (let ((data (make-string (file-length stream))))
       (read-sequence data stream)
       data)))
@@ -69,3 +71,9 @@
   (ironclad:byte-array-to-hex-string
     (ironclad:digest-sequence :sha512
                               (ironclad:ascii-string-to-byte-array str))))
+
+(defun drop (n lst)
+  "Returns a sequence that skips the first N elements of the given list."
+  (cond ((or (null lst) (<= n 0)) lst)
+        ((> n 0) (drop (1- n) (cdr lst)))))
+

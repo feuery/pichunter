@@ -1,0 +1,781 @@
+[
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/01",
+    "level": 1,
+    "code": "01",
+    "order": 1,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Uusimaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/02",
+    "level": 1,
+    "code": "02",
+    "order": 3,
+    "modifiedDate": "1997-05-13T21:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Varsinais-Suomi"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/04",
+    "level": 1,
+    "code": "04",
+    "order": 4,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Satakunta"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/05",
+    "level": 1,
+    "code": "05",
+    "order": 5,
+    "modifiedDate": "1998-03-08T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Kanta-Häme"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/06",
+    "level": 1,
+    "code": "06",
+    "order": 6,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Pirkanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/07",
+    "level": 1,
+    "code": "07",
+    "order": 7,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Päijät-Häme"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/08",
+    "level": 1,
+    "code": "08",
+    "order": 8,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Kymenlaakso"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/09",
+    "level": 1,
+    "code": "09",
+    "order": 9,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Etelä-Karjala"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/10",
+    "level": 1,
+    "code": "10",
+    "order": 10,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Etelä-Savo"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/11",
+    "level": 1,
+    "code": "11",
+    "order": 11,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Pohjois-Savo"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/12",
+    "level": 1,
+    "code": "12",
+    "order": 12,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Pohjois-Karjala"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/13",
+    "level": 1,
+    "code": "13",
+    "order": 13,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Keski-Suomi"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/14",
+    "level": 1,
+    "code": "14",
+    "order": 14,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Etelä-Pohjanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/15",
+    "level": 1,
+    "code": "15",
+    "order": 15,
+    "modifiedDate": "1998-03-08T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Pohjanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/16",
+    "level": 1,
+    "code": "16",
+    "order": 16,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Keski-Pohjanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/17",
+    "level": 1,
+    "code": "17",
+    "order": 17,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Pohjois-Pohjanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/18",
+    "level": 1,
+    "code": "18",
+    "order": 18,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Kainuu"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/19",
+    "level": 1,
+    "code": "19",
+    "order": 19,
+    "modifiedDate": "1899-12-31T22:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Lappi"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  },
+  {
+    "classification": {
+      "localId": "maakunta_1_20230101",
+      "internationalRecommendation": false,
+      "nationalRecommendation": true,
+      "classificationName": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "name": "Maakunnat 2023"
+        }
+      ],
+      "classificationDescription": [
+        {
+          "langName": "suomi",
+          "lang": "fi",
+          "description": "Alue, johon kuuluvat kunnat muodostavat toiminnallisesti ja taloudellisesti sekä alueen suunnittelun kannalta tarkoituksenmukaisen kokonaisuuden.\r\n"
+        }
+      ]
+    },
+    "localId": "maakunta_1_20230101/21",
+    "level": 1,
+    "code": "21",
+    "order": 20,
+    "modifiedDate": "2008-07-03T21:00:00Z",
+    "parentItemLocalId": null,
+    "parentCode": null,
+    "classificationItemNames": [
+      {
+        "langName": "suomi",
+        "lang": "fi",
+        "name": "Ahvenanmaa"
+      }
+    ],
+    "explanatoryNotes": [],
+    "classificationIndexEntry": [
+      {
+        "text": []
+      }
+    ]
+  }
+]

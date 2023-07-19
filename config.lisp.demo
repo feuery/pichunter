@@ -1,0 +1,3 @@
+;; this is read-only, not evalled
+
+(:mml-api-key "https://www.maanmittauslaitos.fi/rajapinnat/api-avaimen-ohje")

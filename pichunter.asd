@@ -6,15 +6,18 @@
                "simple-date"
                "simple-date/postgres-glue"
 	       "ironclad"
+	       "trivial-utf-8"
 	       "binding-arrows"
 	       "hunchentoot"
 	       "com.inuoe.jzon"
 	       "easy-routes"
 	       "zpb-exif"
+	       "drakma"
                "str")
   :components ((:module "src"
                 :components
                 ((:file "std")
+		 (:file "config")
 		 (:file "migrations")
 		 (:file "migration-list")
 		 (:file "decorators")
