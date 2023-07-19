@@ -10,7 +10,7 @@ type Route
     | LoggedInHome
     | ManageUsersGroups
     | ManageMedia
-    | Play
+    | PlayLocationGuessing
     | NotFound
 
 routeParser =
@@ -19,7 +19,7 @@ routeParser =
         , map RegisterScreen (s "register")
         , map ManageUsersGroups (s "admin" </> (s "usersgroups"))
         , map ManageMedia (s "admin" </> (s "media"))
-        , map Play (s "play")
+        , map PlayLocationGuessing (s "play" </> (s "locationguessing"))
         , map LoggedInHome (s "home")]
 
 url_to_route url =

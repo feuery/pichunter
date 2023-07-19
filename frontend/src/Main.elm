@@ -35,7 +35,7 @@ viewStatePerUrl url =
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
-              Play -> [ checkSession
+              PlayLocationGuessing -> [ checkSession
                       , getNextForGame ]
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
@@ -363,15 +363,27 @@ update msg model =
         GotNextPicForGame result ->
             case result of
                 Ok meta ->
-                    ( { model | gameState = Just (GameState meta) }
+                    let gamestate = Maybe.withDefault (GameState meta 0 0) model.gameState in
+                    ( { model | gameState = Just gamestate }
                     , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                   , meta.latitude
                                   , meta.longitude))
                 Err error ->
                     (model, alert (Debug.toString error))
         MapClicked distance ->
-            ( model
-            , alert ("Your answer differed by " ++ (String.fromFloat distance) ++ " meters"))
+            if distance < 100.0 then
+                let state = model.gameState in
+                ( { model | gameState = Maybe.map (\gamestate ->
+                                                       { gamestate
+                                                           | score = gamestate.score + 1
+                                                           , tries = gamestate.tries + 1}) state}
+                , Cmd.batch [ alert "Correct!"
+                            , getNextForGame ])
+            else
+                ( { model | gameState = Maybe.map (\state ->
+                                                       { state
+                                                           | tries = state.tries + 1}) model.gameState}
+                , alert "Wrong :D")
                     
 
                                         
@@ -404,9 +416,9 @@ view model =
              (case model.route of
                  Home -> homeScreen model.session
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 Play -> case model.gameState of
-                             Just state -> gameview model.session state
-                             Nothing -> [ div [] [ text "Game is uninitialized!" ]]
+                 PlayLocationGuessing -> case model.gameState of
+                                             Just state -> gameview model.session state
+                                             Nothing -> [ div [] [ text "Game is uninitialized!" ]]
                  NotFound -> [ div [] [ text "Not found!" ] ]
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  ManageMedia ->

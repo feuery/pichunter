@@ -32,7 +32,9 @@ type alias MediaManagerState =
     { known_metadata: List ImageMetadata }
 
 type alias GameState =
-    { next_pic: ImageMetadata }
+    { next_pic: ImageMetadata
+    , score: Int
+    , tries: Int}
     
 type alias Model =
     { route: Route

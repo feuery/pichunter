@@ -11,8 +11,8 @@ homeScreen session =
     , case session of
           LoggedIn user -> div []
                            [ p [] [ text ("You're logged in, " ++ user.displayName) ]
-                           , p [] [ text "Play "
-                                  , a [ href "/play"] [ text "Here "]]]
+                           , p [] [ text "Play \"where's that taken at?\" "
+                                  , a [ href "/play/locationguessing"] [ text "Here "]]]
           LoggedOut ->
               p [] [ text "Register "
                    , a [ href "/register"] [ text "here"]

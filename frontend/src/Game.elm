@@ -25,7 +25,9 @@ actual_gameview session gamestate =
                                 , src ("/api/pictures/" ++ gamestate.next_pic.id) ] []
                           , let map_id = map_id_to_element_id gamestate.next_pic.id in
                             div [ id map_id
-                                , class "map" ] []]]]
+                                , class "map" ] []]
+          , h3 [] [ text "Score: " ]
+          , p [] [ text ((String.fromInt gamestate.score) ++ "/" ++ (String.fromInt gamestate.tries))]]]
            
 
 gameview = authorizator actual_gameview
