@@ -1,6 +1,6 @@
 (defpackage pichunter
   (:use :cl :postmodern )
-  (:import-from :pichunter.std :slurp)
+  (:import-from :pichunter.std :slurp :slurp-utf-8)
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.file-handler :get-picture-data)
   (:import-from :pichunter.decorators :@json :@transaction))
@@ -29,11 +29,11 @@
   (slurp *css-location*))
 
 (defun js-helper-script ()
-  (slurp (pathname (format nil "/~{~a/~}pichunter-helper.js" (cdr (pathname-directory *js-location*))))))
+  (slurp-utf-8 (pathname (format nil "/~{~a/~}pichunter-helper.js" (cdr (pathname-directory *js-location*))))))
 
 
 (defun get-frontend ()
-  (let ((script (slurp *js-location*)))
+  (let ((script (slurp-utf-8 *js-location*)))
     (format nil "<!DOCTYPE html>~%
 <html>
   <head>
