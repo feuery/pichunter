@@ -17,7 +17,7 @@ import RegistrationScreen exposing (registrationScreen)
 import Header exposing (topbar)
 import GroupManager exposing (groupManagerView)
 import MediaManager exposing (mediaManagerView)
-import Game exposing (gameview)
+import Game exposing (..)
 
 
 port alert : String -> Cmd msg
@@ -35,8 +35,7 @@ viewStatePerUrl url =
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
-              PlayLocationGuessing -> [ checkSession
-                      , getNextForGame ]
+              PlayLocationGuessing -> [ checkSession ]
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
               ManageMedia -> [ checkSession
@@ -64,7 +63,9 @@ init _ url key =
               LoggedOut
               Nothing
               Nothing
-              Nothing
+              (if route == PlayLocationGuessing  then
+                  LocationGuessing_choosing_county
+              else NotPlaying)
         , Cmd.batch cmds )
         
       
@@ -363,27 +364,35 @@ update msg model =
         GotNextPicForGame result ->
             case result of
                 Ok meta ->
-                    let gamestate = Maybe.withDefault (GameState meta 0 0) model.gameState in
-                    ( { model | gameState = Just gamestate }
-                    , initGameMap ( MediaManager.map_id_to_element_id meta.id
-                                  , meta.latitude
-                                  , meta.longitude))
+                    case model.gameState of
+                        LocationGuessing _ score tries county ->
+                            ( { model
+                                  | gameState = LocationGuessing (Just meta) score tries county}
+                            , initGameMap ( MediaManager.map_id_to_element_id meta.id
+                                          , meta.latitude
+                                          , meta.longitude))
+                        _ -> ( model
+                             , alert ("invalid state " ++ (Debug.toString model.gameState)))
                 Err error ->
                     (model, alert (Debug.toString error))
         MapClicked distance ->
-            if distance < 100.0 then
-                let state = model.gameState in
-                ( { model | gameState = Maybe.map (\gamestate ->
-                                                       { gamestate
-                                                           | score = gamestate.score + 1
-                                                           , tries = gamestate.tries + 1}) state}
-                , Cmd.batch [ alert "Correct!"
-                            , getNextForGame ])
-            else
-                ( { model | gameState = Maybe.map (\state ->
-                                                       { state
-                                                           | tries = state.tries + 1}) model.gameState}
-                , alert "Wrong :D")
+            case model.gameState of
+                LocationGuessing meta score tries county ->
+                    if distance < 100.0 then
+                        let state = model.gameState in
+                        ( { model | gameState = LocationGuessing meta (score + 1) (tries + 1) county}
+                        , Cmd.batch [ alert "Correct!"
+                                    , getNextForGame (String.fromInt county) ])
+                    else
+                        ( { model
+                              | gameState = LocationGuessing meta score (tries + 1) county}
+                        , alert "Wrong :D")
+                _ -> ( model
+                     , alert ("State " ++ (Debug.toString model.gameState) ++ " is invalid"))
+        ChoseCounty county_code ->
+            ( { model | gameState = LocationGuessing Nothing 0 0 0 }
+            , getNextForGame county_code)
+            
                     
 
                                         
@@ -416,9 +425,7 @@ view model =
              (case model.route of
                  Home -> homeScreen model.session
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 PlayLocationGuessing -> case model.gameState of
-                                             Just state -> gameview model.session state
-                                             Nothing -> [ div [] [ text "Game is uninitialized!" ]]
+                 PlayLocationGuessing -> gameview_guessing model.session model.gameState
                  NotFound -> [ div [] [ text "Not found!" ] ]
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  ManageMedia ->

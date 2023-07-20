@@ -17,17 +17,53 @@ authorizator view session state =
         LoggedOut ->
             [ div [] [ text "Unauthorized" ] ]
 
-actual_gameview session gamestate =
-    [ div [ class "w"]
-          [ h3 [] [ text "Where is this picture taken at?" ]
-          , div [ class "grid-container" ]
-                          [ img [ class "picture"
-                                , src ("/api/pictures/" ++ gamestate.next_pic.id) ] []
-                          , let map_id = map_id_to_element_id gamestate.next_pic.id in
-                            div [ id map_id
-                                , class "map" ] []]
-          , h3 [] [ text "Score: " ]
-          , p [] [ text ((String.fromInt gamestate.score) ++ "/" ++ (String.fromInt gamestate.tries))]]]
+counties =
+    [ ("1", "Uusimaa")
+    , ("2", "Varsinais-Suomi")
+    , ("4", "Satakunta")
+    , ("5", "Kanta-Häme")
+    , ("6", "Pirkanmaa")
+    , ("7", "Päijät-Häme")
+    , ("8", "Kymenlaakso")
+    , ("9", "Etelä-Karjala")
+    , ("10", "Etelä-Savo")
+    , ("11", "Pohjois-Savo")
+    , ("12", "Pohjois-Karjala")
+    , ("13", "Keski-Suomi")
+    , ("14", "Etelä-Pohjanmaa")
+    , ("15", "Pohjanmaa")
+    , ("16", "Keski-Pohjanmaa")
+    , ("17", "Pohjois-Pohjanmaa")
+    , ("18", "Kainuu")
+    , ("19", "Lappi")
+    , ("21", "Ahvenanmaa")]
+
+actual_guessing_gameview session gamestate =
+    case gamestate of
+        LocationGuessing_choosing_county ->
+            [ h3 [] [ text "Choose a county you expect pictures from" ]
+            , select [ onInput ChoseCounty ]
+                (  ("null", "Choose a county") :: counties
+                |> List.map (\c ->
+                                 let (v, t) = c in
+                                 option [ value v ]
+                                 [ text t]))]
+                     
+        LocationGuessing maybe_meta score tries county ->
+            case maybe_meta of
+                Just meta ->
+                    [ h3 [] [ text "Where is this picture taken at?" ]
+                    , div [ class "grid-container" ]
+                        [ img [ class "picture"
+                              , src ("/api/pictures/" ++ meta.id) ] []
+                        , let map_id = map_id_to_element_id meta.id in
+                          div [ id map_id
+                              , class "map" ] []]
+                    , h3 [] [ text "Score: " ]
+                    , p [] [ text ((String.fromInt score) ++ "/" ++ (String.fromInt tries))]]
+                Nothing ->
+                    [ text "No image loaded yet" ]
+        _ -> [div [] [ text ("wtf how do you even end up in actual_guessing_gameview with state " ++ (Debug.toString gamestate))]]
            
 
-gameview = authorizator actual_gameview
+gameview_guessing = authorizator actual_guessing_gameview

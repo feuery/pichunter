@@ -34,15 +34,15 @@ module HomeScreenHomeScreen1,0
 homeScreen session =homeScreen9,182
 
 src/Main.elm,382
-viewStatePerUrl url =viewStatePerUrl30,857
-main =main47,1465
-init _ url key =init57,1659
-subscriptions _ =subscriptions72,2097
-handleSession model result =handleSession75,2170
-add_user_to_group state group user =add_user_to_group93,2703
-drop_user_from_group state group user =drop_user_from_group103,3105
-update msg model =update114,3588
-view model =view412,18505
+viewStatePerUrl url =viewStatePerUrl30,851
+main =main46,1420
+init _ url key =init56,1614
+subscriptions _ =subscriptions73,2166
+handleSession model result =handleSession76,2239
+add_user_to_group state group user =add_user_to_group94,2772
+drop_user_from_group state group user =drop_user_from_group104,3174
+update msg model =update115,3657
+view model =view421,18948
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -74,7 +74,7 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/Pichunter_http.elm,408
+src/Pichunter_http.elm,420
 module Pichunter_httpPichunter_http1,0
 doRegister state =doRegister8,146
 login state =login14,337
@@ -85,18 +85,19 @@ saveGroupTree groups =saveGroupTree34,884
 postPicture pictureFile =postPicture40,1071
 getPictureIds =getPictureIds46,1421
 removePicture id =removePicture50,1576
-getNextForGame =getNextForGame59,1940
+getNextForGame county_code =getNextForGame59,1940
 
 src/Image.elm,104
 module ImageImage1,0
 type alias ImageMetadata =type3,28
 type alias ImageMetadataImageMetadata3,28
 
-src/Game.elm,162
+src/Game.elm,226
 module GameGame1,0
 authorizator view session state =authorizator13,285
-actual_gameview session gamestate =actual_gameview20,461
-gameview =gameview33,1099
+counties =counties20,461
+actual_guessing_gameview session gamestate =actual_guessing_gameview41,1006
+gameview_guessing =gameview_guessing69,2386
 
 src/MediaManager.elm,255
 module MediaManagerMediaManager1,0
@@ -106,7 +107,7 @@ filesDecoder =filesDecoder33,1400
 mediamanager state =mediamanager36,1470
 mediaManagerView =mediaManagerView42,1744
 
-src/State.elm,2120
+src/State.elm,2278
 module StateState1,0
 type alias RegistrationForm =type12,225
 type alias RegistrationFormRegistrationForm12,225
@@ -119,42 +120,45 @@ type alias GroupManagerState =type25,480
 type alias GroupManagerStateGroupManagerState25,480
 type alias MediaManagerState =type31,651
 type alias MediaManagerStateMediaManagerState31,651
-type alias GameState =type34,726
-type alias GameStateGameState34,726
-type alias Model =type39,819
-type alias ModelModel39,819
-type NthNth49,1113
-    = FirstFirst50,1122
-    | SecondSecond51,1134
-type MsgMsg53,1148
-    = UrlChangedUrlChanged54,1157
-    | LinkClickedLinkClicked55,1182
-    | RegistrationDisplaynameRegistrationDisplayname56,1219
-    | RegistrationUsernameRegistrationUsername57,1256
-    | RegistrationPasswordRegistrationPassword58,1290
-    | SendRegistrationSendRegistration59,1328
-    | DummyResponseDummyResponse60,1368
-    | LoginResultLoginResult61,1411
-    | LoginUsernameLoginUsername62,1454
-    | LoginPasswordLoginPassword63,1481
-    | LoginLogin64,1508
-    | LogoutLogout65,1530
-    | LogoutResultLogoutResult66,1543
-    | SessionResultSessionResult67,1585
-    | GroupTreeResultGroupTreeResult68,1630
-    | AdminGroupSelectedAdminGroupSelected70,1770
-    | AdminUserSelectedAdminUserSelected71,1802
-    | AdminSelectExistingAbilityAdminSelectExistingAbility72,1833
-    | AdminDisallowAdminDisallow73,1873
-    | AdminAllowAdminAllow74,1893
-    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility75,1910
-    | AdminUserToGroupAdminUserToGroup76,1953
-    | AdminUserFromGroupAdminUserFromGroup77,1976
-    | SaveGroupManagerStateSaveGroupManagerState78,2001
-    | GotInputFilesGotInputFiles79,2029
-    | UploadedImageUploadedImage80,2061
-    | GotPictureIdsGotPictureIds81,2104
-    | RemovePictureRemovePicture82,2165
-    | RemovalResultRemovalResult83,2199
-    | GotNextPicForGameGotNextPicForGame84,2244
-    | MapClickedMapClicked85,2302
+type GameStateGameState34,726
+    = NotPlayingNotPlaying35,741
+    | LocationGuessing_choosing_countyLocationGuessing_choosing_county36,758
+    | LocationGuessingLocationGuessing37,797
+type alias Model =type44,960
+type alias ModelModel44,960
+type NthNth54,1248
+    = FirstFirst55,1257
+    | SecondSecond56,1269
+type MsgMsg58,1283
+    = UrlChangedUrlChanged59,1292
+    | LinkClickedLinkClicked60,1317
+    | RegistrationDisplaynameRegistrationDisplayname61,1354
+    | RegistrationUsernameRegistrationUsername62,1391
+    | RegistrationPasswordRegistrationPassword63,1425
+    | SendRegistrationSendRegistration64,1463
+    | DummyResponseDummyResponse65,1503
+    | LoginResultLoginResult66,1546
+    | LoginUsernameLoginUsername67,1589
+    | LoginPasswordLoginPassword68,1616
+    | LoginLogin69,1643
+    | LogoutLogout70,1665
+    | LogoutResultLogoutResult71,1678
+    | SessionResultSessionResult72,1720
+    | GroupTreeResultGroupTreeResult73,1765
+    | AdminGroupSelectedAdminGroupSelected75,1905
+    | AdminUserSelectedAdminUserSelected76,1937
+    | AdminSelectExistingAbilityAdminSelectExistingAbility77,1968
+    | AdminDisallowAdminDisallow78,2008
+    | AdminAllowAdminAllow79,2028
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility80,2045
+    | AdminUserToGroupAdminUserToGroup81,2088
+    | AdminUserFromGroupAdminUserFromGroup82,2111
+    | SaveGroupManagerStateSaveGroupManagerState83,2136
+    | GotInputFilesGotInputFiles84,2164
+    | UploadedImageUploadedImage85,2196
+    | GotPictureIdsGotPictureIds86,2239
+    | RemovePictureRemovePicture87,2300
+    | RemovalResultRemovalResult88,2334
+    | GotNextPicForGameGotNextPicForGame89,2379
+    | MapClickedMapClicked90,2437
+    | ChoseCountyChoseCounty91,2460

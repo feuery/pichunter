@@ -31,10 +31,15 @@ type alias GroupManagerState =
 type alias MediaManagerState =
     { known_metadata: List ImageMetadata }
 
-type alias GameState =
-    { next_pic: ImageMetadata
-    , score: Int
-    , tries: Int}
+type GameState
+    = NotPlaying
+    | LocationGuessing_choosing_county
+    | LocationGuessing
+      (Maybe ImageMetadata) -- current pic 
+      Int -- current score
+      Int -- count of tries
+      Int -- county code
+          
     
 type alias Model =
     { route: Route
@@ -44,7 +49,7 @@ type alias Model =
     , session: Session
     , groupManagerState: Maybe GroupManagerState
     , mediaManagerState: Maybe MediaManagerState
-    , gameState: Maybe GameState }
+    , gameState: GameState }
 
 type Nth
     = First
@@ -83,3 +88,4 @@ type Msg
     | RemovalResult (Result Http.Error Bool)
     | GotNextPicForGame (Result Http.Error ImageMetadata)
     | MapClicked Float
+    | ChoseCounty String

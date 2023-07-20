@@ -4,10 +4,10 @@
 
 (in-package :pichunter.game-routes)
 
-(defroute next-image ("/api/next-picture" :method :get :decorators (@json @transaction @no-cache)) ()
+(defroute next-image ("/api/next-picture/:county-code" :method :get :decorators (@json @transaction @no-cache)) ()
   (stringify
    (aref 
-    (query "select id, filename, latitude, longitude from pichunter.pictures order by random() limit 1" :array-hash)
+    (query "select id, filename, latitude, longitude from pichunter.pictures where county_code = $1 order by random() limit 1" county-code :array-hash)
     0)))
 
 (defun load-counties ()
