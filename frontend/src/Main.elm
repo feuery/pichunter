@@ -36,6 +36,7 @@ viewStatePerUrl url =
               RegisterScreen -> [checkSession]
               LoggedInHome -> [checkSession]
               PlayLocationGuessing -> [ checkSession ]
+              PlayPictureGuessing -> [ checkSession ]
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
               ManageMedia -> [ checkSession
@@ -63,9 +64,10 @@ init _ url key =
               LoggedOut
               Nothing
               Nothing
-              (if route == PlayLocationGuessing  then
-                  LocationGuessing_choosing_county
-              else NotPlaying)
+              (case route of
+                   PlayLocationGuessing -> ChoosingCounty LocationGuessing
+                   PlayPictureGuessing -> ChoosingCounty PictureGuessing
+                   _ -> NotPlaying)
         , Cmd.batch cmds )
         
       
@@ -365,32 +367,42 @@ update msg model =
             case result of
                 Ok meta ->
                     case model.gameState of
-                        LocationGuessing _ score tries county ->
+                        LocationGuessingState _ score tries county ->
                             ( { model
-                                  | gameState = LocationGuessing (Just meta) score tries county}
+                                  | gameState = LocationGuessingState (Just meta) score tries county}
                             , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                           , meta.latitude
                                           , meta.longitude))
+                        PictureGuessingState _ score tries county ->
+                            ( { model
+                                  | gameState = PictureGuessingState (Just meta) score tries county}
+                            , initGameMap ( MediaManager.map_id_to_element_id meta.id
+                                          , meta.latitude
+                                          , meta.longitude))                                
                         _ -> ( model
                              , alert ("invalid state " ++ (Debug.toString model.gameState)))
                 Err error ->
                     (model, alert (Debug.toString error))
         MapClicked distance ->
             case model.gameState of
-                LocationGuessing meta score tries county ->
+                LocationGuessingState meta score tries county ->
                     if distance < 100.0 then
                         let state = model.gameState in
-                        ( { model | gameState = LocationGuessing meta (score + 1) (tries + 1) county}
+                        ( { model | gameState = LocationGuessingState meta (score + 1) (tries + 1) county}
                         , Cmd.batch [ alert "Correct!"
                                     , getNextForGame (String.fromInt county) ])
                     else
                         ( { model
-                              | gameState = LocationGuessing meta score (tries + 1) county}
+                              | gameState = LocationGuessingState meta score (tries + 1) county}
                         , alert "Wrong :D")
                 _ -> ( model
                      , alert ("State " ++ (Debug.toString model.gameState) ++ " is invalid"))
-        ChoseCounty county_code ->
-            ( { model | gameState = LocationGuessing Nothing 0 0 0 }
+        ChoseCounty game_type county_code ->
+            let state = case game_type of
+                            LocationGuessing -> LocationGuessingState Nothing 0 0 0
+                            PictureGuessing -> PictureGuessingState Nothing 0 0 0
+            in
+            ( { model | gameState = state }
             , getNextForGame county_code)
             
                     
@@ -425,7 +437,8 @@ view model =
              (case model.route of
                  Home -> homeScreen model.session
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 PlayLocationGuessing -> gameview_guessing model.session model.gameState
+                 PlayPictureGuessing -> gameview model.session model.gameState
+                 PlayLocationGuessing -> gameview model.session model.gameState
                  NotFound -> [ div [] [ text "Not found!" ] ]
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  ManageMedia ->

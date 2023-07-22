@@ -11,6 +11,7 @@ type Route
     | ManageUsersGroups
     | ManageMedia
     | PlayLocationGuessing
+    | PlayPictureGuessing
     | NotFound
 
 routeParser =
@@ -20,6 +21,7 @@ routeParser =
         , map ManageUsersGroups (s "admin" </> (s "usersgroups"))
         , map ManageMedia (s "admin" </> (s "media"))
         , map PlayLocationGuessing (s "play" </> (s "locationguessing"))
+        , map PlayPictureGuessing (s "play" </> (s "pictureguessing"))
         , map LoggedInHome (s "home")]
 
 url_to_route url =

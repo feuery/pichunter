@@ -39,17 +39,8 @@ counties =
     , ("21", "Ahvenanmaa")]
 
 actual_guessing_gameview session gamestate =
-    case gamestate of
-        LocationGuessing_choosing_county ->
-            [ h3 [] [ text "Choose a county you expect pictures from" ]
-            , select [ onInput ChoseCounty ]
-                (  ("null", "Choose a county") :: counties
-                |> List.map (\c ->
-                                 let (v, t) = c in
-                                 option [ value v ]
-                                 [ text t]))]
-                     
-        LocationGuessing maybe_meta score tries county ->
+    case gamestate of                     
+        LocationGuessingState maybe_meta score tries county ->
             case maybe_meta of
                 Just meta ->
                     [ h3 [] [ text "Where is this picture taken at?" ]
@@ -64,6 +55,26 @@ actual_guessing_gameview session gamestate =
                 Nothing ->
                     [ text "No image loaded yet" ]
         _ -> [div [] [ text ("wtf how do you even end up in actual_guessing_gameview with state " ++ (Debug.toString gamestate))]]
-           
+
+actual_picture_gameview session state =
+     [ div [] [ text "actual_picture_gameview"]]
 
 gameview_guessing = authorizator actual_guessing_gameview
+gameview_pictures = authorizator actual_picture_gameview
+
+choose_county gametype =
+    [ h3 [] [ text "Choose a county you expect pictures from" ]
+    , select [ onInput (ChoseCounty gametype) ]
+        (  ("null", "Choose a county") :: counties
+        |> List.map (\c ->
+                         let (v, t) = c in
+                         option [ value v ]
+                         [ text t]))]
+    
+gameview session gamestate =
+    case gamestate of
+        ChoosingCounty gametype ->
+            choose_county gametype
+        LocationGuessingState _ _ _ _ -> gameview_guessing session gamestate
+        PictureGuessingState _ _ _ _ -> gameview_pictures session gamestate
+        NotPlaying -> [ div [] [ text "Not playing"] ]

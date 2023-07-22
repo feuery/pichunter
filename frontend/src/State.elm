@@ -31,10 +31,19 @@ type alias GroupManagerState =
 type alias MediaManagerState =
     { known_metadata: List ImageMetadata }
 
+type GameType
+    = LocationGuessing
+    | PictureGuessing
+        
 type GameState
     = NotPlaying
-    | LocationGuessing_choosing_county
-    | LocationGuessing
+    | ChoosingCounty GameType
+    | PictureGuessingState
+      (Maybe ImageMetadata) -- current pic 
+      Int -- current score
+      Int -- count of tries
+      Int -- county code
+    | LocationGuessingState
       (Maybe ImageMetadata) -- current pic 
       Int -- current score
       Int -- count of tries
@@ -88,4 +97,4 @@ type Msg
     | RemovalResult (Result Http.Error Bool)
     | GotNextPicForGame (Result Http.Error ImageMetadata)
     | MapClicked Float
-    | ChoseCounty String
+    | ChoseCounty GameType String
