@@ -36,6 +36,7 @@ filesDecoder =
 mediamanager state = [ image_list state
                      , h3 [] [ text "Input new pictures: "]
                      , input [ type_ "file"
+                             , accept "image/*"
                              , multiple False
                              , on "change" (D.map GotInputFiles filesDecoder)] []]
 

@@ -23,8 +23,10 @@ import Game exposing (..)
 port alert : String -> Cmd msg
 port initializeAdminMaps : List (String, Float, Float) -> Cmd msg
 port initGameMap : (String, Float, Float) -> Cmd msg
+port checkGameFiles : () -> Cmd msg                   
 
 port mapClicked : (Float -> msg) -> Sub msg
+port noGpsFound : (() -> msg) -> Sub msg
 
 viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
 viewStatePerUrl url =
@@ -73,7 +75,9 @@ init _ url key =
       
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.batch 
-                  [ mapClicked MapClicked]
+                  [ mapClicked MapClicked
+                  , noGpsFound NoGpsFound]
+                      
 
 handleSession model result =
     case result of
@@ -373,9 +377,9 @@ update msg model =
                             , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                           , meta.latitude
                                           , meta.longitude))
-                        PictureGuessingState _ score tries county ->
+                        PictureGuessingState _ score tries county allow_usage ->
                             ( { model
-                                  | gameState = PictureGuessingState (Just meta) score tries county}
+                                  | gameState = PictureGuessingState (Just meta) score tries county allow_usage}
                             , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                           , meta.latitude
                                           , meta.longitude))                                
@@ -400,11 +404,23 @@ update msg model =
         ChoseCounty game_type county_code ->
             let state = case game_type of
                             LocationGuessing -> LocationGuessingState Nothing 0 0 0
-                            PictureGuessing -> PictureGuessingState Nothing 0 0 0
+                            PictureGuessing -> PictureGuessingState Nothing 0 0 0 False
             in
             ( { model | gameState = state }
             , getNextForGame county_code)
-            
+        SetAllowForUsage allowed ->
+            case model.gameState of
+                PictureGuessingState meta score tries county _ ->
+                    ( { model | gameState = PictureGuessingState meta score tries county allowed}
+                    , Cmd.none)
+                _ -> ( model
+                     , Cmd.none)
+        GotGameFiles files ->
+            ( model
+            , checkGameFiles ())
+        NoGpsFound _ ->
+            ( model
+            , alert "Image you selected doesn't seem to contain gps coordinates")
                     
 
                                         

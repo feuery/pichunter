@@ -37,3 +37,22 @@ app.ports.initGameMap.subscribe(triple => {
 	});
     });
 });
+
+async function checkGameFiles () {
+    let input_el = document.getElementById('game_file');
+    const file = input_el.files[0];
+
+    try {
+	const tags = await ExifReader.load(file);
+
+	if (! tags["GPSLatitude"]) {
+	    input_el.value = null;
+	    app.ports.noGpsFound.send(null);
+	}
+    }
+    catch (ex) {
+	input_el.value = null;
+	app.ports.noGpsFound.send(null);
+    }
+}
+app.ports.checkGameFiles.subscribe(checkGameFiles);

@@ -42,6 +42,7 @@
     <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" integrity=\"sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=\" crossorigin=\"\"/>
     <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"> </script>
     <script src=\"https://unpkg.com/arrive@latest/minified/arrive.min.js\"> </script>
+    <script src=\"https://unpkg.com/exifreader@latest/dist/exif-reader.js\"> </script>
 
     <script> ~A
     </script>

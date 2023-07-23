@@ -34,16 +34,16 @@ src/HomeScreen.elm,71
 module HomeScreenHomeScreen1,0
 homeScreen session =homeScreen9,182
 
-src/Main.elm,382
-viewStatePerUrl url =viewStatePerUrl30,851
-main =main47,1474
-init _ url key =init57,1668
-subscriptions _ =subscriptions75,2297
-handleSession model result =handleSession78,2370
-add_user_to_group state group user =add_user_to_group96,2903
-drop_user_from_group state group user =drop_user_from_group106,3305
-update msg model =update117,3788
-view model =view433,19757
+src/Main.elm,383
+viewStatePerUrl url =viewStatePerUrl32,947
+main =main49,1570
+init _ url key =init59,1764
+subscriptions _ =subscriptions77,2393
+handleSession model result =handleSession82,2531
+add_user_to_group state group user =add_user_to_group100,3064
+drop_user_from_group state group user =drop_user_from_group110,3466
+update msg model =update121,3949
+view model =view449,20474
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -95,14 +95,14 @@ type alias ImageMetadataImageMetadata3,28
 
 src/Game.elm,437
 module GameGame1,0
-authorizator view session state =authorizator13,285
-counties =counties20,461
-actual_guessing_gameview session gamestate =actual_guessing_gameview41,1006
-actual_picture_gameview session state =actual_picture_gameview59,1974
-gameview_guessing =gameview_guessing62,2064
-gameview_pictures =gameview_pictures63,2122
-choose_county gametype =choose_county65,2180
-gameview session gamestate =gameview74,2525
+authorizator view session state =authorizator13,299
+counties =counties20,475
+actual_guessing_gameview session gamestate =actual_guessing_gameview41,1020
+actual_picture_gameview session state =actual_picture_gameview59,1988
+gameview_guessing =gameview_guessing86,3477
+gameview_pictures =gameview_pictures87,3535
+choose_county gametype =choose_county89,3593
+gameview session gamestate =gameview98,3938
 
 src/MediaManager.elm,255
 module MediaManagerMediaManager1,0
@@ -110,9 +110,9 @@ map_id_to_element_id id =map_id_to_element_id13,285
 image_list mediastate =image_list15,346
 filesDecoder =filesDecoder33,1400
 mediamanager state =mediamanager36,1470
-mediaManagerView =mediaManagerView42,1744
+mediaManagerView =mediaManagerView43,1792
 
-src/State.elm,2433
+src/State.elm,2561
 module StateState1,0
 type alias RegistrationForm =type12,225
 type alias RegistrationFormRegistrationForm12,225
@@ -132,42 +132,45 @@ type GameStateGameState38,794
     = NotPlayingNotPlaying39,809
     | ChoosingCountyChoosingCounty40,826
     | PictureGuessingStatePictureGuessingState41,856
-    | LocationGuessingStateLocationGuessingState46,1007
-type alias Model =type53,1175
-type alias ModelModel53,1175
-type NthNth63,1463
-    = FirstFirst64,1472
-    | SecondSecond65,1484
-type MsgMsg67,1498
-    = UrlChangedUrlChanged68,1507
-    | LinkClickedLinkClicked69,1532
-    | RegistrationDisplaynameRegistrationDisplayname70,1569
-    | RegistrationUsernameRegistrationUsername71,1606
-    | RegistrationPasswordRegistrationPassword72,1640
-    | SendRegistrationSendRegistration73,1678
-    | DummyResponseDummyResponse74,1718
-    | LoginResultLoginResult75,1761
-    | LoginUsernameLoginUsername76,1804
-    | LoginPasswordLoginPassword77,1831
-    | LoginLogin78,1858
-    | LogoutLogout79,1880
-    | LogoutResultLogoutResult80,1893
-    | SessionResultSessionResult81,1935
-    | GroupTreeResultGroupTreeResult82,1980
-    | AdminGroupSelectedAdminGroupSelected84,2120
-    | AdminUserSelectedAdminUserSelected85,2152
-    | AdminSelectExistingAbilityAdminSelectExistingAbility86,2183
-    | AdminDisallowAdminDisallow87,2223
-    | AdminAllowAdminAllow88,2243
-    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility89,2260
-    | AdminUserToGroupAdminUserToGroup90,2303
-    | AdminUserFromGroupAdminUserFromGroup91,2326
-    | SaveGroupManagerStateSaveGroupManagerState92,2351
-    | GotInputFilesGotInputFiles93,2379
-    | UploadedImageUploadedImage94,2411
-    | GotPictureIdsGotPictureIds95,2454
-    | RemovePictureRemovePicture96,2515
-    | RemovalResultRemovalResult97,2549
-    | GotNextPicForGameGotNextPicForGame98,2594
-    | MapClickedMapClicked99,2652
-    | ChoseCountyChoseCounty100,2675
+    | LocationGuessingStateLocationGuessingState47,1048
+type alias Model =type54,1216
+type alias ModelModel54,1216
+type NthNth64,1504
+    = FirstFirst65,1513
+    | SecondSecond66,1525
+type MsgMsg68,1539
+    = UrlChangedUrlChanged69,1548
+    | LinkClickedLinkClicked70,1573
+    | RegistrationDisplaynameRegistrationDisplayname71,1610
+    | RegistrationUsernameRegistrationUsername72,1647
+    | RegistrationPasswordRegistrationPassword73,1681
+    | SendRegistrationSendRegistration74,1719
+    | DummyResponseDummyResponse75,1759
+    | LoginResultLoginResult76,1802
+    | LoginUsernameLoginUsername77,1845
+    | LoginPasswordLoginPassword78,1872
+    | LoginLogin79,1899
+    | LogoutLogout80,1921
+    | LogoutResultLogoutResult81,1934
+    | SessionResultSessionResult82,1976
+    | GroupTreeResultGroupTreeResult83,2021
+    | AdminGroupSelectedAdminGroupSelected85,2161
+    | AdminUserSelectedAdminUserSelected86,2193
+    | AdminSelectExistingAbilityAdminSelectExistingAbility87,2224
+    | AdminDisallowAdminDisallow88,2264
+    | AdminAllowAdminAllow89,2284
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility90,2301
+    | AdminUserToGroupAdminUserToGroup91,2344
+    | AdminUserFromGroupAdminUserFromGroup92,2367
+    | SaveGroupManagerStateSaveGroupManagerState93,2392
+    | GotInputFilesGotInputFiles94,2420
+    | UploadedImageUploadedImage95,2452
+    | GotPictureIdsGotPictureIds96,2495
+    | RemovePictureRemovePicture97,2556
+    | RemovalResultRemovalResult98,2590
+    | GotNextPicForGameGotNextPicForGame99,2635
+    | MapClickedMapClicked100,2693
+    | ChoseCountyChoseCounty101,2716
+    | SetAllowForUsageSetAllowForUsage102,2750
+    | GotGameFilesGotGameFiles103,2778
+    | NoGpsFoundNoGpsFound104,2809

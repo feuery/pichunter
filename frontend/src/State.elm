@@ -43,6 +43,7 @@ type GameState
       Int -- current score
       Int -- count of tries
       Int -- county code
+      Bool -- allow-for-usage           
     | LocationGuessingState
       (Maybe ImageMetadata) -- current pic 
       Int -- current score
@@ -98,3 +99,7 @@ type Msg
     | GotNextPicForGame (Result Http.Error ImageMetadata)
     | MapClicked Float
     | ChoseCounty GameType String
+    | SetAllowForUsage Bool
+    | GotGameFiles (List File)
+    | NoGpsFound ()
+   

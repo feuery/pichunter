@@ -8,7 +8,7 @@ import File exposing (File)
 import File.Select as Select
 
 import State exposing (..)
-import MediaManager exposing (map_id_to_element_id)
+import MediaManager exposing (map_id_to_element_id, filesDecoder)
 
 authorizator view session state =
     case session of
@@ -57,7 +57,31 @@ actual_guessing_gameview session gamestate =
         _ -> [div [] [ text ("wtf how do you even end up in actual_guessing_gameview with state " ++ (Debug.toString gamestate))]]
 
 actual_picture_gameview session state =
-     [ div [] [ text "actual_picture_gameview"]]
+    case state of                     
+        PictureGuessingState maybe_meta score tries county allow_for_usage ->
+            case maybe_meta of
+                Just meta ->
+                    [ h3 [] [ text "Give me a picture located here" ]
+                    , div [ class "grid-container" ]
+                        [ img [ class "picture"
+                              , src ("/api/pictures/" ++ meta.id) ] []]
+                    , h5 [] [ text "Your file: " ]
+                    , input [ type_ "file"
+                            , accept "image/*"
+                            , multiple False
+                            , id "game_file"
+                            , on "change" (D.map GotGameFiles filesDecoder)] []
+                    , div []
+                        [ input [ type_ "checkbox"
+                                , checked allow_for_usage
+                                , onCheck SetAllowForUsage
+                                , id "allow_for_use"] []
+                        , label [ for "allow_for_use"] [ text "Allow pichunter to use this picture for questions" ]]
+                    , h3 [] [ text "Score: " ]
+                    , p [] [ text ((String.fromInt score) ++ "/" ++ (String.fromInt tries))]]
+                Nothing ->
+                    [ text "No image loaded yet" ]
+        _ -> [div [] [ text ("wtf how do you even end up in actual_guessing_gameview with state " ++ (Debug.toString state))]]
 
 gameview_guessing = authorizator actual_guessing_gameview
 gameview_pictures = authorizator actual_picture_gameview
@@ -76,5 +100,5 @@ gameview session gamestate =
         ChoosingCounty gametype ->
             choose_county gametype
         LocationGuessingState _ _ _ _ -> gameview_guessing session gamestate
-        PictureGuessingState _ _ _ _ -> gameview_pictures session gamestate
+        PictureGuessingState _ _ _ _ _ -> gameview_pictures session gamestate
         NotPlaying -> [ div [] [ text "Not playing"] ]
