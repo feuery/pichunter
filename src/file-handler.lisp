@@ -44,30 +44,33 @@
 
 (defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction)) (&post file)
   (destructuring-bind (tmp-file filename mime) file
-    (let ((bytes (slurp-bytes tmp-file)))
-      
-      (let* ((exif (zpb-exif:make-exif tmp-file))
-	     (gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif)))
-	     (latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
-	     (latitude-number (coordinate->number latitude))
-	     (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
-	     (longitude-number (coordinate->number longitude))
-	     (municipality-code (query-municipality-from-mml longitude-number latitude-number))
-	     (county-code (first (query (:select 'county_code
-					 :from 'pichunter.municipality
-					 :where (:= 'code municipality-code)) :list))))
-	
+    (let ((bytes (slurp-bytes tmp-file))
+	  (exif (handler-case
+		    (zpb-exif:make-exif tmp-file)
+		  (zpb-exif:invalid-jpeg-stream (e) nil)
+		  (zpb-exif:invalid-exif-stream (e) nil))))
+      (when exif
+	(let* ((gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif)))
+	       (latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
+	       (latitude-number (coordinate->number latitude))
+	       (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
+	       (longitude-number (coordinate->number longitude))
+	       (municipality-code (query-municipality-from-mml longitude-number latitude-number))
+	       (county-code (first (query (:select 'county_code
+					   :from 'pichunter.municipality
+					   :where (:= 'code municipality-code)) :list))))
+	  
 
-	;; (format t "latitude: ~a~%longitude: ~a~%mml-data~a~%"
-	;; 	latitude-number
-	;; 	longitude-number
-	;; 	municipality-code)
+	  ;; (format t "latitude: ~a~%longitude: ~a~%mml-data~a~%"
+	  ;; 	latitude-number
+	  ;; 	longitude-number
+	  ;; 	municipality-code)
 
-	(execute "insert into pichunter.pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
-		 filename
-		 mime
-		 latitude-number
-		 longitude-number
-		 bytes
-		 county-code)
-	"{\"success\": true}"))))
+	  (execute "insert into pichunter.pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
+		   filename
+		   mime
+		   latitude-number
+		   longitude-number
+		   bytes
+		   county-code)
+	  "{\"success\": true}")))))

@@ -38,6 +38,7 @@ mediamanager state = [ image_list state
                      , input [ type_ "file"
                              , accept "image/*"
                              , multiple False
+                             , id "mediamanager_input"
                              , on "change" (D.map GotInputFiles filesDecoder)] []]
 
 mediaManagerView = authorizator mediamanager "can-admin"

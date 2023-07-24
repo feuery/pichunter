@@ -35,15 +35,15 @@ module HomeScreenHomeScreen1,0
 homeScreen session =homeScreen9,182
 
 src/Main.elm,383
-viewStatePerUrl url =viewStatePerUrl32,947
-main =main49,1570
-init _ url key =init59,1764
-subscriptions _ =subscriptions77,2393
-handleSession model result =handleSession82,2531
-add_user_to_group state group user =add_user_to_group100,3064
-drop_user_from_group state group user =drop_user_from_group110,3466
-update msg model =update121,3949
-view model =view449,20474
+viewStatePerUrl url =viewStatePerUrl33,973
+main =main50,1596
+init _ url key =init60,1790
+subscriptions _ =subscriptions78,2419
+handleSession model result =handleSession83,2557
+add_user_to_group state group user =add_user_to_group101,3090
+drop_user_from_group state group user =drop_user_from_group111,3492
+update msg model =update122,3975
+view model =view455,20711
 
 src/Pichunter_json.elm,734
 module Pichunter_jsonPichunter_json1,0
@@ -110,7 +110,7 @@ map_id_to_element_id id =map_id_to_element_id13,285
 image_list mediastate =image_list15,346
 filesDecoder =filesDecoder33,1400
 mediamanager state =mediamanager36,1470
-mediaManagerView =mediaManagerView43,1792
+mediaManagerView =mediaManagerView44,1847
 
 src/State.elm,2561
 module StateState1,0

@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Http
 import Url
-import File exposing (mime)
+import File exposing (File, mime)
 
 import State exposing (..)
 import Pichunter_http exposing (..)
@@ -23,7 +23,8 @@ import Game exposing (..)
 port alert : String -> Cmd msg
 port initializeAdminMaps : List (String, Float, Float) -> Cmd msg
 port initGameMap : (String, Float, Float) -> Cmd msg
-port checkGameFiles : () -> Cmd msg                   
+port checkGameFiles : String -> Cmd msg
+port resetInput: String -> Cmd msg
 
 port mapClicked : (Float -> msg) -> Sub msg
 port noGpsFound : (() -> msg) -> Sub msg
@@ -341,7 +342,11 @@ update msg model =
         GotInputFiles files ->
             if List.all (\file -> String.startsWith "image" (mime file)) files then
                 ( model
-                , Cmd.batch (List.map (\file -> postPicture file) files))
+                , Cmd.batch
+                    (List.concat
+                         [ [ resetInput "mediamanager_input"
+                           , checkGameFiles "mediamanager_input"]
+                         , (List.map (\file -> postPicture file) files)]))
             else
                 ( model
                 , alert ("Expected images, got " ++ (String.join ", " (List.map mime files))))
@@ -417,10 +422,11 @@ update msg model =
                      , Cmd.none)
         GotGameFiles files ->
             ( model
-            , checkGameFiles ())
+            , checkGameFiles "game_file")
         NoGpsFound _ ->
             ( model
             , alert "Image you selected doesn't seem to contain gps coordinates")
+            
                     
 
                                         
