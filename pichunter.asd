@@ -9,6 +9,8 @@
 	       "trivial-utf-8"
 	       "binding-arrows"
 	       "hunchentoot"
+	       "cl-ppcre"
+	       "cl-geocode"
 	       "com.inuoe.jzon"
 	       "easy-routes"
 	       "zpb-exif"
@@ -20,6 +22,7 @@
 		 (:file "config")
 		 (:file "migrations")
 		 (:file "migration-list")
+		 (:file "user-class")
 		 (:file "decorators")
 		 (:file "user-routes")
 		 (:file "file-handler")

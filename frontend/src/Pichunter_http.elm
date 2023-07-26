@@ -56,6 +56,15 @@ removePicture id = Http.request
                    , tracker = Nothing
                    , expect = Http.expectJson RemovalResult D.bool}
                    
-getNextForGame county_code = Http.get
-                 { url = "/api/next-picture/" ++ county_code
-                 , expect = Http.expectJson GotNextPicForGame Json.decodeImageMetadata }
+getNextForGame county_code gamestate = Http.get
+                 { url = case gamestate of
+                             PictureGuessingState _ _ _ _ _ _ ->
+                                 "/api/next-picture/" ++ county_code ++ "?gametype=picguess"
+                             _ ->
+                                 "/api/next-picture/" ++ county_code                       
+                 , expect = Http.expectJson GotNextPicForGame (D.maybe Json.decodeImageMetadata)}
+
+postGuessPicture pictureFile = Http.post 
+                               { url = "/api/guess-picture"
+                               , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
+                               , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}

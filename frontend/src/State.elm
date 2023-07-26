@@ -8,6 +8,7 @@ import RouteParser exposing (..)
 import Browser.Navigation as Nav
 import User exposing (..)
 import Image exposing (ImageMetadata)
+import GuessResult exposing (GuessResult) 
 
 type alias RegistrationForm =
     { displayname: String
@@ -43,7 +44,8 @@ type GameState
       Int -- current score
       Int -- count of tries
       Int -- county code
-      Bool -- allow-for-usage           
+      Bool -- allow-for-usage
+      (List File) -- submitted file
     | LocationGuessingState
       (Maybe ImageMetadata) -- current pic 
       Int -- current score
@@ -96,10 +98,11 @@ type Msg
     | GotPictureIds (Result Http.Error (List ImageMetadata))
     | RemovePicture ImageMetadata
     | RemovalResult (Result Http.Error Bool)
-    | GotNextPicForGame (Result Http.Error ImageMetadata)
+    | GotNextPicForGame (Result Http.Error (Maybe ImageMetadata))
     | MapClicked Float
     | ChoseCounty GameType String
     | SetAllowForUsage Bool
     | GotGameFiles (List File)
     | NoGpsFound ()
-   
+    | SubmitGuess
+    | UploadedGuess (Result Http.Error GuessResult)

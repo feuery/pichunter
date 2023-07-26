@@ -6,6 +6,7 @@ import Json.Decode as Decode
 
 import User exposing (..)
 import Image exposing (ImageMetadata)
+import GuessResult exposing (GuessResult) 
 
 decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
 decodeApply value partial =
@@ -94,3 +95,6 @@ decodeImageMetadata = Decode.succeed ImageMetadata
                       |> decodeApply (Decode.field "longitude" Decode.float)
                          
 decodePicturelistResponse = Decode.list decodeImageMetadata
+
+decodeGuessResult = Decode.succeed GuessResult
+                    |> decodeApply (Decode.field "correct?" Decode.bool)

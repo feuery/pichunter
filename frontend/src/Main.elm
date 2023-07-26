@@ -374,22 +374,27 @@ update msg model =
                 Err error -> (model, alert (Debug.toString error))
         GotNextPicForGame result ->
             case result of
-                Ok meta ->
-                    case model.gameState of
-                        LocationGuessingState _ score tries county ->
-                            ( { model
-                                  | gameState = LocationGuessingState (Just meta) score tries county}
-                            , initGameMap ( MediaManager.map_id_to_element_id meta.id
-                                          , meta.latitude
-                                          , meta.longitude))
-                        PictureGuessingState _ score tries county allow_usage ->
-                            ( { model
-                                  | gameState = PictureGuessingState (Just meta) score tries county allow_usage}
-                            , initGameMap ( MediaManager.map_id_to_element_id meta.id
-                                          , meta.latitude
-                                          , meta.longitude))                                
-                        _ -> ( model
-                             , alert ("invalid state " ++ (Debug.toString model.gameState)))
+                Ok maybe_meta ->
+                    case maybe_meta of
+                        Just meta ->
+                            case model.gameState of
+                                LocationGuessingState _ score tries county ->
+                                    ( { model
+                                          | gameState = LocationGuessingState (Just meta) score tries county}
+                                    , initGameMap ( MediaManager.map_id_to_element_id meta.id
+                                                  , meta.latitude
+                                                  , meta.longitude))
+                                PictureGuessingState _ score tries county allow_usage _ ->
+                                    ( { model
+                                          | gameState = PictureGuessingState (Just meta) score tries county allow_usage []}
+                                    , initGameMap ( MediaManager.map_id_to_element_id meta.id
+                                                  , meta.latitude
+                                                  , meta.longitude))                                
+                                _ -> ( model
+                                     , alert ("invalid state " ++ (Debug.toString model.gameState)))
+                        Nothing ->
+                            ( model
+                            , alert "NextPic returned null. You probably won the game?")
                 Err error ->
                     (model, alert (Debug.toString error))
         MapClicked distance ->
@@ -399,7 +404,7 @@ update msg model =
                         let state = model.gameState in
                         ( { model | gameState = LocationGuessingState meta (score + 1) (tries + 1) county}
                         , Cmd.batch [ alert "Correct!"
-                                    , getNextForGame (String.fromInt county) ])
+                                    , getNextForGame (String.fromInt county) model.gameState ])
                     else
                         ( { model
                               | gameState = LocationGuessingState meta score (tries + 1) county}
@@ -409,23 +414,59 @@ update msg model =
         ChoseCounty game_type county_code ->
             let state = case game_type of
                             LocationGuessing -> LocationGuessingState Nothing 0 0 0
-                            PictureGuessing -> PictureGuessingState Nothing 0 0 0 False
+                            PictureGuessing ->
+                                case (String.toInt county_code) of
+                                    Just county_int ->
+                                        PictureGuessingState Nothing 0 0 county_int False []
+                                    Nothing -> NotPlaying
             in
             ( { model | gameState = state }
-            , getNextForGame county_code)
+            , getNextForGame county_code state)
         SetAllowForUsage allowed ->
             case model.gameState of
-                PictureGuessingState meta score tries county _ ->
-                    ( { model | gameState = PictureGuessingState meta score tries county allowed}
+                PictureGuessingState meta score tries county _  files->
+                    ( { model | gameState = PictureGuessingState meta score tries county allowed files}
                     , Cmd.none)
                 _ -> ( model
                      , Cmd.none)
         GotGameFiles files ->
-            ( model
-            , checkGameFiles "game_file")
+            case model.gameState of
+                PictureGuessingState meta score tries county allow_usage _ ->
+                    ( { model | gameState = PictureGuessingState meta score tries county allow_usage files}
+                    , checkGameFiles "game_file")
+                _ -> ( model, Cmd.none)
         NoGpsFound _ ->
-            ( model
+            ( case model.gameState of
+                  PictureGuessingState meta score tries county allow_usage _ ->
+                      { model | gameState = PictureGuessingState meta score tries county allow_usage []}
+                  _ -> model
             , alert "Image you selected doesn't seem to contain gps coordinates")
+        SubmitGuess ->
+            case model.gameState of
+                PictureGuessingState meta score tries county allow_usage files ->                
+                    ( model
+                    , Cmd.batch (List.map postGuessPicture files))
+                _ ->
+                    ( model
+                    , alert "How have you ended up in SubmitGuess with gameState that's != PictureGuessingState?")
+        UploadedGuess result ->
+            case result of
+                Ok guessresult ->
+                    case model.gameState of
+                        PictureGuessingState _ _ _ county_code _ _ ->
+                            if guessresult.correct then
+                                ( model
+                                , Cmd.batch [ alert "Oikein :D"
+                                            , getNextForGame (String.fromInt county_code) model.gameState])
+                            else
+                                ( model
+                                , alert "Väärin :D")
+                        _ -> ( model, alert ("You should not be able to fire a UploadedGuess from the state of " ++ (Debug.toString model.gameState)))
+                Err err ->
+                    ( model
+                    , alert ("Error: " ++ (Debug.toString err)))
+
+                    
             
                     
 

@@ -1,28 +1,12 @@
 (defpackage pichunter.user-routes
-  (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows)
+  (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :pichunter.user)
+  (:import-from :pichunter.user :user-id)
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.decorators :@json :@transaction)
-  (:import-from :pichunter.std :sha-512))
+  (:import-from :pichunter.std :sha-512)
+  (:export :user :user-username))
 
 (in-package :pichunter.user-routes)
-
-(defclass user ()
-  ((username :initarg username
-
-
-	     :col-type string
-	     :accessor user-username)
-   (id :initarg id
-       :col-type integer
-       :accessor user-id)
-   (display_name :initarg display-name
-		 :col-type string
-		 :accessor user-display-name)
-   (img_id :initarg image-id
-	   :col-type string
-	   :accessor user-image-id))
-  (:metaclass dao-class)
-  (:keys id))
 
 (defun setup-admin-user ()
   (execute "INSERT INTO pichunter.groupmapping (UserID, GroupID)

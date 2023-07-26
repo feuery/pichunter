@@ -58,7 +58,7 @@ actual_guessing_gameview session gamestate =
 
 actual_picture_gameview session state =
     case state of                     
-        PictureGuessingState maybe_meta score tries county allow_for_usage ->
+        PictureGuessingState maybe_meta score tries county allow_for_usage _->
             case maybe_meta of
                 Just meta ->
                     [ h3 [] [ text "Give me a picture located here" ]
@@ -77,6 +77,7 @@ actual_picture_gameview session state =
                                 , onCheck SetAllowForUsage
                                 , id "allow_for_use"] []
                         , label [ for "allow_for_use"] [ text "Allow pichunter to use this picture for questions" ]]
+                    , button [ onClick SubmitGuess] [ text "Submit your guess"]
                     , h3 [] [ text "Score: " ]
                     , p [] [ text ((String.fromInt score) ++ "/" ++ (String.fromInt tries))]]
                 Nothing ->
@@ -100,5 +101,5 @@ gameview session gamestate =
         ChoosingCounty gametype ->
             choose_county gametype
         LocationGuessingState _ _ _ _ -> gameview_guessing session gamestate
-        PictureGuessingState _ _ _ _ _ -> gameview_pictures session gamestate
+        PictureGuessingState _ _ _ _ _ _ -> gameview_pictures session gamestate
         NotPlaying -> [ div [] [ text "Not playing"] ]
