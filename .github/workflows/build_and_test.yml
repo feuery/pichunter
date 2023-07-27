@@ -2,6 +2,11 @@ on:
   push:
     branches: [master]
 
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pichunter
+  
 jobs:
   test:
     name: "Run pichunter tests"
@@ -59,14 +64,84 @@ jobs:
           
           sbcl --load run_tests.lisp
 
-      # - name: Save quicklisp packages
-      #   uses: actions/cache/save@v3
-      #   with:
-      #     path: |
-      #       /home/runner/quicklisp
-      #       /home/runner/.sbclrc
-      #     key: quicklisp-${{ steps.get-date.outputs.date }}-12
+  build:
+    name: Build pichunter docker image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout code
 
-      # - name: start db
-      #   run: |
-      #     docker-compose up -d
+      - name: Install sbcl
+        run: sudo apt-get install sbcl -q -y
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u '+%Y%m')" >> $GITHUB_OUTPUT
+        shell: bash        
+          
+      - name: Cache quicklisp
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            /home/runner/quicklisp
+            /home/runner/.sbclrc
+            /home/runner/quicklisp.lisp
+          key: quicklisp-${{ steps.get-date.outputs.date }}-12345
+
+      - name: Install quicklisp
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl https://beta.quicklisp.org/quicklisp.lisp -o /home/runner/quicklisp.lisp
+          sbcl --load ~/quicklisp.lisp --load ./install_ql.lisp
+
+          current_dir=$(pwd)
+          cd $HOME
+          
+          mkdir ~/common-lisp
+          cd ~/common-lisp
+          ln -s $current_dir
+          
+      - name: Build pichunter
+        run: |
+          cat /home/runner/.sbclrc
+
+          if [ ! -d ~/common-lisp ]; then
+            current_dir=$(pwd)
+          
+            mkdir ~/common-lisp
+            pushd ~/common-lisp
+            ln -s $current_dir
+            popd
+          fi
+          
+          sbcl --load build_pichunter.lisp
+          ls -la
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                    
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/feuery/pichunter:latest
+            ghcr.io/feuery/pichunter:${{ steps.get-date.outputs.date }}
+          labels: ${{ steps.meta.outputs.labels }}
