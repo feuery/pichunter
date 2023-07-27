@@ -4,5 +4,6 @@
 
 (in-package :pichunter.config)
 
-(defparameter config (read-from-string (slurp #P"/etc/pichunter/config.lisp")))
-(assert config)
+(defparameter config (handler-case (read-from-string (slurp #P"/etc/pichunter/config.lisp"))
+		       (error (e) (format t "Error ~a when reading config, config and integrations are probably unavailble" e))))
+

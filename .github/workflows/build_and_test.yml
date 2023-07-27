@@ -37,6 +37,10 @@ jobs:
         shell: bash
         run: ros -e "(ql:update-all-dists :prompt nil)"
 
+      - name: start db
+        run: |
+          docker-compose up -d
+
       - name: load code and run tests
         shell: bash
         run: |
