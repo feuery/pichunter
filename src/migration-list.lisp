@@ -5,9 +5,9 @@
 
 (in-package pichunter.migration-list)
 
-(defmigration #P"init-main-tables.sql")
-(defmigration #P"users.sql")
-(defmigration #P"groups.sql")
+(defmigration #P"./init-main-tables.sql")
+(defmigration #P"./users.sql")
+(defmigration #P"./groups.sql")
 
-(defmigration #P"place_data.sql")
+(defmigration #P"./place_data.sql")
 

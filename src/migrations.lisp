@@ -17,7 +17,7 @@
 (defun init-migration-system ()
   (with-db
       (exec-all
-       (slurp-queries #P"init-migration-tables.sql"))))
+       (slurp-queries #P"./init-migration-tables.sql"))))
 
 (defparameter migrations nil)
 
@@ -55,6 +55,7 @@
   (init-migration-system))
 
 (defun migrate ()
+  (init-migration-system)
   (let* ((migrations (reverse migrations))
 	 (old-migrations (query "SELECT * FROM pichunter.migrations_tracker" :alists))
 	 (migrations-to-run (remove-if-not (lambda (new-migration)
@@ -81,8 +82,6 @@
 		 checksum)
 	(exec-all (migration-code migration))
 	(execute "UPDATE pichunter.migrations_tracker SET installed_successfully = TRUE where filename = $1" name)))))
-
-(init-migration-system)
   
 ;; (with-db
 ;;     (clean)
