@@ -10,23 +10,62 @@ jobs:
       LISP: sbcl-bin
     steps:
       - uses: actions/checkout@v2
+        name: checkout code
 
       - name: Install sbcl
         run: sudo apt-get install sbcl -q -y
 
-      - name: Install quicklisp
+      - name: Get Date
+        id: get-date
         run: |
-          curl -O https://beta.quicklisp.org/quicklisp.lisp
-          ls -la .
-          sbcl --load quicklisp.lisp --load ./install_ql.lisp
+          echo "date=$(/bin/date -u '+%Y%m')" >> $GITHUB_OUTPUT
+        shell: bash        
+          
+      - name: Cache quicklisp
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            /home/runner/quicklisp
+            /home/runner/.sbclrc
+            /home/runner/quicklisp.lisp
+          key: quicklisp-${{ steps.get-date.outputs.date }}-12345
+
+      - name: Install quicklisp
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl https://beta.quicklisp.org/quicklisp.lisp -o /home/runner/quicklisp.lisp
+          sbcl --load ~/quicklisp.lisp --load ./install_ql.lisp
+
           current_dir=$(pwd)
+          cd $HOME
+          
           mkdir ~/common-lisp
           cd ~/common-lisp
           ln -s $current_dir
 
       - name: Run tests
         run: |
+          cat /home/runner/.sbclrc
+
+          if [ ! -d ~/common-lisp ]; then
+            current_dir=$(pwd)
+          
+            mkdir ~/common-lisp
+            pushd ~/common-lisp
+            ln -s $current_dir
+            popd
+          fi
+          
           sbcl --load run_tests.lisp
+
+      # - name: Save quicklisp packages
+      #   uses: actions/cache/save@v3
+      #   with:
+      #     path: |
+      #       /home/runner/quicklisp
+      #       /home/runner/.sbclrc
+      #     key: quicklisp-${{ steps.get-date.outputs.date }}-12
 
       # - name: start db
       #   run: |
