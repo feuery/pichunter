@@ -12,7 +12,7 @@
   (let ((file-path (pathname (pathname (format nil "/~{~a/~}~a"
 				     (drop 1 (pathname-directory (or *load-pathname* *compile-file-pathname*)))
 				     file-path)))))
-    ;; (format t "Loading ~a~%" file-path)
+    (format t "Loading queries from ~a~%" file-path)
     `(list ,@(read-queries file-path))))
 
 (defun exec-all (queries)

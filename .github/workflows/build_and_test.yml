@@ -6,42 +6,18 @@ jobs:
   test:
     name: "Run pichunter tests"
     runs-on: 'ubuntu-latest'
+    env:
+      LISP: sbcl-bin
     steps:
       - uses: actions/checkout@v2
-
-      - name: cache .roswell
-        id: cache-dot-roswell
-        uses: actions/cache@v3
-        with:
-          path: ~/.roswell
-          key: ${{ runner.os }}-dot-roswell-sbcl-${{ hashFiles('**/*.asd') }}
-          restore-keys: |
-            ${{ runner.os }}-dot-roswell-sbcl-
-            ${{ runner.os }}-dot-roswell-
-
-      - name: install roswell
-        shell: bash
-        env:
-          LISP: sbcl
-        run: curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
-
-      - name: run lisp
-        continue-on-error: true
-        shell: bash
-        run: |
-          ros -e '(format t "~a:~a on ~a~%...~%~%" (lisp-implementation-type) (lisp-implementation-version) (machine-type))'
-          ros -e '(format t " fixnum bits:~a~%" (integer-length most-positive-fixnum))'
-          ros -e "(ql:quickload 'trivial-features)" -e '(format t "features = ~s~%" *features*)'
-
-      - name: update ql dist if we have one cached
-        shell: bash
-        run: ros -e "(ql:update-all-dists :prompt nil)"
 
       - name: start db
         run: |
           docker-compose up -d
 
-      - name: load code and run tests
-        shell: bash
-        run: |
-          ros -e '(handler-bind (#+asdf3.2(asdf:bad-SYSTEM-NAME (function MUFFLE-WARNING))) (handler-case (ql:quickload :pichunter/tests) (error (a) (format t "caught error ~s~%~a~%" a a) (uiop:quit 123))))' -e '(asdf:test-system :pichunter)'
+      - uses: 40ants/setup-lisp@v1
+        # with:
+        #   asdf-system: pichunter
+      - uses: 40ants/run-tests@v2
+        with:
+          asdf-system: pichunter
