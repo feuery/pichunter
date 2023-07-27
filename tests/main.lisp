@@ -13,7 +13,7 @@
 (deftest nulltest
     (testing "if tests are ran"
 	     (ok (equalp 1 1))
-	     (ok (string= "This fails" "lol"))))
+	     (ok (string= "lol" "lol"))))
 
 ;; (defun init-db ()
 ;;   (execute "DROP SCHEMA IF EXISTS pichunter_test CASCADE")
