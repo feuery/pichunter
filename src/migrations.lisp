@@ -6,25 +6,17 @@
 (in-package pichunter.migrations)
 
 (defmacro slurp-queries (file-path)
-  "Reads an sql-file into a compile-time constant you can push to exec-all"
-  (format t "Welcome to slurp-queries ~%")
-  
+  "Reads an sql-file into a compile-time constant you can push to exec-all"  
   (unless (or *load-pathname* *compile-file-pathname*)
     (format t "*load-pathname* and *compile-file-pathname* are nil, please don't C-c C-c defmigration macros but load them by C-c C-k"))
   (let* ((local-path (drop 1 (pathname-directory (or *load-pathname* *compile-file-pathname*))))
 	 (local-path (if (not (equalp (first (last local-path))
 				      "src"))
-			 (progn (format t "~a (~a) ~%"
-					(first (last local-path))
-					(type-of (first (last local-path))))
-				(concatenate 'list local-path (list "src")))
+			 (concatenate 'list local-path (list "src"))
 			 local-path))
-	 (_ (format t "local-path: ~a~%" local-path))
 	 (file-path (pathname (pathname (format nil "/~{~a/~}~a"
 						local-path
 						file-path)))))
-    (format t "Loading queries from ~a~%" file-path)
-    (format t "queries: ~a~%" (read-queries file-path))
     `(list ,@(read-queries file-path))))
 
 (defun exec-all (queries)
