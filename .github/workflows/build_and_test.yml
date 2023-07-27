@@ -31,10 +31,3 @@ jobs:
       # - name: start db
       #   run: |
       #     docker-compose up -d
-
-      # - uses: 40ants/setup-lisp@v1
-      #   # with:
-      #   #   asdf-system: pichunter
-      # - uses: 40ants/run-tests@v2
-      #   with:
-      #     asdf-system: pichunter

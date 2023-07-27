@@ -20,9 +20,10 @@
     (execute query)))
 
 (defun init-migration-system ()
-  (with-db
-      (exec-all
-       (slurp-queries #P"init-migration-tables.sql"))))
+  ;; (with-db
+  ;;     (exec-all
+  ;;      (slurp-queries #P"init-migration-tables.sql")))
+  )
 
 (defparameter migrations nil)
 
