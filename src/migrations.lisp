@@ -1,23 +1,28 @@
 (defpackage pichunter.migrations
   (:use :cl :postmodern)
-  (:import-from :pichunter.std :if-let :with-db)
+  (:import-from :pichunter.std :drop :if-let :with-db)
   (:export :migrate :clean))
 
 (in-package pichunter.migrations)
 
 (defmacro slurp-queries (file-path)
   "Reads an sql-file into a compile-time constant you can push to exec-all"
-  `(list ,@(read-queries file-path)))
+  (unless (or *load-pathname* *compile-file-pathname*)
+    (format t "*load-pathname* and *compile-file-pathname* are nil, please don't C-c C-c defmigration macros but load them by C-c C-k"))
+  (let ((file-path (pathname (pathname (format nil "/~{~a/~}~a"
+				     (drop 1 (pathname-directory (or *load-pathname* *compile-file-pathname*)))
+				     file-path)))))
+    ;; (format t "Loading ~a~%" file-path)
+    `(list ,@(read-queries file-path))))
 
 (defun exec-all (queries)
   (dolist (query queries)
     (execute query)))
 
-
 (defun init-migration-system ()
   (with-db
       (exec-all
-       (slurp-queries #P"./init-migration-tables.sql"))))
+       (slurp-queries #P"init-migration-tables.sql"))))
 
 (defparameter migrations nil)
 

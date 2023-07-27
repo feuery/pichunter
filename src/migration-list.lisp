@@ -5,9 +5,11 @@
 
 (in-package pichunter.migration-list)
 
-(defmigration #P"./init-main-tables.sql")
-(defmigration #P"./users.sql")
-(defmigration #P"./groups.sql")
+;; Load this by C-c C-k, *compile-file-path* and *load-pathname* don't handle C-c C-cing single defmigrations
 
-(defmigration #P"./place_data.sql")
+(defmigration #P"init-main-tables.sql")
+(defmigration #P"users.sql")
+(defmigration #P"groups.sql")
+
+(defmigration #P"place_data.sql")
 
