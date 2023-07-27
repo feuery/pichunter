@@ -22,7 +22,8 @@
        (setf *js-location* #P"/Users/feuer/Projects/pichunter/frontend/elm.js")
        (setf *css-location* #P"/Users/feuer/Projects/pichunter/frontend/site.css")))
 
-(assert *js-location* nil "JS location should be configured in the source code when developing")
+;; TODO load this from config or somewhere
+;; (assert *js-location* nil "JS location should be configured in the source code when developing")
 
 (defroute css ("/site.css" :method :get) ()
   (setf (hunchentoot:content-type*) "text/css")
