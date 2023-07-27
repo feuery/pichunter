@@ -11,13 +11,30 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: start db
-        run: |
-          docker-compose up -d
+      - name: Install sbcl
+        run: sudo apt-get install sbcl -q -y
 
-      - uses: 40ants/setup-lisp@v1
-        # with:
-        #   asdf-system: pichunter
-      - uses: 40ants/run-tests@v2
-        with:
-          asdf-system: pichunter
+      - name: Install quicklisp
+        run: |
+          curl -O https://beta.quicklisp.org/quicklisp.lisp
+          ls -la .
+          sbcl --load quicklisp.lisp --load ./install_ql.lisp
+          current_dir=$(pwd)
+          mkdir ~/common-lisp
+          cd ~/common-lisp
+          ln -s $current_dir
+
+      - name: Run tests
+        run: |
+          sbcl --load run_tests.lisp
+
+      # - name: start db
+      #   run: |
+      #     docker-compose up -d
+
+      # - uses: 40ants/setup-lisp@v1
+      #   # with:
+      #   #   asdf-system: pichunter
+      # - uses: 40ants/run-tests@v2
+      #   with:
+      #     asdf-system: pichunter
