@@ -49,6 +49,10 @@ jobs:
           cd ~/common-lisp
           ln -s $current_dir
 
+      - name: Start the database
+        run: |
+          docker-compose up -d
+
       - name: Run tests
         run: |
           cat /home/runner/.sbclrc

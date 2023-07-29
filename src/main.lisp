@@ -1,6 +1,6 @@
 (defpackage pichunter
   (:use :cl :postmodern )
-  (:export :main)
+  (:export :main :*server*)
   (:import-from :pichunter.std :slurp :slurp-utf-8)
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.file-handler :get-picture-data)
@@ -75,6 +75,10 @@
 
 (defvar *server* nil)
 
-(defun main ()
-  (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port 3000))
-  (hunchentoot:start *server*))
+(defun main (&key (port 3000))
+  (let ((server (make-instance 'easy-routes:easy-routes-acceptor :port port)))
+    (when (equalp 3000 port)
+      (setf *server* server))
+    (hunchentoot:start server)
+    server))
+    

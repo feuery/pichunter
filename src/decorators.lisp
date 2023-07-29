@@ -11,10 +11,15 @@
   (funcall next))
 
 (defun @transaction (next)
-  (with-db 
-    (with-schema (:pichunter :if-not-exist nil)
-      (with-transaction ()
-	(funcall next)))))
+  (let* ((test? (equalp "true"
+			(hunchentoot:header-in* "X-PICHUNTER-TEST")))
+	 (schema (if test?
+		     :pichunter_test
+		     :pichunter)))
+    (with-db 
+      (with-schema (schema :if-not-exist nil)
+	(with-transaction ()
+	  (funcall next))))))
 
 (defun @no-cache (next)
   (setf (hunchentoot:header-out "Cache-Control") "no-cache")
@@ -28,7 +33,6 @@
 	     (string= (hunchentoot:session-value :logged-in-username)
 		      (user-username user)))
 	(let ((*user* user))
-	  (format t "user: ~a~%" *user*)
 	  (funcall next))
 	(progn
 	  (setf (hunchentoot:return-code*) 401)

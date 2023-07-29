@@ -4,7 +4,7 @@
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.decorators :@json :@transaction)
   (:import-from :pichunter.std :sha-512)
-  (:export :user :user-username))
+  (:export :user :user-username :register :post-login))
 
 (in-package :pichunter.user-routes)
 
@@ -18,6 +18,12 @@ JOIN usergroup \"group\" ON 1=1;")
 UPDATE users
 SET activated = true;"))
 
+(defun register (username displayname password)
+  (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
+	   username
+	   (sha-512 password)
+	   displayname))
+
 (defroute register-route
     ("/api/login/register" :method :post :decorators (@transaction @json)) ()
 
@@ -29,10 +35,9 @@ SET activated = true;"))
       (handler-case 
 	  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM users)" :single)))
 	    (assert (string= password password-again))
-	    (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
-		     username
-		     (sha-512 password)
-		     displayname)
+
+	    (register username displayname password)
+	    
 	    (unless prior-users
 		      (setup-admin-user))
 
