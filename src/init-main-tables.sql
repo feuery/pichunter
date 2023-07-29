@@ -1,4 +1,4 @@
-CREATE TABLE pichunter.pictures
+CREATE TABLE pictures
 (
 	id uuid not null primary key default gen_random_uuid(),
 	filename text not null,

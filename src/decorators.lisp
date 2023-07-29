@@ -12,8 +12,9 @@
 
 (defun @transaction (next)
   (with-db 
+    (with-schema (:pichunter :if-not-exist nil)
       (with-transaction ()
-	(funcall next))))
+	(funcall next)))))
 
 (defun @no-cache (next)
   (setf (hunchentoot:header-out "Cache-Control") "no-cache")
@@ -22,7 +23,7 @@
 (defparameter *user* nil "A special variable for storing the logged in user (as defined in the db)")
 (defun @authenticated (next)
   (let* ((user-id (hunchentoot:session-value :logged-in-user-id))
-	 (user (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE id = $1" user-id (:dao user :single))))
+	 (user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" user-id (:dao user :single))))
     (if (and user
 	     (string= (hunchentoot:session-value :logged-in-username)
 		      (user-username user)))

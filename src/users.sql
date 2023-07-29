@@ -1,4 +1,4 @@
-CREATE TABLE pichunter.user
+CREATE TABLE users
 (
   id SERIAL,
   username VARCHAR(100) NOT NULL UNIQUE,
@@ -6,7 +6,7 @@ CREATE TABLE pichunter.user
   display_name VARCHAR(1000) NOT NULL DEFAULT '',
   img_id uuid NULL,
   activated BOOLEAN NOT NULL DEFAULT FALSE,  
-  FOREIGN KEY (img_id) REFERENCES pichunter.pictures(id)
+  FOREIGN KEY (img_id) REFERENCES pictures(id)
   ON UPDATE CASCADE
   ON DELETE SET NULL,
   PRIMARY KEY(ID));

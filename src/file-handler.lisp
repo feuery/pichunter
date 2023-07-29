@@ -9,7 +9,7 @@
 (defun get-picture-data (guid)
   (let* ((result 
 	   (car
-	    (postmodern:query "SELECT data, mime FROM pichunter.pictures WHERE id = $1" guid)))
+	    (postmodern:query "SELECT data, mime FROM pictures WHERE id = $1" guid)))
 	 (file-data (car result))
 	 (mime (cadr result)))
     (values file-data mime)))
@@ -57,7 +57,7 @@
 	       (longitude-number (coordinate->number longitude))
 	       (municipality-code (query-municipality-from-mml longitude-number latitude-number))
 	       (county-code (first (query (:select 'county_code
-					   :from 'pichunter.municipality
+					   :from 'municipality
 					   :where (:= 'code municipality-code)) :list))))
 	  
 
@@ -66,7 +66,7 @@
 	  ;; 	longitude-number
 	  ;; 	municipality-code)
 
-	  (execute "insert into pichunter.pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
+	  (execute "insert into pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
 		   filename
 		   mime
 		   latitude-number

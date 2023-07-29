@@ -1,55 +1,55 @@
-CREATE TABLE IF NOT EXISTS pichunter.usergroup (
+CREATE TABLE IF NOT EXISTS usergroup (
        ID SERIAL,
        Name VARCHAR NOT NULL UNIQUE,
        Description VARCHAR(2000) NOT NULL DEFAULT '',
        Img_location VARCHAR(2000) NOT NULL DEFAULT '',
        PRIMARY KEY (ID));
 
-INSERT INTO pichunter.usergroup(Name, Description) VALUES ('Admins', 'Group for admins');
+INSERT INTO usergroup(Name, Description) VALUES ('Admins', 'Group for admins');
 
-CREATE TABLE IF NOT EXISTS pichunter.groupmapping (
+CREATE TABLE IF NOT EXISTS groupmapping (
        UserID INT NOT NULL,
        GroupID INT NOT NULL,
        PRIMARY KEY(UserID, GroupID),
-       FOREIGN KEY(UserID) REFERENCES pichunter.user(ID)
+       FOREIGN KEY(UserID) REFERENCES users(ID)
        	       ON UPDATE CASCADE
 	       ON DELETE CASCADE,
-       FOREIGN KEY(GroupID) REFERENCES pichunter.usergroup(ID)
+       FOREIGN KEY(GroupID) REFERENCES usergroup(ID)
        	       ON UPDATE CASCADE
 	       ON DELETE CASCADE);
 
-CREATE TABLE pichunter.permission (
+CREATE TABLE permission (
        ID SERIAL,
        action varchar(2000),
        PRIMARY KEY (ID));
 
-INSERT INTO pichunter.permission(action) VALUES('view-picture');
-INSERT INTO pichunter.permission(action) VALUES('insert-picture');
-INSERT INTO pichunter.permission(action) VALUES('can-admin');
+INSERT INTO permission(action) VALUES('view-picture');
+INSERT INTO permission(action) VALUES('insert-picture');
+INSERT INTO permission(action) VALUES('can-admin');
        
-CREATE TABLE pichunter.grouppermission (
+CREATE TABLE grouppermission (
        PermissionID INT,
        GroupID INT,
 
        PRIMARY KEY(PermissionID, GroupID),
-       FOREIGN KEY(PermissionID) REFERENCES pichunter.permission(ID)
+       FOREIGN KEY(PermissionID) REFERENCES permission(ID)
        	       ON UPDATE CASCADE
 	       ON DELETE CASCADE,
-       FOREIGN KEY(GroupID) REFERENCES pichunter.usergroup(ID)
+       FOREIGN KEY(GroupID) REFERENCES usergroup(ID)
        	       ON UPDATE CASCADE
 	       ON DELETE CASCADE);
 
-INSERT INTO pichunter.grouppermission(PermissionID, GroupID)
+INSERT INTO grouppermission(PermissionID, GroupID)
 SELECT permission.ID, usergroup.ID
-FROM pichunter.permission permission
-JOIN pichunter.usergroup usergroup ON 1=1;
+FROM permission permission
+JOIN usergroup usergroup ON 1=1;
 
-INSERT INTO pichunter.usergroup(Name, Description) VALUES ('Users', 'Group for ordinary mortals');
+INSERT INTO usergroup(Name, Description) VALUES ('Users', 'Group for ordinary mortals');
 
-CREATE VIEW pichunter.user_abilities AS
+CREATE VIEW user_abilities AS
 SELECT "user".id, "user".username, perm.action
-FROM pichunter.user "user"
-JOIN pichunter.groupmapping gm on "user".ID = gm.UserID
-JOIN pichunter.usergroup ug on gm.GroupID = ug.ID
-join pichunter.grouppermission gp on gp.GroupID = ug.ID
-JOIN pichunter.permission perm on perm.ID = gp.PermissionID;
+FROM users "user"
+JOIN groupmapping gm on "user".ID = gm.UserID
+JOIN usergroup ug on gm.GroupID = ug.ID
+join grouppermission gp on gp.GroupID = ug.ID
+JOIN permission perm on perm.ID = gp.PermissionID;

@@ -14,15 +14,15 @@
   ;; 	      (setf (gethash "filename" hashmap)
   ;; 		    (getf
   (stringify
-   (query (:select 'id 'filename 'latitude 'longitude :from 'pichunter.pictures) :array-hash)))
+   (query (:select 'id 'filename 'latitude 'longitude :from 'pictures) :array-hash)))
 
 (defroute delete-picture ("/api/pictures/:guid" :method :delete :decorators (@json @transaction)) ()
-  (execute (:delete-from 'pichunter.pictures :where (:= :id guid)))
+  (execute (:delete-from 'pictures :where (:= :id guid)))
   "true")
 						
 (defroute count-per-county ("/api/pictures/count-per-county" :method :get :decorators (@json @transaction)) ()
   (stringify
    (query
     "SELECT county_code, count(*)
-FROM pichunter.pictures
+FROM pictures
 group by county_code" :array-hash)))

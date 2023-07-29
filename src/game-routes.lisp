@@ -10,20 +10,20 @@
 	 (results (coerce (cond ((string= gametype "picguess")
 				 (query
 				  "SELECT pic.id, pic.filename, pic.latitude, pic.longitude
-FROM pichunter.pictures pic
-LEFT JOIN pichunter.pictureguessing_session session ON session.picture_id = pic.id
+FROM pictures pic
+LEFT JOIN pictureguessing_session session ON session.picture_id = pic.id
 WHERE county_code = $1
 AND   guessed_at IS NULL
 AND   (user_id = $2 OR user_id IS NULL)
 ORDER BY random()
 limit 1" county-code id :array-hash))
-				(t (query "select id, filename, latitude, longitude from pichunter.pictures where county_code = $1 order by random() limit 1" county-code :array-hash))) 'list )))
+				(t (query "select id, filename, latitude, longitude from pictures where county_code = $1 order by random() limit 1" county-code :array-hash))) 'list )))
 
     (if results
 	(let ((result (first results)))
 	  (when (and (string= gametype "picguess")
-		     (not (query "SELECT * FROM pichunter.pictureguessing_session WHERE guessed_at IS NULL AND user_id = $1" id)))
-	    (execute "INSERT INTO pichunter.pictureguessing_session (user_id, picture_id) VALUES ($1, $2)" id (gethash "id" result)))	  
+		     (not (query "SELECT * FROM pictureguessing_session WHERE guessed_at IS NULL AND user_id = $1" id)))
+	    (execute "INSERT INTO pictureguessing_session (user_id, picture_id) VALUES ($1, $2)" id (gethash "id" result)))	  
 	  (stringify result))
 
 	"null")))
@@ -54,8 +54,8 @@ limit 1" county-code id :array-hash))
       (with-slots (id) *user*
 	(let ((asked-image (query
 			    "SELECT data, pic.id
-FROM pichunter.pictures pic
-JOIN pichunter.pictureguessing_session session ON pic.id = session.picture_id
+FROM pictures pic
+JOIN pictureguessing_session session ON pic.id = session.picture_id
 WHERE user_id = $1 AND guessed_at IS NULL" id :array-hash)))	  
 	  (multiple-value-bind (asked-latitude asked-longitude) (get-position (flexi-streams:make-in-memory-input-stream (gethash "data" (aref asked-image 0))))
 	    (let* ((d (distance input-latitude input-longitude
@@ -64,7 +64,7 @@ WHERE user_id = $1 AND guessed_at IS NULL" id :array-hash)))
 
 	      (when correct?
 		(execute
-"UPDATE pichunter.pictureguessing_session 
+"UPDATE pictureguessing_session 
 SET guessed_at = NOW()
 WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
 	      
@@ -74,7 +74,7 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
 	  
 
 (defun load-counties ()
-  (execute (:insert-rows-into 'pichunter.county
+  (execute (:insert-rows-into 'county
 	    :columns 'code 'name
 
 	    :values (mapcar (lambda (code)
@@ -89,7 +89,7 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
 
 ;; curl https://www2.tilastokeskus.fi/fi/luokitukset/corrmaps/export/kunta_1_20160101%23maakunta_1_20160101/ -o maakunnat_kunnat.csv
 (defun load-municipalities ()
-  (execute (:insert-rows-into 'pichunter.municipality
+  (execute (:insert-rows-into 'municipality
 	    :columns 'code 'county-code
 	    :values
 	    (->> (slurp #P"/home/feuer/projects/pichunter/src/maakunnat_kunnat.csv" :external-format :cp1252)

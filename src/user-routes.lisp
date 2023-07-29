@@ -9,13 +9,13 @@
 (in-package :pichunter.user-routes)
 
 (defun setup-admin-user ()
-  (execute "INSERT INTO pichunter.groupmapping (UserID, GroupID)
+  (execute "INSERT INTO groupmapping (UserID, GroupID)
 SELECT \"user\".ID, \"group\".ID
-FROM pichunter.user \"user\"
-JOIN pichunter.usergroup \"group\" ON 1=1;")
+FROM users \"user\"
+JOIN usergroup \"group\" ON 1=1;")
   (execute 
-"-- at this point, there is only one row in the pichunter.user
-UPDATE pichunter.user
+"-- at this point, there is only one row in the user
+UPDATE users
 SET activated = true;"))
 
 (defroute register-route
@@ -27,9 +27,9 @@ SET activated = true;"))
 	 (password (gethash "password" body-param))
 	 (password-again (gethash "password-again" body-param)))
       (handler-case 
-	  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM pichunter.user)" :single)))
+	  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM users)" :single)))
 	    (assert (string= password password-again))
-	    (execute "INSERT INTO pichunter.user(username, password, display_name) VALUES ($1, $2, $3)"
+	    (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
 		     username
 		     (sha-512 password)
 		     displayname)
@@ -48,7 +48,7 @@ SET activated = true;"))
 (defroute users-route ("/api/users" :method :get :decorators (@transaction)) ()
   (setf (hunchentoot:content-type*) "application7json; charset=utf-8")
   (stringify 
-  (query "SELECT * FROM pichunter.user" :array-hash)))
+  (query "SELECT * FROM users" :array-hash)))
 
 (defun clean-postmodern-rubbish-json (json)
   (str:replace-all "\"null\"" "null"
@@ -62,12 +62,12 @@ SET activated = true;"))
 	 (username (gethash "username" body-params))
 	 (password (gethash "password" body-params))
 
-	 (user-row  (query "SELECT id, username, display_name, img_id FROM pichunter.user WHERE username = $1 AND password = $2" username (sha-512 password)
+	 (user-row  (query "SELECT id, username, display_name, img_id FROM users WHERE username = $1 AND password = $2" username (sha-512 password)
 			   (:dao user :single)))
 	 (user-json (clean-postmodern-rubbish-json
 		     (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
-FROM pichunter.user \"user\"
-JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
+FROM users \"user\"
+JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".username = $1 AND \"user\".password = $2
 GROUP BY \"user\".id" username (sha-512 password)
 :json-str))))
@@ -87,8 +87,8 @@ GROUP BY \"user\".id" username (sha-512 password)
   (if (hunchentoot:session-value :logged-in-username)
       (let ((user (clean-postmodern-rubbish-json
 		   (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
-FROM pichunter.user \"user\"
-JOIN pichunter.user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
+FROM users \"user\"
+JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".id = $1
 GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
 :json-str))))
@@ -120,15 +120,15 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
   (let ((id (gethash "id" user))
 	(displayName (gethash "displayName" user))
 	(activated? (gethash "activated?" user)))
-    (execute (:update 'pichunter.user
+    (execute (:update 'users
 	      :set 'display_name displayName
 	      'activated activated?
 	      :where (:= 'id id)))
-    (execute (:insert-into 'pichunter.groupmapping
+    (execute (:insert-into 'groupmapping
 	      :set 'UserID id 'GroupID group-id))))
 
 (defun save-permission (group-id permission)
-  (execute (:insert-into 'pichunter.GroupPermission
+  (execute (:insert-into 'GroupPermission
 	    :set 'PermissionID (gethash "id" permission)
 	         'GroupID group-id)))
 
@@ -149,12 +149,12 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
 		      :test (lambda (a b)
 			      (equalp (gethash "id" a)
 				      (gethash "id" b))))))
-    (execute (:update 'pichunter.usergroup
+    (execute (:update 'usergroup
 	      :set 'name name
 	           'description description
 		   :where (:= 'id id)))
-    (execute (:delete-from 'pichunter.groupmapping :where (:= 'GroupID id)))
-    (execute (:delete-from 'pichunter.GroupPermission :where (:= 'GroupID id)))
+    (execute (:delete-from 'groupmapping :where (:= 'GroupID id)))
+    (execute (:delete-from 'GroupPermission :where (:= 'GroupID id)))
     (dolist (user users)
       (save-user id user))
     (dolist (permission permissions)
@@ -180,36 +180,36 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
 				   (:as :usergroup.description :group-description)
 				   (:as :permission.id :permission-id)
 				   (:as :permission.action :action)
-				   (:as :user.id :user-id)
-				   (:as :user.username :username)
-				   (:as :user.activated :activated)
+				   (:as :users.id :user-id)
+				   (:as :users.username :username)
+				   (:as :users.activated :activated)
 				   (:as :display-name :displayName)
 				   (:as :img_id :imgId)
 				   (:as "[]" :abilities)
-				   :from :pichunter.usergroup
+				   :from :usergroup
 				   
-				   :join :pichunter.groupmapping 
+				   :join :groupmapping 
 				   :on (:= :groupmapping.groupid :usergroup.id)
 				   
-				   :join :pichunter.user
-				   :on (:= :groupmapping.userid :user.id)
+				   :join :users
+				   :on (:= :groupmapping.userid :users.id)
 
-				   :left-join :pichunter.grouppermission
+				   :left-join :grouppermission
 				   :on (:= :grouppermission.groupid :usergroup.id)
 
-				   :left-join :pichunter.permission
+				   :left-join :permission
 				   :on (:= :grouppermission.permissionid :permission.id))
 			  :plists))
 	   (all-abilities (->> (query (:select :action (:as :id :permission-id)
-					       :from :pichunter.permission)
+					       :from :permission)
 				      :plists)
 			    (mapcar #'transform-permission)))
-	   (all-users (->> (query (:select (:as :user.id :user-id)
-				      (:as :user.activated :activated)
-				      (:as :user.username :username)
+	   (all-users (->> (query (:select (:as :users.id :user-id)
+				      (:as :users.activated :activated)
+				      (:as :users.username :username)
 				      (:as :display-name :displayName)
 				      (:as :img_id :imgId)
-				      :from :pichunter.user)
+				      :from :users)
 				  :plists)
 			;; (mapcar (lambda (row)
 			;; 	  (let ((hashmap (make-hash-table :test 'equal :size 5)))

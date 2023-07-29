@@ -66,7 +66,7 @@
 (defun migrate ()
   (init-migration-system)
   (let* ((migrations (reverse migrations))
-	 (old-migrations (query "SELECT * FROM pichunter.migrations_tracker" :alists))
+	 (old-migrations (query "SELECT * FROM migrations_tracker" :alists))
 	 (migrations-to-run (remove-if-not (lambda (new-migration)
 					     (if-let (old (first (remove-if-not (lambda (old-migration)
 										  (string= (migration-filename new-migration)
@@ -86,11 +86,11 @@
 					   migrations)))
     (dolist (migration migrations-to-run)
       (with-slots (name checksum) migration
-	(execute "INSERT INTO pichunter.migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
+	(execute "INSERT INTO migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
 		 name
 		 checksum)
 	(exec-all (migration-code migration))
-	(execute "UPDATE pichunter.migrations_tracker SET installed_successfully = TRUE where filename = $1" name)))))
+	(execute "UPDATE migrations_tracker SET installed_successfully = TRUE where filename = $1" name)))))
   
 ;; (with-db
 ;;     (clean)
