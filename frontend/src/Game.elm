@@ -9,6 +9,7 @@ import File.Select as Select
 
 import State exposing (..)
 import MediaManager exposing (map_id_to_element_id, filesDecoder)
+import Image exposing (..)
 
 authorizator view session state =
     case session of
@@ -87,19 +88,29 @@ actual_picture_gameview session state =
 gameview_guessing = authorizator actual_guessing_gameview
 gameview_pictures = authorizator actual_picture_gameview
 
-choose_county gametype =
+choose_county: GameType -> List PictureCount -> List (Html Msg)
+choose_county gametype imagecounts =
     [ h3 [] [ text "Choose a county you expect pictures from" ]
     , select [ onInput (ChoseCounty gametype) ]
         (  ("null", "Choose a county") :: counties
         |> List.map (\c ->
-                         let (v, t) = c in
-                         option [ value v ]
-                         [ text t]))]
+                         let (county_code, county_name) = c
+                             count = imagecounts |>
+                                     List.filter (\pc ->
+                                                      let pc_county_code = String.fromInt(pc.county) in
+                                                      pc_county_code == county_code) |>
+                                     List.map .count |>
+                                     List.map String.fromInt |>
+                                     List.head |>
+                                     Maybe.withDefault "0"
+                         in
+                         option [ value county_code ]
+                         [ text (county_name ++ " (" ++ count ++ ")")]))]
     
-gameview session gamestate =
+gameview session gamestate piccounts =
     case gamestate of
         ChoosingCounty gametype ->
-            choose_county gametype
+            choose_county gametype piccounts
         LocationGuessingState _ _ _ _ -> gameview_guessing session gamestate
         PictureGuessingState _ _ _ _ _ _ -> gameview_pictures session gamestate
         NotPlaying -> [ div [] [ text "Not playing"] ]

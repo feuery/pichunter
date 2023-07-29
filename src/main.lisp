@@ -76,5 +76,5 @@
 (defvar *server* nil)
 
 (defun main ()
-  (make-instance 'easy-routes:easy-routes-acceptor :port 3000)
+  (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port 3000))
   (hunchentoot:start *server*))

@@ -20,5 +20,9 @@
   (execute (:delete-from 'pichunter.pictures :where (:= :id guid)))
   "true")
 						
-
-    
+(defroute count-per-county ("/api/pictures/count-per-county" :method :get :decorators (@json @transaction)) ()
+  (stringify
+   (query
+    "SELECT county_code, count(*)
+FROM pichunter.pictures
+group by county_code" :array-hash)))

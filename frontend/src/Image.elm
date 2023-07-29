@@ -5,3 +5,7 @@ type alias ImageMetadata =
     , filename: String
     , latitude: Float
     , longitude: Float}
+
+type alias PictureCount =
+    { county: Int
+    , count: Int }

@@ -2,6 +2,7 @@ module Pichunter_http exposing (..)
 
 import Http exposing (..)
 import State exposing (..)
+import Image exposing (..)
 import Pichunter_json as Json
 import Json.Decode as D 
 
@@ -68,3 +69,7 @@ postGuessPicture pictureFile = Http.post
                                { url = "/api/guess-picture"
                                , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
                                , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}
+
+loadPictureCounts = Http.get
+                    { url = "/api/pictures/count-per-county"
+                    , expect = Http.expectJson GotPictureCounts (D.list Json.decodePictureCount)}

@@ -71,6 +71,7 @@ init _ url key =
                    PlayLocationGuessing -> ChoosingCounty LocationGuessing
                    PlayPictureGuessing -> ChoosingCounty PictureGuessing
                    _ -> NotPlaying)
+              [] 
         , Cmd.batch cmds )
         
       
@@ -84,7 +85,7 @@ handleSession model result =
     case result of
         Ok user ->
             ( { model | session = LoggedIn user}
-            , Cmd.none)
+            , loadPictureCounts)
         Err error ->
             case error of
                 Http.BadStatus status ->
@@ -465,7 +466,14 @@ update msg model =
                 Err err ->
                     ( model
                     , alert ("Error: " ++ (Debug.toString err)))
-
+        GotPictureCounts result ->
+            case result of
+                Ok counts ->
+                    ( { model | imageCounts = counts}
+                    , Cmd.none)
+                Err err ->
+                    ( model
+                    , alert ("Error: " ++ (Debug.toString err)))
                     
             
                     
@@ -500,8 +508,8 @@ view model =
              (case model.route of
                  Home -> homeScreen model.session
                  RegisterScreen -> registrationScreen model.registrationFormState
-                 PlayPictureGuessing -> gameview model.session model.gameState
-                 PlayLocationGuessing -> gameview model.session model.gameState
+                 PlayPictureGuessing -> gameview model.session model.gameState model.imageCounts
+                 PlayLocationGuessing -> gameview model.session model.gameState model.imageCounts
                  NotFound -> [ div [] [ text "Not found!" ] ]
                  ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                  ManageMedia ->

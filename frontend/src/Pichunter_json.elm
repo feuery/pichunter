@@ -5,7 +5,7 @@ import Json.Encode.Extra as Enc_Extra
 import Json.Decode as Decode
 
 import User exposing (..)
-import Image exposing (ImageMetadata)
+import Image exposing (..)
 import GuessResult exposing (GuessResult) 
 
 decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
@@ -98,3 +98,8 @@ decodePicturelistResponse = Decode.list decodeImageMetadata
 
 decodeGuessResult = Decode.succeed GuessResult
                     |> decodeApply (Decode.field "correct?" Decode.bool)
+
+
+decodePictureCount =  Decode.succeed PictureCount
+                   |> decodeApply (Decode.field "county_code" Decode.int)
+                   |> decodeApply (Decode.field "count" Decode.int)

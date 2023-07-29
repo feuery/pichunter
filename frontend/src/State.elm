@@ -7,7 +7,7 @@ import Browser
 import RouteParser exposing (..)
 import Browser.Navigation as Nav
 import User exposing (..)
-import Image exposing (ImageMetadata)
+import Image exposing (..)
 import GuessResult exposing (GuessResult) 
 
 type alias RegistrationForm =
@@ -61,7 +61,8 @@ type alias Model =
     , session: Session
     , groupManagerState: Maybe GroupManagerState
     , mediaManagerState: Maybe MediaManagerState
-    , gameState: GameState }
+    , gameState: GameState
+    , imageCounts: List PictureCount}
 
 type Nth
     = First
@@ -106,3 +107,4 @@ type Msg
     | NoGpsFound ()
     | SubmitGuess
     | UploadedGuess (Result Http.Error GuessResult)
+    | GotPictureCounts (Result Http.Error (List PictureCount))
