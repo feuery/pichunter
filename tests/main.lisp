@@ -63,10 +63,6 @@
 	      "NULL")
       "admin is ok")
 
-  ;; (unless (equalp (gethash "abilities" user)
-  ;; 	      (vector "insert-picture" "can-admin" "view-picture"))
-  ;;   (break))
-  
   (ok (equalp (gethash "abilities" user)
 	      (vector "insert-picture" "can-admin" "view-picture")))
   (ok (gethash "activated?" user)))

@@ -250,7 +250,8 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 				       (setf (gethash "description" hashmap) (getf g :group-description))
 				       (setf (gethash "name" hashmap) (getf g :group-name))
 				       (setf (gethash "id" hashmap) (getf g :group-id))
-				       (setf (gethash "permissions" hashmap) (remove-duplicates
+				       (setf (gethash "permissions" hashmap)
+					     (or (remove-duplicates
 									      (->>
 										groups
 										(remove-if
@@ -267,7 +268,8 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 									      :test (lambda (a b)
 										      (equalp
 										       (gethash "id" a)
-										       (gethash "id" b)))))
+										       (gethash "id" b))))
+						 (vector)))
 				       (setf (gethash "users" hashmap) (remove-duplicates
 									(->>
 									  groups
