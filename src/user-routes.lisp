@@ -19,10 +19,13 @@ UPDATE users
 SET activated = true;"))
 
 (defun register (username displayname password)
-  (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
-	   username
-	   (sha-512 password)
-	   displayname))
+  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM users)" :single)))
+    (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
+	     username
+	     (sha-512 password)
+	     displayname)
+    (unless prior-users
+      (setup-admin-user))))
 
 (defroute register-route
     ("/api/login/register" :method :post :decorators (@transaction @json)) ()
@@ -32,22 +35,19 @@ SET activated = true;"))
 	 (displayname (gethash "displayname" body-param))
 	 (password (gethash "password" body-param))
 	 (password-again (gethash "password-again" body-param)))
-      (handler-case 
-	  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM users)" :single)))
-	    (assert (string= password password-again))
+    (handler-case
+	(progn
+	  (assert (string= password password-again))
 
-	    (register username displayname password)
-	    
-	    (unless prior-users
-		      (setup-admin-user))
+	  (register username displayname password)
 
-	    (format t "Registered ~a (~a)~%" displayname username)
-	    "{\"success?\": true}")
-	(error (e)
-	  (format t "Error in \"/register\": ~a~%" e)
-	  (break "~a" e)
-	  
-	  (easy-routes:http-error 500)))))
+	  (format t "Registered ~a (~a)~%" displayname username)
+	  "{\"success?\": true}")
+      (error (e)
+	(format t "Error in \"/register\": ~a~%" e)
+	(break "~a" e)
+	
+	(easy-routes:http-error 500)))))
 
 ;; wtf why does this route exist?
 (defroute users-route ("/api/users" :method :get :decorators (@transaction)) ()
@@ -69,20 +69,29 @@ SET activated = true;"))
 
 	 (user-row  (query "SELECT id, username, display_name, img_id FROM users WHERE username = $1 AND password = $2" username (sha-512 password)
 			   (:dao user :single)))
-	 (user-json (clean-postmodern-rubbish-json
-		     (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
+	 (data-for-frontend (query "SELECT \"user\".id, \"user\".username, \"user\".display_name AS \"displayName\", \"user\".img_id AS \"imgId\", json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
 FROM users \"user\"
 JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".username = $1 AND \"user\".password = $2
-GROUP BY \"user\".id" username (sha-512 password)
-:json-str))))
-
+GROUP BY \"user\".id" username (sha-512 password) :array-hash)))
+      
     (if (and user-row
 	     (string= (user-username user-row) username))
 	(progn
+	  (setf data-for-frontend (aref data-for-frontend 0))
+	  (setf (gethash "abilities" data-for-frontend) (remove-duplicates (coerce
+								      (parse (gethash "abilities" data-for-frontend))
+								      'list)
+									   :test 'equal))
+	  ;; (when (or (equalp (gethash "imgId" data-for-frontend)
+	  ;; 		    "NULL")
+	  ;; 	    (equalp (gethash "imgId" data-for-frontend)
+	  ;; 		    :NULL))
+	  ;;   (remhash "imgId" data-for-frontend))
+	  ;; (break)
 	  (setf (hunchentoot:session-value :logged-in-username) username)
 	  (setf (hunchentoot:session-value :logged-in-user-id) (user-id user-row))
-	  user-json)
+	  (stringify data-for-frontend))
 
 	(progn 
 	  (setf (hunchentoot:return-code*) 401)
@@ -90,14 +99,22 @@ GROUP BY \"user\".id" username (sha-512 password)
 
 (defroute getsession ("/api/session" :method :get :decorators (@transaction @json)) ()
   (if (hunchentoot:session-value :logged-in-username)
-      (let ((user (clean-postmodern-rubbish-json
-		   (query "SELECT \"user\".id, \"user\".username, \"user\".display_name, \"user\".img_id, json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
+      (let ((users (coerce (query "SELECT \"user\".id, \"user\".username, \"user\".display_name AS \"displayName\", \"user\".img_id AS \"imgId\", json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
 FROM users \"user\"
 JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
 WHERE \"user\".id = $1
-GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id)
-:json-str))))
-	user)
+GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash)
+			  'list)))
+	(if users
+	    (let ((user (first users)))
+	      (setf (gethash "abilities" user) (remove-duplicates (coerce
+								   (parse (gethash "abilities" user))
+								   'list)
+								  :test 'equal))	      
+	      (stringify user))
+	    (progn
+	      (setf (hunchentoot:return-code*) 500)
+	      "server error")))
       (progn
 	(setf (hunchentoot:return-code*) 401)
 	"not authorized")))
