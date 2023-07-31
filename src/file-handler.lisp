@@ -1,7 +1,7 @@
 (defpackage pichunter.file-handler
   (:use :cl :pichunter.std :postmodern :pichunter.config :binding-arrows :com.inuoe.jzon)
   (:import-from :easy-routes :defroute)
-  (:import-from :pichunter.decorators :@json :@transaction :@authenticated)
+  (:import-from :pichunter.decorators :@can? :@json :@transaction :@authenticated)
   (:export :get-picture-data))
 
 (in-package pichunter.file-handler)
@@ -42,7 +42,7 @@
       (gethash "properties")
       (gethash "kuntatunnus"))))
 
-(defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction @authenticated)) (&post file)
+(defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction @authenticated (@can "insert-picture"))) (&post file)
   (destructuring-bind (tmp-file filename mime) file
     (let ((bytes (slurp-bytes tmp-file))
 	  (exif (handler-case

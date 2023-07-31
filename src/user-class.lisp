@@ -1,6 +1,6 @@
 (defpackage :pichunter.user
   (:use :cl :postmodern)
-  (:export :user :user-username :user-display-name :user-id :id))
+  (:export :user-permissions :user :user-username :user-display-name :user-id :id))
 
 (in-package :pichunter.user)
 
@@ -19,6 +19,9 @@
 		 :accessor user-display-name)
    (img_id :initarg image-id
 	   :col-type string
-	   :accessor user-image-id))
+	   :accessor user-image-id)
+   (permissions :initarg permissions
+		:col-type (:list string)
+		:accessor user-permissions))
   (:metaclass dao-class)
   (:keys id))

@@ -142,6 +142,14 @@
 	      (let ((user (parse result)))
 
 		(user-is-ok user)))))
+	(testing " can? decorator"
+	  (multiple-value-bind (body status)
+	      (drakma:http-request (format nil "~a/api/pictures" (url))
+				   :additional-headers `(("X-pichunter-test" . "true"))
+				   :cookie-jar jar)
+	    (ok (equalp status 401))
+	    (ok (equalp "you need to be able to can-admin"
+			(trivial-utf-8:utf-8-bytes-to-string body)))))
 
 	(testing "if authenticated works"
 	  (logout jar)

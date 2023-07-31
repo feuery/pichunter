@@ -1,8 +1,8 @@
 (defpackage pichunter.decorators
-  (:use :cl :postmodern :pichunter.user)
+  (:use :cl :postmodern :pichunter.user :com.inuoe.jzon )
   (:import-from :pichunter.std :with-db)
   (:import-from :postmodern :with-transaction)
-  (:export :@json :@transaction :@no-cache :@authenticated :*user*))
+  (:export :@json :@can? :@transaction :@no-cache :@authenticated :*user*))
 
 (in-package pichunter.decorators)
 
@@ -29,11 +29,14 @@
 (defun @authenticated (next)
   (let ((user-id (hunchentoot:session-value :logged-in-user-id)))
     (if user-id
-	(let ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" user-id (:dao user :single))))
+	(let ((user (query "SELECT users.id, users.username, users.display_name, users.img_id, json_agg(distinct ab.action) AS \"permissions\" FROM users JOIN  user_abilities ab ON users.id = ab.id WHERE users.id = $1 GROUP BY users.id" user-id (:dao user :single))))
 	  (if (and user
 		   (string= (hunchentoot:session-value :logged-in-username)
 			    (user-username user)))
 	      (let ((*user* user))
+		(setf (user-permissions *user*)
+		    (coerce (parse (user-permissions *user*))
+			    'list))
 		(funcall next))
 	      (progn
 		(setf (hunchentoot:return-code*) 401)
@@ -42,5 +45,12 @@
 	  (setf (hunchentoot:return-code*) 401)
 	  "not authorized"))))
 
-;; (defun @can? (ability next)
-  
+(defun @can? (ability next)
+  (if (and *user*
+	   (member ability 
+		   (coerce (user-permissions *user*) 'list)
+		   :test #'string=))
+      (funcall next)
+      (progn
+	(setf (hunchentoot:return-code*) 401)
+	(format nil "you need to be able to ~a" ability))))

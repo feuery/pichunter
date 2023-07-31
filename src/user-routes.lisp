@@ -2,7 +2,7 @@
   (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :pichunter.user)
   (:import-from :pichunter.user :user-id)
   (:import-from :easy-routes :defroute)
-  (:import-from :pichunter.decorators :@json :@transaction)
+  (:import-from :pichunter.decorators :@json :@transaction :@authenticated :@can?)
   (:import-from :pichunter.std :sha-512)
   (:export :user :user-username :register :post-login))
 
@@ -177,7 +177,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 	(save-permission id permission))))
 	      
 
-(defroute grouptree-saver ("/api/grouptree" :method :post :decorators (@transaction @json)) ()
+(defroute grouptree-saver ("/api/grouptree" :method :post :decorators (@transaction @json @authenticated (@can? "can-admin"))) ()
   (let ((body-params (parse (hunchentoot:raw-post-data :force-text t))))
     (dolist (group (coerce body-params 'list))
       (save-group group))
@@ -190,7 +190,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
     (setf (gethash "id" hashmap) (getf row :permission-id))
     hashmap))
 
-(defroute grouptree-getter ("/api/grouptree" :method :get :decorators (@json @transaction)) ()
+(defroute grouptree-getter ("/api/grouptree" :method :get :decorators (@json @transaction @authenticated (@can? "can-admin"))) ()
     (let* ((groups (query (:select (:as :usergroup.id :group-id)
 				   (:as :usergroup.name :group-name)
 				   (:as :usergroup.description :group-description)
