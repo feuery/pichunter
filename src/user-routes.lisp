@@ -49,12 +49,6 @@ SET activated = true;"))
 	
 	(easy-routes:http-error 500)))))
 
-;; wtf why does this route exist?
-(defroute users-route ("/api/users" :method :get :decorators (@transaction)) ()
-  (setf (hunchentoot:content-type*) "application7json; charset=utf-8")
-  (stringify 
-  (query "SELECT * FROM users" :array-hash)))
-
 (defun clean-postmodern-rubbish-json (json)
   (str:replace-all "\"null\"" "null"
 		   (str:replace-all "]\"" "]"

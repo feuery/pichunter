@@ -27,14 +27,20 @@
 
 (defparameter *user* nil "A special variable for storing the logged in user (as defined in the db)")
 (defun @authenticated (next)
-  (let* ((user-id (hunchentoot:session-value :logged-in-user-id))
-	 (user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" user-id (:dao user :single))))
-    (if (and user
-	     (string= (hunchentoot:session-value :logged-in-username)
-		      (user-username user)))
-	(let ((*user* user))
-	  (funcall next))
+  (let ((user-id (hunchentoot:session-value :logged-in-user-id)))
+    (if user-id
+	(let ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" user-id (:dao user :single))))
+	  (if (and user
+		   (string= (hunchentoot:session-value :logged-in-username)
+			    (user-username user)))
+	      (let ((*user* user))
+		(funcall next))
+	      (progn
+		(setf (hunchentoot:return-code*) 401)
+		"not authorized")))
 	(progn
 	  (setf (hunchentoot:return-code*) 401)
 	  "not authorized"))))
-	
+
+;; (defun @can? (ability next)
+  

@@ -80,6 +80,13 @@
 	      (vector "view-picture")))
   (ok (not (gethash "activated?" user))))
 
+(defun logout (jar)
+  (drakma:http-request (format nil "~a/api/logout" (url))
+		       :additional-headers `(("X-pichunter-test" . "true"))
+		       :cookie-jar jar)
+  (multiple-value-bind (body status) (drakma:http-request (format nil "~a/api/session" (url)))
+    (ok (equalp 401 status))))
+
 (deftest authentication
   (testing "authentication |"
     (testing " if authentication unauths users with wrong username / password"
@@ -119,11 +126,7 @@
 	      (admin-is-ok user))))
 
 	(testing " logout"
-	  (drakma:http-request (format nil "~a/api/logout" (url))
-			       :additional-headers `(("X-pichunter-test" . "true"))
-			       :cookie-jar jar)
-	  (multiple-value-bind (body status) (drakma:http-request (format nil "~a/api/session" (url)))
-	    (ok (equalp 401 status))))
+	  (logout jar))
 
 	(testing " login with a nonadmin"
 	  (multiple-value-bind (body status) (drakma:http-request (format nil "~a/api/login" (url))
@@ -138,4 +141,14 @@
 	      
 	      (let ((user (parse result)))
 
-		(user-is-ok user)))))))))
+		(user-is-ok user)))))
+
+	(testing "if authenticated works"
+	  (logout jar)
+	  (multiple-value-bind (body status)
+	      (drakma:http-request (format nil "~a/api/next-picture/1" (url))
+				   :additional-headers `(("X-pichunter-test" . "true"))
+				   :cookie-jar jar)
+	    (ok (equalp status 401))
+	    (ok (equalp (trivial-utf-8:utf-8-bytes-to-string body)
+			"not authorized"))))))))
