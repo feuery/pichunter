@@ -6,8 +6,24 @@
 (in-package pichunter.std)
 
 (defmacro with-db (&rest body)
-  `(with-connection '("pichunter" "pichunter" "TESTIPASSU" "localhost" :pooled-p t)
-     ,@body))
+  (let ((db (or (sb-ext:posix-getenv "PICHUNTER_DB")
+		"pichunter"))
+	(username (or (sb-ext:posix-getenv "PICHUNTER_DB_USER")
+		      "pichunter"))
+	(password (or (sb-ext:posix-getenv "PICHUNTER_DB_PASSWD")
+		      "TESTIPASSU"))
+	(host (or (sb-ext:posix-getenv "PICHUNTER_DB_HOST")
+		  "localhost"))
+	(port (let ((port-str (sb-ext:posix-getenv "PICHUNTER_DB_PORT")))
+			      (if port-str
+				  (parse-integer port-str)
+				  5432))))
+	
+    `(with-connection '(,db ,username ,password ,host
+			:port ,port
+			:pooled-p t)
+       ,@body)))
+
 
 ;; https://www.n16f.net/blog/reading-files-faster-in-common-lisp/
 (defun slurp-bytes (path)

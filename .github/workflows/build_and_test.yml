@@ -80,7 +80,10 @@ jobs:
         name: checkout code
 
       - name: Install sbcl
-        run: sudo apt-get install sbcl -q -y
+        run: sudo apt-get install sbcl npm uglifyjs -q -y
+
+      - name: Install elm
+        run: npm install -g elm
 
       - name: Get Date
         id: get-date
@@ -125,6 +128,12 @@ jobs:
           fi
           
           sbcl --load build_pichunter.lisp
+          cd frontend
+          elm make src/Main.elm --output pichunter.js
+          uglifyjs pichunter.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle > pichunter.min.js
+          cd ..
+          mv frontend/pichunter.min.js .
+          mv frontend/site.css .
           ls -la
 
       - name: Log in to the Container registry
@@ -139,7 +148,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-                    
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -147,5 +156,5 @@ jobs:
           push: true
           tags: |
             ghcr.io/feuery/pichunter:latest
-            ghcr.io/feuery/pichunter:${{ steps.get-date.outputs.date }}
+            ghcr.io/feuery/pichunter:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}

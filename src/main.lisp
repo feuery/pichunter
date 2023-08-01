@@ -8,8 +8,8 @@
 
 (in-package :pichunter)
 
-(defparameter *js-location* nil)
-(defparameter *css-location* nil)
+(defparameter *js-location* #P"pichunter.min.js")
+(defparameter *css-location* #P"site.css")
 
 (setf hunchentoot:*catch-errors-p* nil)
 
