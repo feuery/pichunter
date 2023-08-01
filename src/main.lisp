@@ -1,6 +1,7 @@
 (defpackage pichunter
   (:use :cl :postmodern )
-  (:export :main :*server*)
+  (:export :main :*server* :start-server)
+  (:import-from :pichunter.migrations :migrate)
   (:import-from :pichunter.std :slurp :slurp-utf-8)
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.file-handler :get-picture-data)
@@ -75,10 +76,23 @@
 
 (defvar *server* nil)
 
-(defun main (&key (port 3000))
+(defun start-server (&key (port 3000))
+  (format t "Starting pichunter server~%")
   (let ((server (make-instance 'easy-routes:easy-routes-acceptor :port port)))
     (when (equalp 3000 port)
       (setf *server* server))
     (hunchentoot:start server)
+    (format t "Started pichunter server on ~a ~%" port)
     server))
+
+(defun main (&key (port 3000))
+  (pichunter.std:with-db
+      (with-schema (:pichunter)
+	(migrate)
+	(pichunter.game-routes:load-codesets)))
+  (start-server :port port)
+  (handler-case
+      (loop do (sleep 1000))
+    (condition () nil)))
+  
     

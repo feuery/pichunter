@@ -19,6 +19,8 @@
     (with-db 
       (with-schema (schema :if-not-exist nil)
 	(with-transaction ()
+	  (format t "inside schema ~a~%" schema)
+	  (format t "search-path: ~a~%" (postmodern:get-search-path))
 	  (funcall next))))))
 
 (defun @no-cache (next)

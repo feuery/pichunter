@@ -42,7 +42,7 @@
 	   (permission-id (getf (query "SELECT ID FROM permission WHERE action = 'view-picture'" :plist) :id)))
        (execute "INSERT INTO grouppermission VALUES ($1, $2)" permission-id group-id)
        (execute "INSERT INTO groupmapping VALUES ($1, $2)" user-id group-id)))
-   (setf *test-server* (pichunter:main :port *test-port*))))
+   (setf *test-server* (pichunter:start-server :port *test-port*))))
 
 (teardown
   (with-db 

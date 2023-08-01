@@ -1,7 +1,8 @@
 (defpackage :pichunter.game-routes
   (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :com.inuoe.jzon :pichunter.decorators :pichunter.user)
   (:import-from :pichunter.file-handler :coordinate->number)
-  (:import-from :easy-routes :defroute))
+  (:import-from :easy-routes :defroute)
+  (:export :load-codesets))
 
 (in-package :pichunter.game-routes)
 
@@ -83,7 +84,7 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
 				      first
 				      (gethash "name"))))
 			    (coerce 
-			     (parse (slurp-utf-8 "counties.json")
+			     (parse (slurp-utf-8 #P"/etc/pichunter/counties.json")
 				    :allow-comments t)
 			     'list)))))
 
@@ -92,7 +93,7 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
   (execute (:insert-rows-into 'municipality
 	    :columns 'code 'county-code
 	    :values
-	    (->> (slurp #P"/home/feuer/projects/pichunter/src/maakunnat_kunnat.csv" :external-format :cp1252)
+	    (->> (slurp #P"/etc/pichunter/maakunnat_kunnat.csv" :external-format :cp1252)
 	      (str:split #\Newline)
 	      (drop 5)
 	      (mapcar (lambda (row)
@@ -110,9 +111,7 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
   
 
 (defun load-codesets ()
-  (with-db 
-    (with-transaction ()
-      (load-counties)
-      (load-municipalities))))
+  (load-counties)
+  (load-municipalities))
   
  ;; (load-codesets)

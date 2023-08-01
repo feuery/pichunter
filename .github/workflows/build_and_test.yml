@@ -79,8 +79,8 @@ jobs:
       - uses: actions/checkout@v2
         name: checkout code
 
-      - name: Install sbcl
-        run: sudo apt-get install sbcl npm uglifyjs -q -y
+      - name: Install tools
+        run: sudo apt-get install npm uglifyjs -q -y
 
       - name: Install elm
         run: npm install -g elm
@@ -91,49 +91,15 @@ jobs:
           echo "date=$(/bin/date -u '+%Y%m')" >> $GITHUB_OUTPUT
         shell: bash        
           
-      - name: Cache quicklisp
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            /home/runner/quicklisp
-            /home/runner/.sbclrc
-            /home/runner/quicklisp.lisp
-          key: quicklisp-${{ steps.get-date.outputs.date }}-12345
-
-      - name: Install quicklisp
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          curl https://beta.quicklisp.org/quicklisp.lisp -o /home/runner/quicklisp.lisp
-          sbcl --load ~/quicklisp.lisp --load ./install_ql.lisp
-
-          current_dir=$(pwd)
-          cd $HOME
-          
-          mkdir ~/common-lisp
-          cd ~/common-lisp
-          ln -s $current_dir
-          
       - name: Build pichunter
         run: |
-          cat /home/runner/.sbclrc
-
-          if [ ! -d ~/common-lisp ]; then
-            current_dir=$(pwd)
-          
-            mkdir ~/common-lisp
-            pushd ~/common-lisp
-            ln -s $current_dir
-            popd
-          fi
-          
-          sbcl --load build_pichunter.lisp
           cd frontend
           elm make src/Main.elm --output pichunter.js
           uglifyjs pichunter.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle > pichunter.min.js
           cd ..
           mv frontend/pichunter.min.js .
           mv frontend/site.css .
+          mv frontend/pichunter-helper.js .
           ls -la
 
       - name: Log in to the Container registry

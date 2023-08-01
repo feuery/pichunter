@@ -33,7 +33,7 @@
 (defun query-municipality-from-mml (lon lat)
   (let ((url (format nil "https://avoin-paikkatieto.maanmittauslaitos.fi/geocoding/v2/pelias/reverse?&lang=fi&sources=addresses&crs=EPSG:3067&point.lon=~f&point.lat=~f" lon lat)))
     (->> (coerce (->> (drakma:http-request url
-					   :basic-authorization (list (getf config :mml-api-key) ""))
+					   :basic-authorization (list (config :mml-api-key) ""))
 		   (trivial-utf-8:utf-8-bytes-to-string)
 		   parse 
 		   (gethash "features"))
@@ -42,13 +42,14 @@
       (gethash "properties")
       (gethash "kuntatunnus"))))
 
-(defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction @authenticated (@can "insert-picture"))) (&post file)
+(defroute picture-upload-route ("/api/pictures" :method :post :decorators (@json @transaction @authenticated (@can? "insert-picture"))) (&post file)
   (destructuring-bind (tmp-file filename mime) file
     (let ((bytes (slurp-bytes tmp-file))
 	  (exif (handler-case
 		    (zpb-exif:make-exif tmp-file)
 		  (zpb-exif:invalid-jpeg-stream (e) nil)
 		  (zpb-exif:invalid-exif-stream (e) nil))))
+      (format t "inside picture-upload-route, ~a ~a ~a ~%" filename mime (prin1-to-string exif))
       (when exif
 	(let* ((gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif)))
 	       (latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
@@ -61,10 +62,10 @@
 					   :where (:= 'code municipality-code)) :list))))
 	  
 
-	  ;; (format t "latitude: ~a~%longitude: ~a~%mml-data~a~%"
-	  ;; 	latitude-number
-	  ;; 	longitude-number
-	  ;; 	municipality-code)
+	  (format t "latitude: ~a~%longitude: ~a~%mml-data~a~%"
+		latitude-number
+		longitude-number
+		municipality-code)
 
 	  (execute "insert into pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
 		   filename

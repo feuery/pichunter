@@ -24,9 +24,10 @@
     (execute query)))
 
 (defun init-migration-system ()
-  (with-db
-      (exec-all
-       (slurp-queries #P"init-migration-tables.sql"))))
+  (let ((queries (slurp-queries #P"init-migration-tables.sql")))
+    (format t "initing migration system ~a~%" queries)
+    (exec-all
+     queries)))
 
 (defparameter migrations nil)
 
@@ -65,32 +66,42 @@
 
 (defun migrate ()
   (init-migration-system)
-  (let* ((migrations (reverse migrations))
-	 (old-migrations (query "SELECT * FROM migrations_tracker" :alists))
-	 (migrations-to-run (remove-if-not (lambda (new-migration)
-					     (if-let (old (first (remove-if-not (lambda (old-migration)
-										  (string= (migration-filename new-migration)
-											   (cdr (assoc :filename old-migration))))
-										old-migrations)))
-					       
-					       (progn
-						 (unless (equalp (cdr (assoc :checksum old))
-								 (format nil "~a"
-									 (migration-checksum new-migration)))
-						   (error "Migration ~a has a checksum error (checksum from on-disk ~a)." old (migration-checksum new-migration)))
+  (let* ((migrations-to-run (reverse migrations))
+	 ;; (old-migrations (query "SELECT * FROM migrations_tracker" :alists))
+	 ;; (migrations-to-run (remove-if-not (lambda (new-migration)
+	 ;; 				     (if-let (old (first (remove-if-not (lambda (old-migration)
+	 ;; 									  (string= (migration-filename new-migration)
+	 ;; 										   (cdr (assoc :filename old-migration))))
+	 ;; 									old-migrations)))
+	 
+	 ;; 				       (progn
+	 ;; 					 (unless (equalp (cdr (assoc :checksum old))
+	 ;; 							 (format nil "~a"
+	 ;; 								 (migration-checksum new-migration)))
+	 ;; 					   (error "Migration ~a has a checksum error (checksum from on-disk ~a)." old (migration-checksum new-migration)))
 
-						 (not (cdr (assoc :installed-successfully old))))
-					       t))
-					   
+	 ;; 					 (not (cdr (assoc :installed-successfully old))))
+	 ;; 				       t))
+	 
 
-					   migrations)))
+	 ;; 				   migrations))
+	 )
+
+    (mapcar #'describe migrations)
+
+    (format t "migrations-to-run: ~a~%" migrations-to-run)
     (dolist (migration migrations-to-run)
-      (with-slots (name checksum) migration
-	(execute "INSERT INTO migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
-		 name
-		 checksum)
-	(exec-all (migration-code migration))
-	(execute "UPDATE migrations_tracker SET installed_successfully = TRUE where filename = $1" name)))))
+      (ignore-errors 
+	  (with-slots (name checksum) migration
+	    (format t "Running migration ~a~%" name)
+	    (describe migration)
+	    ;; (execute "INSERT INTO migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
+	    ;; 	     name
+	    ;; 	     checksum)
+	    (format t "executing ~a~%" (migration-code migration))
+	    (exec-all (migration-code migration))
+	    ;; (execute "UPDATE migrations_tracker SET installed_successfully = TRUE where filename = $1" name)
+	    )))))
   
 ;; (with-db
 ;;     (clean)
