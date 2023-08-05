@@ -2,7 +2,7 @@
 set -euo pipefail
 
 apt-get update
-apt-get install sbcl curl -q -y
+apt-get install sbcl curl libssl-dev -q -y
 
 curl https://beta.quicklisp.org/quicklisp.lisp -o ~/quicklisp.lisp
 sbcl --load ~/quicklisp.lisp --load ./install_ql.lisp
