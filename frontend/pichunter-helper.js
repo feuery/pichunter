@@ -26,16 +26,35 @@ app.ports.initializeAdminMaps.subscribe( ids => {
 	});
 });
 
+let map_element = null;
+
+let handleMap = (id, lat, long) => element => {
+
+    let map = initmap("map", lat, long);
+    map.on('click', e => {
+	let distance = e.latlng.distanceTo( L.latLng([lat, long]))
+	
+	app.ports.mapClicked.send (distance);
+    });
+
+    map_element = map;
+};
+
 app.ports.initGameMap.subscribe(triple => {
     let [id, lat, long] = triple;
-    document.arrive('#'+id, elm => {
-	let map = initmap(id, lat, long);
-	map.on('click', e => {
+
+    if (map_element) {
+	map_element.off('click');
+	map_element.on('click', e => {
 	    let distance = e.latlng.distanceTo( L.latLng([lat, long]))
 	    
 	    app.ports.mapClicked.send (distance);
 	});
-    });
+    }
+    else
+    {
+	document.arrive("#map", handleMap(id, lat, long));
+    };
 });
 
 function checkGameFiles (id) {

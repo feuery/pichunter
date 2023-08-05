@@ -404,25 +404,27 @@ update msg model =
                     if distance < 100.0 then
                         let state = model.gameState in
                         ( { model | gameState = LocationGuessingState meta (score + 1) (tries + 1) county}
-                        , Cmd.batch [ alert "Correct!"
+                        , Cmd.batch [ alert ("Correct! " ++ (String.fromInt county))
                                     , getNextForGame (String.fromInt county) model.gameState ])
                     else
                         ( { model
                               | gameState = LocationGuessingState meta score (tries + 1) county}
-                        , alert "Wrong :D")
+                        , alert ("Wrong by " ++ (String.fromFloat distance) ++ " meters"))
                 _ -> ( model
                      , alert ("State " ++ (Debug.toString model.gameState) ++ " is invalid"))
         ChoseCounty game_type county_code ->
-            let state = case game_type of
-                            LocationGuessing -> LocationGuessingState Nothing 0 0 0
-                            PictureGuessing ->
-                                case (String.toInt county_code) of
-                                    Just county_int ->
-                                        PictureGuessingState Nothing 0 0 county_int False []
-                                    Nothing -> NotPlaying
-            in
-            ( { model | gameState = state }
-            , getNextForGame county_code state)
+            case (String.toInt county_code) of
+                Just county ->
+                    let state = case game_type of
+                                    LocationGuessing -> LocationGuessingState Nothing 0 0 county
+                                    PictureGuessing -> PictureGuessingState Nothing 0 0 county False []
+                                    
+                    in
+                        ( { model | gameState = state }
+                        , getNextForGame county_code state)
+                Nothing ->
+                    ( model
+                    , alert ("Can't parse county code " ++ county_code ))
         SetAllowForUsage allowed ->
             case model.gameState of
                 PictureGuessingState meta score tries county _  files->

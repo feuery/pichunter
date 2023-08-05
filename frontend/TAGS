@@ -48,7 +48,7 @@ handleSession model result =handleSession84,2575
 add_user_to_group state group user =add_user_to_group102,3117
 drop_user_from_group state group user =drop_user_from_group112,3519
 update msg model =update123,4002
-view model =view504,23461
+view model =view506,23619
 
 src/Pichunter_json.elm,829
 module Pichunter_jsonPichunter_json1,0
@@ -109,11 +109,11 @@ module GameGame1,0
 authorizator view session state =authorizator14,326
 counties =counties21,502
 actual_guessing_gameview session gamestate =actual_guessing_gameview42,1047
-actual_picture_gameview session state =actual_picture_gameview60,2015
-gameview_guessing =gameview_guessing88,3585
-gameview_pictures =gameview_pictures89,3643
-choose_county gametype imagecounts =choose_county92,3765
-gameview session gamestate piccounts =gameview110,4743
+actual_picture_gameview session state =actual_picture_gameview60,1994
+gameview_guessing =gameview_guessing88,3564
+gameview_pictures =gameview_pictures89,3622
+choose_county gametype imagecounts =choose_county92,3744
+gameview session gamestate piccounts =gameview110,4722
 
 src/MediaManager.elm,255
 module MediaManagerMediaManager1,0

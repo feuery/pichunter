@@ -45,11 +45,11 @@ actual_guessing_gameview session gamestate =
             case maybe_meta of
                 Just meta ->
                     [ h3 [] [ text "Where is this picture taken at?" ]
-                    , div [ class "grid-container" ]
+                    , div [ class "grid-container"
+                          , id "map_game_container"]
                         [ img [ class "picture"
                               , src ("/api/pictures/" ++ meta.id) ] []
-                        , let map_id = map_id_to_element_id meta.id in
-                          div [ id map_id
+                        , div [ id "map"
                               , class "map" ] []]
                     , h3 [] [ text "Score: " ]
                     , p [] [ text ((String.fromInt score) ++ "/" ++ (String.fromInt tries))]]

@@ -114,4 +114,6 @@ WHERE user_id = $1 AND picture_id = $2" id (gethash "id" (aref asked-image 0))))
   (load-counties)
   (load-municipalities))
   
- ;; (load-codesets)
+;; (with-db
+;;     (postmodern:with-schema (:pichunter)
+;;     (load-codesets)))
