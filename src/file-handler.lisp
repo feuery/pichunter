@@ -56,7 +56,9 @@
 	       (latitude-number (coordinate->number latitude))
 	       (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
 	       (longitude-number (coordinate->number longitude))
+	       (_ (format "into query-municipality-from-mml~%"))
 	       (municipality-code (query-municipality-from-mml longitude-number latitude-number))
+	       (_ (format "out of query-municipality-from-mml~%"))
 	       (county-code (first (query (:select 'county_code
 					   :from 'municipality
 					   :where (:= 'code municipality-code)) :list))))
