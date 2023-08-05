@@ -404,7 +404,7 @@ update msg model =
                     if distance < 100.0 then
                         let state = model.gameState in
                         ( { model | gameState = LocationGuessingState meta (score + 1) (tries + 1) county}
-                        , Cmd.batch [ alert ("Correct! " ++ (String.fromInt county))
+                        , Cmd.batch [ alert "Correct!"
                                     , getNextForGame (String.fromInt county) model.gameState ])
                     else
                         ( { model
