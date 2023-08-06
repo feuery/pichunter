@@ -2,7 +2,7 @@
   (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :com.inuoe.jzon :pichunter.decorators :pichunter.user)
   (:import-from :pichunter.file-handler :coordinate->number)
   (:import-from :easy-routes :defroute)
-  (:export :load-codesets))
+  (:export :get-position :load-codesets))
 
 (in-package :pichunter.game-routes)
 
@@ -31,16 +31,19 @@ limit 1" county-code id :array-hash))
 
 (defun get-position (tmp-file)
   (let ((exif (handler-case
-		    (zpb-exif:make-exif tmp-file)
-		  (zpb-exif:invalid-jpeg-stream (e) nil)
-		  (zpb-exif:invalid-exif-stream (e) nil))))
-      (when exif
-	(let* ((gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif)))
-	       (latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
-	       (latitude-number (coordinate->number latitude))
-	       (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
-	       (longitude-number (coordinate->number longitude)))
-	  (values latitude-number longitude-number)))))
+		  (zpb-exif:make-exif tmp-file)
+		(zpb-exif:invalid-jpeg-stream (e) nil)
+		(zpb-exif:invalid-exif-stream (e) nil))))
+    (when exif
+      (let ((gps-data (zpb-exif:ifd-alist (zpb-exif:gps-ifd exif))))
+	(when gps-data
+	  (let* ((latitude (coerce (cdr (assoc "GPSLatitude" gps-data :test #'string=)) 'list))
+		 (latitude-number (coordinate->number latitude))
+		 (longitude (coerce (cdr (assoc "GPSLongitude" gps-data :test #'string=)) 'list))
+		 (longitude-number (coordinate->number longitude)))
+	    (when (and latitude-number
+		       longitude-number)
+	      (values latitude-number longitude-number))))))))
 
 (defun distance (lat1 long1
 		 lat2 long2)

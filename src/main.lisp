@@ -1,5 +1,5 @@
 (defpackage pichunter
-  (:use :cl :postmodern )
+  (:use :cl :postmodern :binding-arrows)
   (:export :main :*server* :start-server)
   (:import-from :pichunter.migrations :migrate)
   (:import-from :pichunter.std :slurp :slurp-utf-8)
@@ -85,11 +85,36 @@
     (format t "Started pichunter server on ~a ~%" port)
     server))
 
+(defun filename (path)
+  (format nil "~a.~a"
+	  (pathname-name path)
+	  (pathname-type path)))
+
+(defun import-pictures-from-fs ()
+  (let ((imported-filenames (pichunter.file-handler:imported-filenames)))
+    (->> 
+      (uiop:directory-files #P"/etc/pichunter/pictures")
+      (remove-if-not #'pichunter.game-routes:get-position)
+      (remove-if (lambda (path)
+		   (member (filename path) imported-filenames :test #'string=)))
+      
+      (mapcar (lambda (path)
+		(let ((filename (filename path)))
+		  (format t "importing ~a~%" filename)
+		  (handler-case 
+		      (pichunter.file-handler:import-picture filename "image/jpeg" path)
+		    (error (c)
+		      (format t "import error: ~a~%" c)))))))))
+
+
+		     
+
 (defun main (&key (port 3000))
   (pichunter.std:with-db
       (with-schema (:pichunter)
 	(migrate)
-	(pichunter.game-routes:load-codesets)))
+	(pichunter.game-routes:load-codesets)
+	(import-pictures-from-fs)))
   (start-server :port port)
   (handler-case
       (loop do (sleep 1000))
