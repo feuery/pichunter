@@ -7,14 +7,13 @@ import State exposing (..)
 
           
 homeScreen session =
-    [  p [] [ text "Pichunter is a game where you guess where on a map pictures have been taken"]
+    [  p [] [ text "Pichunter is a location-based image game" ]
     , case session of
-          LoggedIn user -> div []
-                           [ p [] [ text ("You're logged in, " ++ user.displayName) ]
-                           , p [] [ text "Play \"where's that taken at?\" "
-                                  , a [ href "/play/locationguessing"] [ text "here"]]
-                           , p [] [ text "Play pictureguessing "
-                                  , a [href "/play/pictureguessing"] [ text "here"]]]
+          LoggedIn user -> ul []
+                           [ li [] [ a [ href "/play/locationguessing"] [ text "Place pictures on the map"]
+                                   , p [] [ text "Tähän sit jotain dataa kesken olevasta pelistä"] ]
+                           , li [] [ a [href "/play/pictureguessing"] [ text "Show pichunter pictures from these places " ]
+                                   , p [] [ text "Tähän sit jotain dataa kesken olevasta pelistä"]]]
           LoggedOut ->
               p [] [ text "Register "
                    , a [ href "/register"] [ text "here"]

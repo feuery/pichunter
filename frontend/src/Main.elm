@@ -505,17 +505,33 @@ allow_permission state old_group permission
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
-    , body = (topbar model.session model.loginState)
-             ::
-             (case model.route of
-                 Home -> homeScreen model.session
-                 RegisterScreen -> registrationScreen model.registrationFormState
-                 PlayPictureGuessing -> gameview model.session model.gameState model.imageCounts
-                 PlayLocationGuessing -> gameview model.session model.gameState model.imageCounts
-                 NotFound -> [ div [] [ text "Not found!" ] ]
-                 ManageUsersGroups -> groupManagerView model.groupManagerState model.session
-                 ManageMedia ->
-                  case model.mediaManagerState of
-                      Just state -> mediaManagerView state model.session
-                      Nothing -> [ div [] [ text "Media manager hasn't loaded"]]
-                 _ -> [div [] [ text "Hello World!" ]])}
+    , body = [ topbar model.session model.loginState
+             , div [ class "body_container" ]
+                 [ div [class "sidebar"
+                       , id "left_sidebar"]
+                       (case model.session of
+                            LoggedIn user ->
+                                [ img [ class "picture"
+                                      , src ("/api/pictures/" ++ (Maybe.withDefault "" user.imgId))] []
+                                , p [ class "displayname"] [ text user.displayName ]
+                                , p [ class "username"] [ text user.username ]]
+                            LoggedOut -> [ text "Welcome to pichunter"])
+                 , article [ ]
+                     (case model.route of
+                          Home -> homeScreen model.session
+                          RegisterScreen -> registrationScreen model.registrationFormState
+                          PlayPictureGuessing -> gameview model.session model.gameState model.imageCounts
+                          PlayLocationGuessing -> gameview model.session model.gameState model.imageCounts
+                          NotFound -> [ div [] [ text "Not found!" ] ]
+                          ManageUsersGroups -> groupManagerView model.groupManagerState model.session
+                          ManageMedia ->
+                              case model.mediaManagerState of
+                                  Just state -> mediaManagerView state model.session
+                                  Nothing -> [ div [] [ text "Media manager hasn't loaded"]]
+                          _ -> [div [] [ text "Hello World!" ]])
+                 , div [ class "sidebar"
+                       , id "right_sidebar"]
+                     [ h4 [] [ text "Your highest scores"]
+                     , ol []
+                         [ li [] [ text "16/20"]
+                         , li [] [ text "12/22"]]]]]}

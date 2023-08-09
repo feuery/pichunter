@@ -21,7 +21,11 @@
 	picture-data)))
 
 (defroute get-picture-route ("/api/pictures/:guid" :method :get :decorators (@transaction)) ()
-  (get-picture guid))
+  (if (string= guid "NULL")
+      (progn
+	(setf (hunchentoot:return-code*) 404)
+	nil)
+      (get-picture guid)))
 
 ;; https://gis.stackexchange.com/a/273402
 (defun coordinate->number (coord)
