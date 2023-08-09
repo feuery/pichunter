@@ -12,6 +12,7 @@ body {
     flex-direction: column;
     background-color: #f7f7fa;
     justify-content: space-between;
+    overflow: hidden;
 }
 
 header, article {
@@ -64,6 +65,9 @@ header, article {
     justify-content: space-between;
     align-items: start;
 
+    
+    height: 100vh;
+    overflow: hidden;
 }
 
 .group_container > :nth-child(3){
@@ -124,7 +128,7 @@ header, article {
 }
 
 article {
-    overflow: overlay;
+    overflow: auto;
 
     width: 65%;
     align-self: stretch;
