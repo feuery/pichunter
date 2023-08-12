@@ -93,6 +93,7 @@ decodeImageMetadata = Decode.succeed ImageMetadata
                       |> decodeApply (Decode.field "filename" Decode.string)
                       |> decodeApply (Decode.field "latitude" Decode.float)
                       |> decodeApply (Decode.field "longitude" Decode.float)
+                      |> decodeApply (Decode.field "session-id" (Decode.maybe Decode.string))
                          
 decodePicturelistResponse = Decode.list decodeImageMetadata
 
@@ -103,3 +104,14 @@ decodeGuessResult = Decode.succeed GuessResult
 decodePictureCount =  Decode.succeed PictureCount
                    |> decodeApply (Decode.field "county_code" Decode.int)
                    |> decodeApply (Decode.field "count" Decode.int)
+
+type alias LocationGuess =
+    { pic_id: String
+    , latitude: Float
+    , longitude: Float}
+
+encodeLocationGuess guess =
+        Encode.object
+            [ ("latitude", Encode.float guess.latitude)
+            , ("longitude", Encode.float guess.longitude)
+            , ("picture-id", Encode.string guess.pic_id)]

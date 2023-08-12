@@ -93,7 +93,7 @@
 (defun import-pictures-from-fs ()
   (let ((imported-filenames (pichunter.file-handler:imported-filenames)))
     (->> 
-      (uiop:directory-files #P"/etc/pichunter/pictures")
+      (uiop:directory-files #P"/etc/pichunter/pictures/")
       (remove-if-not #'pichunter.game-routes:get-position)
       (remove-if (lambda (path)
 		   (member (filename path) imported-filenames :test #'string=)))

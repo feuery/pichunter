@@ -33,8 +33,8 @@ let handleMap = (id, lat, long) => element => {
     let map = initmap("map", lat, long);
     map.on('click', e => {
 	let distance = e.latlng.distanceTo( L.latLng([lat, long]))
-	
-	app.ports.mapClicked.send (distance);
+	let click_coords = e.latlng;
+	app.ports.mapClicked.send ([distance, click_coords.lat, click_coords.lng]);
     });
 
     map_element = map;
@@ -45,10 +45,12 @@ app.ports.initGameMap.subscribe(triple => {
 
     if (map_element) {
 	map_element.off('click');
+	map_element.setView([lat, long], 13);
 	map_element.on('click', e => {
 	    let distance = e.latlng.distanceTo( L.latLng([lat, long]))
+	    let click_coords = e.latlng;
 	    
-	    app.ports.mapClicked.send (distance);
+	    app.ports.mapClicked.send ([distance, click_coords.lat, click_coords.lng]);
 	});
     }
     else

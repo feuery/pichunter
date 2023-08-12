@@ -62,7 +62,8 @@ type alias Model =
     , groupManagerState: Maybe GroupManagerState
     , mediaManagerState: Maybe MediaManagerState
     , gameState: GameState
-    , imageCounts: List PictureCount}
+    , imageCounts: List PictureCount
+    , sessionId: Maybe String}
 
 type Nth
     = First
@@ -100,7 +101,7 @@ type Msg
     | RemovePicture ImageMetadata
     | RemovalResult (Result Http.Error Bool)
     | GotNextPicForGame (Result Http.Error (Maybe ImageMetadata))
-    | MapClicked Float
+    | MapClicked (Float, Float, Float)
     | ChoseCounty GameType String
     | SetAllowForUsage Bool
     | GotGameFiles (List File)

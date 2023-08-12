@@ -56,15 +56,33 @@ removePicture id = Http.request
                    , timeout = Nothing
                    , tracker = Nothing
                    , expect = Http.expectJson RemovalResult D.bool}
+
+session_to_getparam firstparam session_id =
+    if firstparam then
+        "?gamesession=" ++ session_id
+    else
+        "&gamesession=" ++ session_id
                    
-getNextForGame county_code gamestate = Http.get
+getNextForGame county_code gamestate session_id = Http.get
                  { url = case gamestate of
                              PictureGuessingState _ _ _ _ _ _ ->
-                                 "/api/next-picture/" ++ county_code ++ "?gametype=picguess"
+                                 let session = Maybe.withDefault "" (Maybe.map (session_to_getparam False) session_id)
+                                 in
+                                 "/api/next-picture/" ++ county_code ++ "?gametype=picguess" ++ session
                              _ ->
                                  "/api/next-picture/" ++ county_code                       
-                 , expect = Http.expectJson GotNextPicForGame (D.maybe Json.decodeImageMetadata)}
+                 , expect = Http.expectJson GotNextPicForGame (D.maybe Json.decodeImageMetadata)}    
 
+postLocationGuess pic_id latitude longitude gamesession =
+    let guess = Json.LocationGuess pic_id latitude longitude
+        session = Maybe.withDefault "" (Maybe.map (session_to_getparam True) gamesession)
+    in
+        Http.post
+            { url = "/api/guess-location" ++ session
+            , body = Http.jsonBody <| Json.encodeLocationGuess guess
+            , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}
+                  
+    
 postGuessPicture pictureFile = Http.post 
                                { url = "/api/guess-picture"
                                , body = Http.multipartBody [ Http.filePart "file" pictureFile ]

@@ -91,17 +91,21 @@
 
     (format t "migrations-to-run: ~a~%" migrations-to-run)
     (dolist (migration migrations-to-run)
-      (ignore-errors 
-	  (with-slots (name checksum) migration
-	    (format t "Running migration ~a~%" name)
-	    (describe migration)
-	    ;; (execute "INSERT INTO migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
-	    ;; 	     name
-	    ;; 	     checksum)
-	    (format t "executing ~a~%" (migration-code migration))
-	    (exec-all (migration-code migration))
-	    ;; (execute "UPDATE migrations_tracker SET installed_successfully = TRUE where filename = $1" name)
-	    )))))
+      (with-slots (name checksum) migration
+	(handler-case
+	    (progn
+	      (format t "Running migration ~a~%" name)
+	      (describe migration)
+	      ;; (execute "INSERT INTO migrations_tracker (filename, checksum) VALUES ($1, $2) ON CONFLICT DO NOTHING"
+	      ;; 	     name
+	      ;; 	     checksum)
+	      (format t "executing ~a~%" (migration-code migration))
+	      (exec-all (migration-code migration))
+	      (format t "ran ~a~%" name)
+	      ;; (execute "UPDATE migrations_tracker SET installed_successfully = TRUE where filename = $1" name)
+	      )
+	  (error (c)
+	    (format t "got error ~a while running migration ~a~%" c name)))))))
   
 ;; (with-db
 ;;     (clean)

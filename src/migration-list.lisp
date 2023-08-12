@@ -13,3 +13,5 @@
 
 (defmigration #P"place_data.sql")
 
+(defmigration #P"pictureguessing.sql")
+(defmigration #P"locationguessing.sql")

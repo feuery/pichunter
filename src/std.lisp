@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :drop :hash-keys :slurp :slurp-bytes :if-let :when-let :with-db :take :sha-512 :slurp-utf-8))
+  (:export :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8))
 
 (in-package pichunter.std)
 
@@ -94,3 +94,7 @@
   (cond ((or (null lst) (<= n 0)) lst)
         ((> n 0) (drop (1- n) (cdr lst)))))
 
+
+(defun partial (f &rest args)
+  (lambda (&rest rst-args)
+    (apply f (concatenate 'list args rst-args))))

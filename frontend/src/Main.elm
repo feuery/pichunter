@@ -26,7 +26,7 @@ port initGameMap : (String, Float, Float) -> Cmd msg
 port checkGameFiles : String -> Cmd msg
 port resetInput: String -> Cmd msg
 
-port mapClicked : (Float -> msg) -> Sub msg
+port mapClicked : ((Float, Float, Float) -> msg) -> Sub msg
 port noGpsFound : (() -> msg) -> Sub msg
 
 viewStatePerUrl : Url.Url -> (RouteParser.Route, List (Cmd Msg))
@@ -71,7 +71,8 @@ init _ url key =
                    PlayLocationGuessing -> ChoosingCounty LocationGuessing
                    PlayPictureGuessing -> ChoosingCounty PictureGuessing
                    _ -> NotPlaying)
-              [] 
+              []
+              Nothing
         , Cmd.batch cmds )
         
       
@@ -381,7 +382,8 @@ update msg model =
                             case model.gameState of
                                 LocationGuessingState _ score tries county ->
                                     ( { model
-                                          | gameState = LocationGuessingState (Just meta) score tries county}
+                                          | gameState = LocationGuessingState (Just meta) score tries county
+                                          , sessionId = meta.session_id}
                                     , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                                   , meta.latitude
                                                   , meta.longitude))
@@ -398,18 +400,15 @@ update msg model =
                             , alert "NextPic returned null. You probably won the game?")
                 Err error ->
                     (model, alert (Debug.toString error))
-        MapClicked distance ->
+        MapClicked (distance, latitude, longitude) ->
             case model.gameState of
                 LocationGuessingState meta score tries county ->
-                    if distance < 100.0 then
-                        let state = model.gameState in
-                        ( { model | gameState = LocationGuessingState meta (score + 1) (tries + 1) county}
-                        , Cmd.batch [ alert "Correct!"
-                                    , getNextForGame (String.fromInt county) model.gameState ])
-                    else
-                        ( { model
-                              | gameState = LocationGuessingState meta score (tries + 1) county}
-                        , alert ("Wrong by " ++ (String.fromFloat distance) ++ " meters"))
+                    case meta of
+                        Just pic ->
+                            ( model
+                            , postLocationGuess pic.id latitude longitude model.sessionId)
+                        Nothing -> ( model
+                                   , alert "Wtf pic is nil?")
                 _ -> ( model
                      , alert ("State " ++ (Debug.toString model.gameState) ++ " is invalid"))
         ChoseCounty game_type county_code ->
@@ -421,7 +420,7 @@ update msg model =
                                     
                     in
                         ( { model | gameState = state }
-                        , getNextForGame county_code state)
+                        , getNextForGame county_code state model.sessionId)
                 Nothing ->
                     ( model
                     , alert ("Can't parse county code " ++ county_code ))
@@ -460,10 +459,20 @@ update msg model =
                             if guessresult.correct then
                                 ( model
                                 , Cmd.batch [ alert "Oikein :D"
-                                            , getNextForGame (String.fromInt county_code) model.gameState])
+                                            , getNextForGame (String.fromInt county_code) model.gameState model.sessionId])
                             else
                                 ( model
                                 , alert "Väärin :D")
+                        LocationGuessingState pic score tries county ->
+                            if guessresult.correct then
+                                ( { model
+                                        | gameState = LocationGuessingState pic (score + 1) (tries + 1) county }
+                                , getNextForGame (String.fromInt county) model.gameState model.sessionId)
+                            else
+                                ( { model
+                                        | gameState = LocationGuessingState pic score (tries + 1) county }
+                                , alert "Wrong!")
+                                        
                         _ -> ( model, alert ("You should not be able to fire a UploadedGuess from the state of " ++ (Debug.toString model.gameState)))
                 Err err ->
                     ( model
