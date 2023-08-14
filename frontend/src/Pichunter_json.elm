@@ -3,10 +3,13 @@ module Pichunter_json exposing (..)
 import Json.Encode as Encode
 import Json.Encode.Extra as Enc_Extra
 import Json.Decode as Decode
+import Json.Decode.Extra as Extra
 
 import User exposing (..)
 import Image exposing (..)
-import GuessResult exposing (GuessResult) 
+import GuessResult exposing (GuessResult)
+import Session
+import StupidTime
 
 decodeApply : Decode.Decoder a -> Decode.Decoder (a -> b) -> Decode.Decoder b
 decodeApply value partial =
@@ -115,3 +118,22 @@ encodeLocationGuess guess =
             [ ("latitude", Encode.float guess.latitude)
             , ("longitude", Encode.float guess.longitude)
             , ("picture-id", Encode.string guess.pic_id)]
+
+decodeGuess = Decode.succeed Session.Guess
+           |> decodeApply (Decode.field "picture_id" Decode.string)
+           |> decodeApply (Decode.field "correctly_guessed" Decode.bool)
+
+decodeTimestamp =  Decode.succeed StupidTime.StupidTime
+                |>  decodeApply (Decode.field "year" Decode.int)
+                |> decodeApply (Decode.field "month" Decode.int)
+                |> decodeApply (Decode.field "day" Decode.int)
+                |> decodeApply (Decode.field "hour" Decode.int)
+                |> decodeApply (Decode.field "minute" Decode.int)
+                |> decodeApply (Decode.field "second" Decode.int)
+                |> decodeApply (Decode.field "millisec" Decode.int)
+                   
+decodeSessionData =  Decode.succeed Session.Session
+                  |> decodeApply (Decode.field "id" Decode.string)
+                  |> decodeApply (Decode.field "started_at" decodeTimestamp)
+                  |> decodeApply (Decode.field "completed_at" (Decode.maybe decodeTimestamp))
+                  |> decodeApply (Decode.field "guesses" (Decode.list decodeGuess))

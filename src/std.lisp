@@ -1,9 +1,13 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8))
+  (:export :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng*))
 
 (in-package pichunter.std)
+
+(defvar *automatic-tests-mode* nil)
+(defvar *test-position-lat* nil)
+(defvar *test-position-lng* nil)
 
 (defmacro with-db (&rest body)
   `(let ((db (or (sb-ext:posix-getenv "PICHUNTER_DB")

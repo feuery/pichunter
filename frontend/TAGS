@@ -1,155 +1,16 @@
 
-src/Pichunter_json.elm,976
-module Pichunter_jsonPichunter_json1,0
-decodeApply value partial =decodeApply12,309
-encodeMaybe valueEncoder maybeValue =encodeMaybe15,392
-encodeRegistration state =encodeRegistration22,558
-encodeLogin state =encodeLogin29,835
-encodeUser user =encodeUser34,981
-decodeUser =decodeUser42,1293
-decodeAdministrativeUser =decodeAdministrativeUser51,1730
-encodePermission permission =encodePermission60,2181
-decodePermission =decodePermission65,2372
-encodeGroup group =encodeGroup70,2569
-decodeGroup =decodeGroup78,2885
-decodeGroupTree =decodeGroupTree88,3446
-encodeGroupTree =encodeGroupTree89,3488
-decodeImageMetadata =decodeImageMetadata91,3531
-decodePicturelistResponse =decodePicturelistResponse98,4003
-decodeGuessResult =decodeGuessResult100,4064
-decodePictureCount =decodePictureCount104,4186
-type alias LocationGuess =type108,4379
-type alias LocationGuessLocationGuess108,4379
-encodeLocationGuess guess =encodeLocationGuess113,4474
-
-src/Main.elm,383
-viewStatePerUrl url =viewStatePerUrl33,989
-main =main50,1612
-init _ url key =init60,1806
-subscriptions _ =subscriptions80,2474
-handleSession model result =handleSession85,2612
-add_user_to_group state group user =add_user_to_group103,3154
-drop_user_from_group state group user =drop_user_from_group113,3556
-update msg model =update124,4039
-view model =view515,24111
-
-src/Game.elm,460
-module GameGame1,0
-authorizator view session state =authorizator14,326
-counties =counties21,502
-actual_guessing_gameview session gamestate =actual_guessing_gameview42,1047
-actual_picture_gameview session state =actual_picture_gameview60,1994
-gameview_guessing =gameview_guessing88,3564
-gameview_pictures =gameview_pictures89,3622
-choose_county gametype imagecounts =choose_county92,3744
-gameview session gamestate piccounts =gameview110,4722
-
-src/Pichunter_http.elm,699
-module Pichunter_httpPichunter_http1,0
-doRegister state =doRegister9,173
-login state =login15,364
-checkSession =checkSession21,544
-logout =logout26,670
-loadGroupTree =loadGroupTree31,776
-saveGroupTree groups =saveGroupTree35,911
-postPicture pictureFile =postPicture41,1098
-getPictureIds =getPictureIds47,1448
-removePicture id =removePicture51,1603
-session_to_getparam firstparam session_id =session_to_getparam60,1948
-getNextForGame county_code gamestate session_id =getNextForGame66,2120
-postLocationGuess pic_id latitude longitude gamesession =postLocationGuess76,2775
-postGuessPicture pictureFile =postGuessPicture86,3232
-loadPictureCounts =loadPictureCounts91,3527
-
-src/MediaManager.elm,255
-module MediaManagerMediaManager1,0
-map_id_to_element_id id =map_id_to_element_id13,285
-image_list mediastate =image_list15,346
-filesDecoder =filesDecoder33,1400
-mediamanager state =mediamanager36,1470
-mediaManagerView =mediaManagerView44,1847
-
-src/User.elm,212
-module UserUser1,0
-type alias User =type3,27
-type alias UserUser3,27
-type alias Permission =type11,187
-type alias PermissionPermission11,187
-type alias Group =type15,261
-type alias GroupGroup15,261
-
-src/Header.elm,25
-module HeaderHeader1,0
-
-src/State.elm,2696
-module StateState1,0
-type alias RegistrationForm =type13,257
-type alias RegistrationFormRegistrationForm13,257
-type Session =type19,390
-type SessionSession19,390
-    | LoggedOutLoggedOut20,419
-type alias LoginForm =type22,440
-type alias LoginFormLoginForm22,440
-type alias GroupManagerState =type26,512
-type alias GroupManagerStateGroupManagerState26,512
-type alias MediaManagerState =type32,683
-type alias MediaManagerStateMediaManagerState32,683
-type GameTypeGameType35,758
-    = LocationGuessingLocationGuessing36,772
-    | PictureGuessingPictureGuessing37,795
-type GameStateGameState39,826
-    = NotPlayingNotPlaying40,841
-    | ChoosingCountyChoosingCounty41,858
-    | PictureGuessingStatePictureGuessingState42,888
-    | LocationGuessingStateLocationGuessingState49,1105
-type alias Model =type56,1273
-type alias ModelModel56,1273
-type NthNth68,1627
-    = FirstFirst69,1636
-    | SecondSecond70,1648
-type MsgMsg72,1662
-    = UrlChangedUrlChanged73,1671
-    | LinkClickedLinkClicked74,1696
-    | RegistrationDisplaynameRegistrationDisplayname75,1733
-    | RegistrationUsernameRegistrationUsername76,1770
-    | RegistrationPasswordRegistrationPassword77,1804
-    | SendRegistrationSendRegistration78,1842
-    | DummyResponseDummyResponse79,1882
-    | LoginResultLoginResult80,1925
-    | LoginUsernameLoginUsername81,1968
-    | LoginPasswordLoginPassword82,1995
-    | LoginLogin83,2022
-    | LogoutLogout84,2044
-    | LogoutResultLogoutResult85,2057
-    | SessionResultSessionResult86,2099
-    | GroupTreeResultGroupTreeResult87,2144
-    | AdminGroupSelectedAdminGroupSelected89,2284
-    | AdminUserSelectedAdminUserSelected90,2316
-    | AdminSelectExistingAbilityAdminSelectExistingAbility91,2347
-    | AdminDisallowAdminDisallow92,2387
-    | AdminAllowAdminAllow93,2407
-    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility94,2424
-    | AdminUserToGroupAdminUserToGroup95,2467
-    | AdminUserFromGroupAdminUserFromGroup96,2490
-    | SaveGroupManagerStateSaveGroupManagerState97,2515
-    | GotInputFilesGotInputFiles98,2543
-    | UploadedImageUploadedImage99,2575
-    | GotPictureIdsGotPictureIds100,2618
-    | RemovePictureRemovePicture101,2679
-    | RemovalResultRemovalResult102,2713
-    | GotNextPicForGameGotNextPicForGame103,2758
-    | MapClickedMapClicked104,2824
-    | ChoseCountyChoseCounty105,2863
-    | SetAllowForUsageSetAllowForUsage106,2897
-    | GotGameFilesGotGameFiles107,2925
-    | NoGpsFoundNoGpsFound108,2956
-    | SubmitGuessSubmitGuess109,2976
-    | UploadedGuessUploadedGuess110,2994
-    | GotPictureCountsGotPictureCounts111,3046
-
-src/RegistrationScreen.elm,112
-module RegistrationScreenRegistrationScreen1,0
-registrationScreen maybe_formState =registrationScreen11,278
+src/GroupManager.elm,511
+module GroupManagerGroupManager1,0
+list_diff a b =list_diff9,174
+userDetails user =userDetails14,275
+all_users users =all_users40,1296
+group_users groupstate group =group_users50,1766
+user_container state selectedGroup =user_container60,2261
+group_permissions group =group_permissions66,2490
+group_details group =group_details95,4060
+groupmanager groupstate =groupmanager99,4148
+authorizator view ability groupstate session =authorizator131,5852
+groupManagerView =groupManagerView142,6189
 
 src/RouteParser.elm,458
 module RouteParserRouteParser1,0
@@ -165,18 +26,95 @@ type RouteRoute7,153
 routeParser =routeParser17,327
 url_to_route url =url_to_route27,722
 
-src/GroupManager.elm,511
-module GroupManagerGroupManager1,0
-list_diff a b =list_diff9,174
-userDetails user =userDetails14,275
-all_users users =all_users40,1296
-group_users groupstate group =group_users50,1766
-user_container state selectedGroup =user_container60,2261
-group_permissions group =group_permissions66,2490
-group_details group =group_details95,4060
-groupmanager groupstate =groupmanager99,4148
-authorizator view ability groupstate session =authorizator131,5852
-groupManagerView =groupManagerView142,6189
+src/GuessResult.elm,110
+module GuessResultGuessResult1,0
+type alias GuessResult =type3,34
+type alias GuessResultGuessResult3,34
+
+src/RegistrationScreen.elm,112
+module RegistrationScreenRegistrationScreen1,0
+registrationScreen maybe_formState =registrationScreen11,278
+
+src/HomeScreen.elm,120
+module HomeScreenHomeScreen1,0
+session_label game_session =session_label10,190
+homeScreen model =homeScreen21,767
+
+src/Main.elm,383
+viewStatePerUrl url =viewStatePerUrl33,989
+main =main50,1612
+init _ url key =init60,1806
+subscriptions _ =subscriptions82,2518
+handleSession model result =handleSession86,2633
+add_user_to_group state group user =add_user_to_group106,3290
+drop_user_from_group state group user =drop_user_from_group116,3692
+update msg model =update127,4175
+view model =view542,25376
+
+src/Pichunter_json.elm,1103
+module Pichunter_jsonPichunter_json1,0
+decodeApply value partial =decodeApply15,375
+encodeMaybe valueEncoder maybeValue =encodeMaybe18,458
+encodeRegistration state =encodeRegistration25,624
+encodeLogin state =encodeLogin32,901
+encodeUser user =encodeUser37,1047
+decodeUser =decodeUser45,1359
+decodeAdministrativeUser =decodeAdministrativeUser54,1796
+encodePermission permission =encodePermission63,2247
+decodePermission =decodePermission68,2438
+encodeGroup group =encodeGroup73,2635
+decodeGroup =decodeGroup81,2951
+decodeGroupTree =decodeGroupTree91,3512
+encodeGroupTree =encodeGroupTree92,3554
+decodeImageMetadata =decodeImageMetadata94,3597
+decodePicturelistResponse =decodePicturelistResponse101,4069
+decodeGuessResult =decodeGuessResult103,4130
+decodePictureCount =decodePictureCount107,4252
+type alias LocationGuess =type111,4445
+type alias LocationGuessLocationGuess111,4445
+encodeLocationGuess guess =encodeLocationGuess116,4540
+decodeGuess =decodeGuess122,4763
+decodeTimestamp =decodeTimestamp126,4948
+decodeSessionData =decodeSessionData135,5481
+
+src/User.elm,212
+module UserUser1,0
+type alias User =type3,27
+type alias UserUser3,27
+type alias Permission =type11,187
+type alias PermissionPermission11,187
+type alias Group =type15,261
+type alias GroupGroup15,261
+
+src/Header.elm,25
+module HeaderHeader1,0
+
+src/StupidTime.elm,237
+module StupidTimeStupidTime1,0
+type alias StupidTime =type3,33
+type alias StupidTimeStupidTime3,33
+type FormattingFormatting12,179
+    = DateDate13,195
+    | DateTimeDateTime14,206
+format formatting timestamp =format16,222
+
+src/Pichunter_http.elm,765
+module Pichunter_httpPichunter_http1,0
+doRegister state =doRegister9,173
+login state =login15,364
+checkSession =checkSession21,544
+logout =logout26,670
+loadGroupTree =loadGroupTree31,776
+saveGroupTree groups =saveGroupTree35,911
+postPicture pictureFile =postPicture41,1098
+getPictureIds =getPictureIds47,1448
+removePicture id =removePicture51,1603
+session_to_getparam firstparam session_id =session_to_getparam60,1948
+getNextForGame county_code gamestate session_id =getNextForGame66,2120
+postLocationGuess pic_id latitude longitude gamesession =postLocationGuess76,2775
+postGuessPicture gamesession pictureFile =postGuessPicture86,3232
+loadPictureCounts =loadPictureCounts94,3582
+loadSessionData sessiontype =loadSessionData98,3775
 
 src/Image.elm,186
 module ImageImage1,0
@@ -185,11 +123,98 @@ type alias ImageMetadataImageMetadata3,28
 type alias PictureCount =type11,234
 type alias PictureCountPictureCount11,234
 
-src/HomeScreen.elm,71
-module HomeScreenHomeScreen1,0
-homeScreen session =homeScreen9,182
+src/Game.elm,460
+module GameGame1,0
+authorizator view session state =authorizator14,326
+counties =counties21,502
+actual_guessing_gameview session gamestate =actual_guessing_gameview42,1047
+actual_picture_gameview session state =actual_picture_gameview60,1994
+gameview_guessing =gameview_guessing88,3564
+gameview_pictures =gameview_pictures89,3622
+choose_county gametype imagecounts =choose_county92,3744
+gameview session gamestate piccounts =gameview110,4722
 
-src/GuessResult.elm,110
-module GuessResultGuessResult1,0
-type alias GuessResult =type3,34
-type alias GuessResultGuessResult3,34
+src/MediaManager.elm,255
+module MediaManagerMediaManager1,0
+map_id_to_element_id id =map_id_to_element_id13,285
+image_list mediastate =image_list15,346
+filesDecoder =filesDecoder33,1400
+mediamanager state =mediamanager36,1470
+mediaManagerView =mediaManagerView44,1847
+
+src/Session.elm,151
+module SessionSession1,0
+type alias Guess =type5,50
+type alias GuessGuess5,50
+type alias Session =type10,152
+type alias SessionSession10,152
+
+src/State.elm,2848
+module StateState1,0
+type alias RegistrationForm =type14,271
+type alias RegistrationFormRegistrationForm14,271
+type Session =type20,404
+type SessionSession20,404
+    | LoggedOutLoggedOut21,433
+type alias LoginForm =type23,454
+type alias LoginFormLoginForm23,454
+type alias GroupManagerState =type27,526
+type alias GroupManagerStateGroupManagerState27,526
+type alias MediaManagerState =type33,697
+type alias MediaManagerStateMediaManagerState33,697
+type GameTypeGameType36,772
+    = LocationGuessingLocationGuessing37,786
+    | PictureGuessingPictureGuessing38,809
+type GameStateGameState40,840
+    = NotPlayingNotPlaying41,855
+    | ChoosingCountyChoosingCounty42,872
+    | PictureGuessingStatePictureGuessingState43,902
+    | LocationGuessingStateLocationGuessingState50,1119
+type alias Model =type57,1287
+type alias ModelModel57,1287
+type NthNth71,1734
+    = FirstFirst72,1743
+    | SecondSecond73,1755
+type SessionTypeSessionType76,1770
+    = PicturePicture77,1787
+    | LocationLocation78,1801
+type MsgMsg80,1824
+    = UrlChangedUrlChanged81,1833
+    | LinkClickedLinkClicked82,1858
+    | RegistrationDisplaynameRegistrationDisplayname83,1895
+    | RegistrationUsernameRegistrationUsername84,1932
+    | RegistrationPasswordRegistrationPassword85,1966
+    | SendRegistrationSendRegistration86,2004
+    | DummyResponseDummyResponse87,2044
+    | LoginResultLoginResult88,2087
+    | LoginUsernameLoginUsername89,2130
+    | LoginPasswordLoginPassword90,2157
+    | LoginLogin91,2184
+    | LogoutLogout92,2206
+    | LogoutResultLogoutResult93,2219
+    | SessionResultSessionResult94,2261
+    | GroupTreeResultGroupTreeResult95,2306
+    | AdminGroupSelectedAdminGroupSelected97,2446
+    | AdminUserSelectedAdminUserSelected98,2478
+    | AdminSelectExistingAbilityAdminSelectExistingAbility99,2509
+    | AdminDisallowAdminDisallow100,2549
+    | AdminAllowAdminAllow101,2569
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility102,2586
+    | AdminUserToGroupAdminUserToGroup103,2629
+    | AdminUserFromGroupAdminUserFromGroup104,2652
+    | SaveGroupManagerStateSaveGroupManagerState105,2677
+    | GotInputFilesGotInputFiles106,2705
+    | UploadedImageUploadedImage107,2737
+    | GotPictureIdsGotPictureIds108,2780
+    | RemovePictureRemovePicture109,2841
+    | RemovalResultRemovalResult110,2875
+    | GotNextPicForGameGotNextPicForGame111,2920
+    | MapClickedMapClicked112,2986
+    | ChoseCountyChoseCounty113,3025
+    | SetAllowForUsageSetAllowForUsage114,3059
+    | GotGameFilesGotGameFiles115,3087
+    | NoGpsFoundNoGpsFound116,3118
+    | SubmitGuessSubmitGuess117,3138
+    | UploadedGuessUploadedGuess118,3156
+    | GotPictureCountsGotPictureCounts119,3208
+    | GotSessionDataGotSessionData120,3271

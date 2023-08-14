@@ -73,6 +73,8 @@ init _ url key =
                    _ -> NotPlaying)
               []
               Nothing
+              Nothing
+              Nothing
         , Cmd.batch cmds )
         
       
@@ -80,13 +82,14 @@ subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.batch 
                   [ mapClicked MapClicked
                   , noGpsFound NoGpsFound]
-                      
 
 handleSession model result =
     case result of
         Ok user ->
             ( { model | session = LoggedIn user}
-            , loadPictureCounts)
+            , Cmd.batch [ loadPictureCounts
+                        , loadSessionData Picture
+                        , loadSessionData Location ])
         Err error ->
             case error of
                 Http.BadStatus status ->
@@ -389,10 +392,11 @@ update msg model =
                                                   , meta.longitude))
                                 PictureGuessingState _ score tries county allow_usage _ ->
                                     ( { model
-                                          | gameState = PictureGuessingState (Just meta) score tries county allow_usage []}
+                                          | gameState = PictureGuessingState (Just meta) score tries county allow_usage []
+                                          , sessionId = meta.session_id}
                                     , initGameMap ( MediaManager.map_id_to_element_id meta.id
                                                   , meta.latitude
-                                                  , meta.longitude))                                
+                                                  , meta.longitude))
                                 _ -> ( model
                                      , alert ("invalid state " ++ (Debug.toString model.gameState)))
                         Nothing ->
@@ -447,7 +451,7 @@ update msg model =
             case model.gameState of
                 PictureGuessingState meta score tries county allow_usage files ->                
                     ( model
-                    , Cmd.batch (List.map postGuessPicture files))
+                    , Cmd.batch (List.map (postGuessPicture model.sessionId) files))
                 _ ->
                     ( model
                     , alert "How have you ended up in SubmitGuess with gameState that's != PictureGuessingState?")
@@ -485,6 +489,29 @@ update msg model =
                 Err err ->
                     ( model
                     , alert ("Error: " ++ (Debug.toString err)))
+        GotSessionData sessiontype result ->
+            case result of
+                Ok sessiondata ->
+                    case sessiontype of
+                        Picture ->
+                            ({ model
+                                 | picGameSession = Just sessiondata}
+                            , Cmd.none)
+                        Location -> 
+                            ({ model
+                                 | locationGameSession = Just sessiondata}
+                            , Cmd.none)
+                Err err ->
+                    case err of
+                        Http.BadStatus status ->
+                            if status == 404 then
+                                ( model
+                                , Cmd.none)
+                            else 
+                                ( model
+                                , alert ("Didn't get session data due to: " ++ (Debug.toString err)))
+                        _ -> ( model
+                             , alert ("Didn't get session data due to: " ++ (Debug.toString err)))
                     
             
                     
@@ -527,7 +554,7 @@ view model =
                             LoggedOut -> [ text "Welcome to pichunter"])
                  , article [ ]
                      (case model.route of
-                          Home -> homeScreen model.session
+                          Home -> homeScreen model
                           RegisterScreen -> registrationScreen model.registrationFormState
                           PlayPictureGuessing -> gameview model.session model.gameState model.imageCounts
                           PlayLocationGuessing -> gameview model.session model.gameState model.imageCounts
