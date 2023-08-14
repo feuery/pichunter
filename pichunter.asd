@@ -11,6 +11,7 @@
 	       "hunchentoot"
 	       "cl-ppcre"
 	       "cl-geocode"
+	       "parse-number"
 	       "com.inuoe.jzon"
 	       "easy-routes"
 	       "zpb-exif"
@@ -37,10 +38,14 @@
   :license "LLGPL"
   :depends-on ("pichunter"
 	       "cl-strings"
-               "rove")
+               "fiveam")
   :components ((:module "tests"
                 :components
                 ((:file "main")
 		 (:file "game"))))
   :description "Test system for pichunter"
-  :perform (test-op (op c) (symbol-call :rove :run c)))
+  :perform (test-op (op c)
+                    (symbol-call :fiveam :run!
+                                 (find-symbol* :my-system :pichunter/tests)))
+  ;; :perform (test-op (op c) (symbol-call :rove :run c))
+  )

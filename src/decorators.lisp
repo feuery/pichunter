@@ -2,7 +2,7 @@
   (:use :cl :postmodern :pichunter.user :com.inuoe.jzon )
   (:import-from :pichunter.std :with-db)
   (:import-from :postmodern :with-transaction)
-  (:export :@json :@can? :@transaction :@no-cache :@authenticated :*user*))
+  (:export :@json :@can? :@transaction :@no-cache :@authenticated :*user* :@setup-test-headers))
 
 (in-package pichunter.decorators)
 
@@ -56,3 +56,20 @@
       (progn
 	(setf (hunchentoot:return-code*) 401)
 	(format nil "you need to be able to ~a" ability))))
+
+(defun @setup-test-headers (next)
+  (let* ((test? (equalp "true"
+			(hunchentoot:header-in* "X-PICHUNTER-TEST")))
+	 (pichunter.std:*automatic-tests-mode* test?)
+	 (pichunter.std:*test-position-lat*
+	   (ignore-errors 
+	    (parse-number:parse-number (hunchentoot:header-in* "X-PICHUNTER-TEST-LAT"))))
+	 (pichunter.std:*test-position-lng*
+	   (ignore-errors 
+	    (parse-number:parse-number (hunchentoot:header-in* "X-PICHUNTER-TEST-LNG")))))
+    (format t "headers: ~a~%" (hunchentoot:headers-in*))
+    (format t "set up test headers: ~a, ~a~%"
+	    pichunter.std:*test-position-lat*
+	    pichunter.std:*test-position-lng*)
+	    
+    (funcall next)))

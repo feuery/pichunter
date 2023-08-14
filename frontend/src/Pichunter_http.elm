@@ -78,16 +78,28 @@ postLocationGuess pic_id latitude longitude gamesession =
         session = Maybe.withDefault "" (Maybe.map (session_to_getparam True) gamesession)
     in
         Http.post
-            { url = "/api/guess-location" ++ session
+            { url = "/api/location/guess" ++ session
             , body = Http.jsonBody <| Json.encodeLocationGuess guess
             , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}
                   
     
-postGuessPicture pictureFile = Http.post 
-                               { url = "/api/guess-picture"
-                               , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
-                               , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}
+postGuessPicture gamesession pictureFile =
+    let session = Maybe.withDefault "" (Maybe.map (session_to_getparam True) gamesession)
+    in
+    Http.post 
+        { url = "/api/picture/guess" ++ session
+        , body = Http.multipartBody [ Http.filePart "file" pictureFile ]
+        , expect = Http.expectJson UploadedGuess Json.decodeGuessResult}
 
 loadPictureCounts = Http.get
                     { url = "/api/pictures/count-per-county"
                     , expect = Http.expectJson GotPictureCounts (D.list Json.decodePictureCount)}
+    
+loadSessionData sessiontype =
+    let session_url = case sessiontype of
+                          Picture -> "/api/picture/session"
+                          Location -> "/api/location/session"
+    in 
+        Http.get
+            { url = session_url
+            , expect = Http.expectJson (GotSessionData sessiontype) Json.decodeSessionData}

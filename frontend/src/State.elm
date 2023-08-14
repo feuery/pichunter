@@ -8,7 +8,8 @@ import RouteParser exposing (..)
 import Browser.Navigation as Nav
 import User exposing (..)
 import Image exposing (..)
-import GuessResult exposing (GuessResult) 
+import GuessResult exposing (GuessResult)
+import Session
 
 type alias RegistrationForm =
     { displayname: String
@@ -63,11 +64,18 @@ type alias Model =
     , mediaManagerState: Maybe MediaManagerState
     , gameState: GameState
     , imageCounts: List PictureCount
-    , sessionId: Maybe String}
+    , sessionId: Maybe String
+    , picGameSession: Maybe Session.Session
+    , locationGameSession: Maybe Session.Session}
 
 type Nth
     = First
     | Second
+
+
+type SessionType
+    = Picture
+    | Location       
 
 type Msg
     = UrlChanged Url.Url
@@ -109,3 +117,4 @@ type Msg
     | SubmitGuess
     | UploadedGuess (Result Http.Error GuessResult)
     | GotPictureCounts (Result Http.Error (List PictureCount))
+    | GotSessionData SessionType (Result Http.Error Session.Session)

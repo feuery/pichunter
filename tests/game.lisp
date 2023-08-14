@@ -1,18 +1,20 @@
 (defpackage pichunter/tests/game
   (:use :cl
 	:com.inuoe.jzon
+	:binding-arrows
 	:pichunter.std
 	:postmodern
-	:rove )
+	:fiveam )
   (:import-from :pichunter/tests/main
-		:do-setup
-		:url
-		:do-teardown))
+		:test-data
+		:url)
+  (:export :game-suite))
 
 (in-package :pichunter/tests/game)
 
-(do-setup)
-(do-teardown)
+(def-suite game-suite)
+
+(setf fiveam:*run-test-when-defined* t)
 
 (defparameter *jar* nil)
 
@@ -22,93 +24,223 @@
 (defun login* (username password)
   (pichunter/tests/main:login *jar* username password))
 
-(defun get-next-picture ()
-  (multiple-value-bind (body status) (drakma:http-request (format nil "~a/api/next-picture/6" (url))
+(defun get-next-picture (&key gametype)
+  (multiple-value-bind (body status1) (drakma:http-request (if gametype
+							       (format nil "~a/api/next-picture/6?gametype=~a" (url) gametype)
+							       (format nil "~a/api/next-picture/6" (url)))
 							  :cookie-jar *jar*
 							  :additional-headers `(("X-pichunter-test" . "true")))
-    (ok (not (zerop (caar (query "SELECT count(*) from pictures")))))
-    (ok (equalp 200 status))
+    (is (not (zerop (caar (query "SELECT count(*) from pictures")))))
+    (is (equalp 200 status1))
     (parse body)))
 
 (defun describe-hash (hash)
   (dolist (key (hash-keys hash))
     (format t "~a -> ~a~%" key (gethash key hash))))
 
+(defun guess-pic-picture (session-id picture &key guess-wrong)
+  (assert session-id)
+  (let ((url (format nil "~a/api/picture/guess?gametype=picguess&gamesession=~a" (url) session-id))
+	(lat (gethash "latitude" picture))
+	(lng (gethash "longitude" picture)))
+    (format t "url: ~a~%" url)
+    
+    (is-true lat)
+    (is-true lng)
+    (multiple-value-bind (body status2) (drakma:http-request url
+							     :cookie-jar *jar*
+							     :additional-headers `(("X-pichunter-test" . "true")
+										   ("X-PICHUNTER-TEST-LAT" . ,(if guess-wrong
+														  (+ 20 lat)
+														  lat))
+										   ("X-PICHUNTER-TEST-LNG" . ,(if guess-wrong
+														  (+ 20 lng)
+														  lng)))
+							     :method :post
+							     
+							     :content nil)
+
+      (is (equalp 200 status2))
+      (if guess-wrong
+	  (is (not (gethash "correct?"
+			    (parse body))))
+	  (is (gethash "correct?"
+		   (parse body)))))))
 
 (defun guess-pic (session-id picture)
   (assert session-id)
   (format t "Guessing picture ~a~%" picture)
-  (multiple-value-bind (body status) (drakma:http-request (format nil "~a/api/guess-location?gamesession=~a" (url) session-id)
-							  :cookie-jar *jar*
-							  :additional-headers `(("X-pichunter-test" . "true"))
-							  :method :post
-							  
-							  :content (format nil "{\"latitude\": ~f, \"longitude\": ~f, \"picture-id\": \"~a\"}"
-									   (gethash "latitude" picture)
-									   (gethash "longitude" picture)
-									   (gethash "id" picture)))
+  (let ((url (format nil "~a/api/location/guess?gamesession=~a" (url) session-id)))
+    (format t "url: ~a~%" url)
+    (multiple-value-bind (body status2) (drakma:http-request url
+							     :cookie-jar *jar*
+							     :additional-headers `(("X-pichunter-test" . "true"))
+							     :method :post
+							     
+							     :content (format nil "{\"latitude\": ~f, \"longitude\": ~f, \"picture-id\": \"~a\"}"
+									      (gethash "latitude" picture)
+									      (gethash "longitude" picture)
+									      (gethash "id" picture)))
 
-    (ok (equalp 200 status))
-    (ok (gethash "correct?"
-		 (parse body)))))
+      (is (equalp 200 status2))
+      (is (gethash "correct?"
+		   (parse body))))))
 
-(deftest game
-  (with-db  
-      (with-schema (:pichunter_test)
+(defun fill-picture-data ()
+  (dotimes (index 6)
+    (dotimes (county-code 10)
+      (let ((county-code (1+ county-code)))
+	(unless (equalp county-code 3)
+	  (execute "insert into pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
+		   (format nil "game ~d ~d.lisp" county-code index)
+		   "application/jpeg"
+		   0
+		   0 
+		   (slurp-bytes #P"/dev/null")
+		   county-code))))))
 
-	(dotimes (index 6)
-	  (dotimes (county-code 10)
-	    (let ((county-code (1+ county-code)))
-	      (unless (equalp county-code 3)
-		(execute "insert into pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
-			 (format nil "game ~d ~d.lisp" county-code index)
-			 "application/jpeg"
-			 0
-			 0 
-			 (slurp-bytes #P"/dev/null")
-			 county-code)))))
-	
-	
-	(let ((*jar* (make-instance 'drakma:cookie-jar)))
-	  (multiple-value-bind (body status) (login* "test_nonadmin" "testpassword")
-	    (ok (equalp 200 status)))
-	  
-	  (let* ((pictures '())
-		 (picture (get-next-picture))
-		 (session-id (gethash "session-id" picture)))
-	    (ok session-id)
+(def-test picture-game (:fixture test-data :suite game-suite)
+  (with-db
+    (with-schema (:pichunter_test)
+      (fill-picture-data)
+
+      (let ((*jar* (make-instance 'drakma:cookie-jar)))
+	(multiple-value-bind (body status) (login* "test_nonadmin" "testpassword")
+	  (is (equalp 200 status)))
+	(let* ((pictures '())
+	       (picture (get-next-picture :gametype "picguess"))
+	       (session-id (gethash "session-id" picture)))
+	    (is-true session-id)
 	    (format t "Session-id: ~a ~%" session-id)
-	    (ok (equalp (hash-keys picture)
+	    (is (equalp (hash-keys picture)
 			(list "id" "filename" "latitude" "longitude" "session-id")))
 	    
 	    (push picture pictures)
 
-	    (ok (not (query "SELECT * FROM locationguessing_session_guess")))
+	  ;; there's only one, unfinished guess
+	  (is-true (not (query "SELECT * FROM game_session_guess WHERE guessed_at IS NOT NULL")))
+
+	  ;; amount of sessions is 1 and they're all of the gametype "picture"
+	  
+	  (is (equalp (list "picture")
+		      (map 'list
+			   (partial #'gethash "gametype")
+			   (query "SELECT session.gametype FROM game_session_guess guess JOIN game_session session ON guess.session_id = session.id" :array-hash))))
+
+	  (is (equalp (list "picture")
+		      (map 'list
+			   (partial #'gethash "gametype")
+			   (query "SELECT gametype FROM game_session session" :array-hash))))
+	  ;; guess the first picture away
+	  (guess-pic-picture session-id picture)
+
+	  ;; the amount of correctly guessed guesses == the amount of calls to guess-pic-picture
+	  (is (equalp 1
+		      (length (query "SELECT * FROM game_session_guess where correctly_guessed"))))
+
+	  (is (equalp 1
+		      (length (query "SELECT * FROM game_session_guess WHERE guessed_at IS NOT NULL"))))
+
+	  ;; getting next picture initializes the guess table with a new row on the same session
+	  (let ((pic (get-next-picture :gametype "picguess")))
+	    (push pic pictures)
+	    (is (equalp 1
+			(length (query "SELECT * FROM game_session_guess WHERE guessed_at IS NULL"))))
+	    (is (string= (gethash "session-id" pic)
+			 session-id))
+ 
+	    (guess-pic-picture session-id picture :guess-wrong t)
+
+	    (dotimes (x 7)
+	      (let ((picture (get-next-picture :gametype "picguess")))
+		(unless (equalp 'NULL picture)
+		  (is (hash-table-p picture))
+		  (push picture pictures)
+		  (guess-pic-picture session-id picture)
+
+		  (is (equalp (+ 2 x)
+			      (length (query "SELECT * FROM game_session_guess where correctly_guessed"))))
+		  (is (equalp (+ 2 x)
+			      (length (query "SELECT distinct picture_id FROM game_session_guess where correctly_guessed"))))))))
+
+	  (multiple-value-bind (session-body status)
+		(drakma:http-request (format nil "~a/api/picture/session" (url))
+				     :cookie-jar *jar*
+				     :additional-headers `(("X-pichunter-test" . "true"))
+				     :method :get)
+	      (let* ((session (trivial-utf-8:utf-8-bytes-to-string session-body))
+		     (session-obj (parse session)))
+		(is (equalp 200 status))
+		(is-true session)
+		(is (equalp 9
+			    (length (gethash "guesses" session-obj))))
+	        
+		(is (equalp (map 'list
+				 (partial #'gethash "correctly_guessed")
+				 (gethash "guesses" session-obj))
+			    (list T nil T T T T T T T))))))))))
+
+    
+(def-test location-game (:fixture test-data :suite game-suite)
+  (with-db  
+      (with-schema (:pichunter_test)
+
+	(fill-picture-data)
+	
+	(let ((*jar* (make-instance 'drakma:cookie-jar)))
+	  (multiple-value-bind (body status) (login* "test_nonadmin" "testpassword")
+	    (is (equalp 200 status)))
+	  
+	  (let* ((pictures '())
+		 (picture (get-next-picture))
+		 (session-id (gethash "session-id" picture)))
+	    (is-true session-id)
+	    (format t "Session-id: ~a ~%" session-id)
+	    (is (equalp (hash-keys picture)
+			(list "id" "filename" "latitude" "longitude" "session-id")))
+	    
+	    (push picture pictures)
+
+	    (is (not (query "SELECT * FROM game_session_guess")))
 	    
 	    (guess-pic session-id picture)
 
-	    (ok (equalp 1
-			(length (query "SELECT * FROM locationguessing_session_guess where correctly_guessed"))))
+	    (is (equalp 1
+			(length (query "SELECT * FROM game_session_guess where correctly_guessed"))))
 
 	    (dotimes (x 7)
 	      (let ((picture (get-next-picture)))
 		(unless (equalp 'NULL picture)
 		  (format t "picture: ~a ~a ~%~%" picture (type-of picture))
-		  (ok (hash-table-p picture))
+		  (is (hash-table-p picture))
 		  (push picture pictures)
 		  (guess-pic session-id picture)
 
-		  (ok (equalp (+ 2 x)
-			      (length (query "SELECT * FROM locationguessing_session_guess where correctly_guessed"))))
-		  (ok (equalp (+ 2 x)
-			      (length (query "SELECT distinct picture_id FROM locationguessing_session_guess where correctly_guessed")))))))
+		  (is (equalp (+ 2 x)
+			      (length (query "SELECT * FROM game_session_guess where correctly_guessed"))))
+		  (is (equalp (+ 2 x)
+			      (length (query "SELECT distinct picture_id FROM game_session_guess where correctly_guessed")))))))	    
 
-	    
-
-	    (ok (equalp 8
+	    (is (equalp 8
 			(length (remove-duplicates (mapcar (partial #'gethash "id") pictures)
 						   :test #'string=))))
 
-	    (ok (equalp 8
-			(length (query "SELECT * FROM locationguessing_session_guess WHERE correctly_guessed")))))))))
-			       
+	    (is (equalp 8
+			(length (query "SELECT * FROM game_session_guess WHERE correctly_guessed"))))
+
+	    (multiple-value-bind (session-body status)
+		(drakma:http-request (format nil "~a/api/location/session" (url))
+				     :cookie-jar *jar*
+				     :additional-headers `(("X-pichunter-test" . "true"))
+				     :method :get)
+	      (let* ((session (trivial-utf-8:utf-8-bytes-to-string session-body))
+		     (session-obj (parse session)))
+		(is (equalp 200 status))
+		(is-true session)
+		(is (equalp 8
+			    (length (gethash "guesses" session-obj))))
+	        
+		(is (equalp (map 'list
+				 (partial #'gethash "correctly_guessed")
+				 (gethash "guesses" session-obj))
+			    (list  t  t  t  t  t  t  t  t ))))))))))

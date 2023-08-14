@@ -108,5 +108,6 @@
 	    (format t "got error ~a while running migration ~a~%" c name)))))))
   
 ;; (with-db
+;;     (with-schema (:pichunter)
 ;;     (clean)
-;;     (migrate))
+;;     (migrate)))
