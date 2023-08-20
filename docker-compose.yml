@@ -8,4 +8,8 @@ services:
       POSTGRES_PASSWORD: TESTIPASSU
       POSTGRES_DB: pichunter
       POSTGRES_INITDB_ARGS: '--locale en_US.UTF-8'
+    networks:
+      - pichunter_test_network
     
+networks:
+  pichunter_test_network:

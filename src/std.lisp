@@ -11,22 +11,24 @@
 
 (defmacro with-db (&rest body)
   `(let ((db (or (sb-ext:posix-getenv "PICHUNTER_DB")
-		"pichunter"))
-	(username (or (sb-ext:posix-getenv "PICHUNTER_DB_USER")
-		      "pichunter"))
-	(password (or (sb-ext:posix-getenv "PICHUNTER_DB_PASSWD")
-		      "TESTIPASSU"))
-	(host (or (sb-ext:posix-getenv "PICHUNTER_DB_HOST")
-		  "localhost"))
-	(port (let ((port-str (sb-ext:posix-getenv "PICHUNTER_DB_PORT")))
-			      (if port-str
-				  (parse-integer port-str)
-				  5432))))
-    
-       (with-connection `(,db ,username ,password ,host
-			:port ,port
-			:pooled-p t)
-	 ,@body)))
+		 "pichunter"))
+	 (username (or (sb-ext:posix-getenv "PICHUNTER_DB_USER")
+		       "pichunter"))
+	 (password (or (sb-ext:posix-getenv "PICHUNTER_DB_PASSWD")
+		       "TESTIPASSU"))
+	 (host (or (sb-ext:posix-getenv "PICHUNTER_DB_HOST")
+		   "localhost"))
+	 (port (let ((port-str (sb-ext:posix-getenv "PICHUNTER_DB_PORT")))
+		 (if port-str
+		     (parse-integer port-str)
+		     5432))))
+     (format t "database settings: ~a" (list db username password host
+					     :port port
+					     :pooled-p t))
+     (with-connection `(,db ,username ,password ,host
+			    :port ,port
+			    :pooled-p t)
+       ,@body)))
 
 ;;(macroexpand-1 '(with-db (format t "lol")))
 
