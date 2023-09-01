@@ -4,7 +4,8 @@ import Http exposing (..)
 import State exposing (..)
 import Image exposing (..)
 import Pichunter_json as Json
-import Json.Decode as D 
+import Json.Decode as D
+import Json.Encode as E
 
 doRegister state =
     Http.post
@@ -103,3 +104,19 @@ loadSessionData sessiontype =
         Http.get
             { url = session_url
             , expect = Http.expectJson (GotSessionData sessiontype) Json.decodeSessionData}
+
+postUser new_image user fs =
+    let body = case new_image of
+                   Just file -> Http.multipartBody [ Http.filePart "file" file
+                                                   , Http.stringPart "new_password" fs.newPassword
+                                                   , Http.stringPart "old_password" fs.oldPassword
+                                                   , Http.stringPart "user" (E.encode 0 (Json.encodeUser user)) ]
+                   Nothing -> Http.multipartBody [ Http.stringPart "user" (E.encode 0 (Json.encodeUser user))
+                                                 , Http.stringPart "new_password" fs.newPassword
+                                                 , Http.stringPart "old_password" fs.oldPassword]
+    in 
+        Http.post
+            { url = "/api/user" 
+            , body = body
+            , expect = Http.expectJson SavedUser Json.decodeUser}
+            

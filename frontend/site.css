@@ -151,6 +151,22 @@ article {
     background-color: #fff;
 }
 
+#topbar_welcome {
+    margin-right: 1em;
+}
+
+.usersettings {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.user-setting-list-item {
+    align-items: center;
+    display: flex;
+}
+
 @media (hover: hover) {
     .sidebar {
 	/* margin-right: 10%; */

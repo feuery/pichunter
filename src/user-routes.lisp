@@ -2,7 +2,7 @@
   (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :pichunter.user)
   (:import-from :pichunter.user :user-id)
   (:import-from :easy-routes :defroute)
-  (:import-from :pichunter.decorators :@json :@transaction :@authenticated :@can?)
+  (:import-from :pichunter.decorators :*user* :@json :@transaction :@authenticated :@can?)
   (:import-from :pichunter.std :sha-512)
   (:export :user :user-username :register :post-login))
 
@@ -286,3 +286,54 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 				    (gethash "id" b))))))
 
       (stringify actual-groups)))
+
+(defun hash->user (hash)
+  (let ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" (gethash "id" hash)
+		     (:dao user :single))))
+    (setf (user-username user) (gethash "username" hash))
+    (setf (user-display-name user) (gethash "displayName" hash))
+    user))
+
+(defroute usersettings-saver ("/api/user" :method :post :decorators (@json @transaction @authenticated)) (&post file user new_password old_password)
+
+  (let ((user (hash->user (parse user))))
+
+    (when (equalp (user-id user)
+		  (user-id *user*))
+
+      (cond ((string= new_password "")
+	     (execute
+	      "UPDATE users 
+SET username = $1,
+    display_name = $2
+WHERE id = $3"
+	      (user-username user)
+	      (user-display-name user)
+	      (user-id user)))
+
+	    ((string=
+	      (caar (query "SELECT password FROM users WHERE id = $1" (user-id *user*)))
+	      (sha-512 old_password))
+
+	     (execute
+	      "UPDATE users 
+SET username = $1,
+    display_name = $2,
+    password = $3
+WHERE id = $4 AND password = $5"
+	      (user-username user)
+	      (user-display-name user)
+	      new_password
+	      (user-id user)
+	      (sha-512 old_password))))
+
+      (when file
+	(destructuring-bind (tmp-file filename mime) file
+	  (let* ((bytes (slurp-bytes tmp-file))
+		 (avatar-id (caar (query "insert into avatar (filename, mime, data) values ($1, $2, $3) returning id" filename mime bytes))))
+
+	    (execute "UPDATE users SET img_id = $1 WHERE id = $2"
+		     avatar-id
+		     (user-id user))))))
+    ""))
+	

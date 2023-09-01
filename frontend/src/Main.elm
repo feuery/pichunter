@@ -17,6 +17,7 @@ import RegistrationScreen exposing (registrationScreen)
 import Header exposing (topbar)
 import GroupManager exposing (groupManagerView)
 import MediaManager exposing (mediaManagerView)
+import UserSettings
 import Game exposing (..)
 
 
@@ -37,9 +38,9 @@ viewStatePerUrl url =
         , case route of
               Home -> [checkSession]
               RegisterScreen -> [checkSession]
-              LoggedInHome -> [checkSession]
               PlayLocationGuessing -> [ checkSession ]
               PlayPictureGuessing -> [ checkSession ]
+              UserSettings -> [ checkSession ]
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
               ManageMedia -> [ checkSession
@@ -72,6 +73,7 @@ init _ url key =
                    PlayPictureGuessing -> ChoosingCounty PictureGuessing
                    _ -> NotPlaying)
               []
+              Nothing
               Nothing
               Nothing
               Nothing
@@ -512,6 +514,34 @@ update msg model =
                                 , alert ("Didn't get session data due to: " ++ (Debug.toString err)))
                         _ -> ( model
                              , alert ("Didn't get session data due to: " ++ (Debug.toString err)))
+        ChangeUserField formstate title value ->
+            let new_model = { model
+                                | usersettingsform = 
+                                  Just (case title of
+                                           "Login username" -> { formstate
+                                                                   | username = value}
+                                           "Display name" -> { formstate | displayname  = value}
+                                           "Old password" -> { formstate | oldPassword = value}
+                                           "Password" -> { formstate | newPassword = value}
+                                           _ -> formstate)}
+            in ( new_model, Cmd.none)
+        SaveLoggedInUser user formstate ->
+            (model, postUser formstate.newImage
+                 {user
+                     | username = formstate.username
+                     , displayName = formstate.displayname} formstate)
+        SavedUser result -> (model, checkSession)
+        GotUserFile files ->
+            case model.session of
+                LoggedIn user ->
+                    let settings = UserSettings.defaultFormState user model.usersettingsform
+                    in
+                        ( { model |
+                                usersettingsform = Just { settings | newImage = List.head files}}
+                        , Cmd.none)
+                _ -> ( model
+                     , Cmd.none)
+                            
                     
             
                     
@@ -548,7 +578,9 @@ view model =
                        (case model.session of
                             LoggedIn user ->
                                 [ img [ class "picture"
-                                      , src ("/api/pictures/" ++ (Maybe.withDefault "" user.imgId))] []
+                                      , width 50
+                                      , height 50
+                                      , src ("/api/avatar/" ++ (Maybe.withDefault "" user.imgId))] []
                                 , p [ class "displayname"] [ text user.displayName ]
                                 , p [ class "username"] [ text user.username ]]
                             LoggedOut -> [ text "Welcome to pichunter"])
@@ -558,13 +590,14 @@ view model =
                           RegisterScreen -> registrationScreen model.registrationFormState
                           PlayPictureGuessing -> gameview model.session model.gameState model.imageCounts
                           PlayLocationGuessing -> gameview model.session model.gameState model.imageCounts
+                          UserSettings ->
+                              UserSettings.view model.session model.usersettingsform
                           NotFound -> [ div [] [ text "Not found!" ] ]
                           ManageUsersGroups -> groupManagerView model.groupManagerState model.session
                           ManageMedia ->
                               case model.mediaManagerState of
                                   Just state -> mediaManagerView state model.session
-                                  Nothing -> [ div [] [ text "Media manager hasn't loaded"]]
-                          _ -> [div [] [ text "Hello World!" ]])
+                                  Nothing -> [ div [] [ text "Media manager hasn't loaded"]])
                  , div [ class "sidebar"
                        , id "right_sidebar"]
                      [ h4 [] [ text "Your highest scores"]

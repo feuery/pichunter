@@ -8,6 +8,7 @@
 ;; Load this by C-c C-k, *compile-file-path* and *load-pathname* don't handle C-c C-cing single defmigrations
 
 (defmigration #P"init-main-tables.sql")
+(defmigration #P"user-media.sql")
 (defmigration #P"users.sql")
 (defmigration #P"groups.sql")
 

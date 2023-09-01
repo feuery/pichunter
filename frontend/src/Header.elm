@@ -10,6 +10,7 @@ topbar session loginstate
        (  h2 [] [ a [ href "/" ] [text "Welcome to pichunter" ] ]
        :: (case session of
               LoggedIn usr -> [ span [ id "topbar_welcome" ] [ text ("Welcome, " ++ usr.displayName)]
+                              , a [ href "/user_details" ] [ text "Profile settings" ]
                               , if List.member "can-admin" usr.abilities then
                                     ul [ id "topbar_tools"]
                                         [ li [] [ a [href "/admin/usersgroups"] [ text "Handle users and groups"]]

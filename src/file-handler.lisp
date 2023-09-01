@@ -6,17 +6,26 @@
 
 (in-package pichunter.file-handler)
 
-(defun get-picture-data (guid)
+(defun get-picture-data (guid source)
   (let* ((result 
 	   (car
-	    (postmodern:query "SELECT data, mime FROM pictures WHERE id = $1" guid)))
+	    (postmodern:query (if (string= source "pictures")
+				  "SELECT data, mime FROM pictures WHERE id = $1"
+				  "SELECT data, mime FROM avatar WHERE id = $1")
+			      guid)))
 	 (file-data (car result))
 	 (mime (cadr result)))
     (values file-data mime)))
 
 (defun get-picture (guid)
   (when guid
-      (multiple-value-bind (picture-data mime) (get-picture-data guid)
+      (multiple-value-bind (picture-data mime) (get-picture-data guid "pictures")
+	(setf (hunchentoot:content-type*) mime)
+	picture-data)))
+
+(defun get-avatar (guid)
+  (when guid
+      (multiple-value-bind (picture-data mime) (get-picture-data guid "avatar")
 	(setf (hunchentoot:content-type*) mime)
 	picture-data)))
 
@@ -26,6 +35,13 @@
 	(setf (hunchentoot:return-code*) 404)
 	nil)
       (get-picture guid)))
+
+(defroute get-avatar-route ("/api/avatar/:guid" :method :get :decorators (@transaction)) ()
+  (if (string= guid "NULL")
+      (progn
+	(setf (hunchentoot:return-code*) 404)
+	nil)
+      (get-avatar guid)))
 
 ;; https://gis.stackexchange.com/a/273402
 (defun coordinate->number (coord)

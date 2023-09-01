@@ -53,6 +53,12 @@ type GameState
       Int -- count of tries
       Int -- county code
           
+type alias UserSettingsFormState =
+    { username: String
+    , displayname: String
+    , oldPassword: String
+    , newPassword: String
+    , newImage: Maybe File}
     
 type alias Model =
     { route: Route
@@ -66,7 +72,8 @@ type alias Model =
     , imageCounts: List PictureCount
     , sessionId: Maybe String
     , picGameSession: Maybe Session.Session
-    , locationGameSession: Maybe Session.Session}
+    , locationGameSession: Maybe Session.Session
+    , usersettingsform: Maybe UserSettingsFormState}
 
 type Nth
     = First
@@ -118,3 +125,7 @@ type Msg
     | UploadedGuess (Result Http.Error GuessResult)
     | GotPictureCounts (Result Http.Error (List PictureCount))
     | GotSessionData SessionType (Result Http.Error Session.Session)
+    | SaveLoggedInUser User UserSettingsFormState
+    | ChangeUserField UserSettingsFormState String String
+    | SavedUser (Result Http.Error User)
+    | GotUserFile (List File)

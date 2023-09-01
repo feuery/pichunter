@@ -64,6 +64,8 @@
   (get-frontend))
 (defroute root-grmgr ("/admin/usersgroups" :method :get) ()
   (get-frontend))
+(defroute root-profilesettings ("/user_details" :method :get) ()
+  (get-frontend))
 (defroute root-spela-location ("/play/locationguessing" :method :get) ()
   (get-frontend))
 (defroute root-spela-pictures ("/play/pictureguessing" :method :get) ()

@@ -7,11 +7,11 @@ import String exposing (fromInt)
 type Route
     = Home 
     | RegisterScreen
-    | LoggedInHome
     | ManageUsersGroups
     | ManageMedia
     | PlayLocationGuessing
     | PlayPictureGuessing
+    | UserSettings
     | NotFound
 
 routeParser =
@@ -22,7 +22,7 @@ routeParser =
         , map ManageMedia (s "admin" </> (s "media"))
         , map PlayLocationGuessing (s "play" </> (s "locationguessing"))
         , map PlayPictureGuessing (s "play" </> (s "pictureguessing"))
-        , map LoggedInHome (s "home")]
+        , map UserSettings (s "user_details")]
 
 url_to_route url =
             Maybe.withDefault NotFound (parse routeParser url)

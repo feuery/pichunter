@@ -6,7 +6,7 @@ CREATE TABLE users
   display_name VARCHAR(1000) NOT NULL DEFAULT '',
   img_id uuid NULL,
   activated BOOLEAN NOT NULL DEFAULT FALSE,  
-  FOREIGN KEY (img_id) REFERENCES pictures(id)
+  FOREIGN KEY (img_id) REFERENCES avatar(id)
   ON UPDATE CASCADE
   ON DELETE SET NULL,
   PRIMARY KEY(ID));
