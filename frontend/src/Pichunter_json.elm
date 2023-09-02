@@ -137,3 +137,11 @@ decodeSessionData =  Decode.succeed Session.Session
                   |> decodeApply (Decode.field "started_at" decodeTimestamp)
                   |> decodeApply (Decode.field "completed_at" (Decode.maybe decodeTimestamp))
                   |> decodeApply (Decode.field "guesses" (Decode.list decodeGuess))
+
+decodeHighscoreRow =  Decode.succeed Session.HighscoreRow
+                   |> decodeApply (Decode.field "correct_guesses" Decode.int)
+                   |> decodeApply (Decode.field "all_guesses" Decode.int)
+
+decodeHighscore =  Decode.succeed Session.SessionHighscore
+                |> decodeApply (Decode.field "location" decodeHighscoreRow)
+                |> decodeApply (Decode.field "picture" decodeHighscoreRow)

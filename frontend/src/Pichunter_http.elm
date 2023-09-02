@@ -24,6 +24,11 @@ checkSession =
         { url = "/api/session"
         , expect = Http.expectJson SessionResult Json.decodeUser}
 
+loadHighestSessions =
+    Http.get
+        { url = "/api/session/highest"
+        , expect = Http.expectJson GotGameSessionHighs Json.decodeHighscore}
+
 logout =
     Http.get
         { url = "/api/logout"

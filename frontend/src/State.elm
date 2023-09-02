@@ -73,7 +73,8 @@ type alias Model =
     , sessionId: Maybe String
     , picGameSession: Maybe Session.Session
     , locationGameSession: Maybe Session.Session
-    , usersettingsform: Maybe UserSettingsFormState}
+    , usersettingsform: Maybe UserSettingsFormState
+    , highestSessionData: Maybe Session.SessionHighscore}
 
 type Nth
     = First
@@ -129,3 +130,4 @@ type Msg
     | ChangeUserField UserSettingsFormState String String
     | SavedUser (Result Http.Error User)
     | GotUserFile (List File)
+    | GotGameSessionHighs (Result Http.Error Session.SessionHighscore)

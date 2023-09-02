@@ -19,6 +19,7 @@ import GroupManager exposing (groupManagerView)
 import MediaManager exposing (mediaManagerView)
 import UserSettings
 import Game exposing (..)
+import Session exposing (..)
 
 
 port alert : String -> Cmd msg
@@ -77,6 +78,7 @@ init _ url key =
               Nothing
               Nothing
               Nothing
+              Nothing
         , Cmd.batch cmds )
         
       
@@ -91,7 +93,8 @@ handleSession model result =
             ( { model | session = LoggedIn user}
             , Cmd.batch [ loadPictureCounts
                         , loadSessionData Picture
-                        , loadSessionData Location ])
+                        , loadSessionData Location
+                        , loadHighestSessions])
         Err error ->
             case error of
                 Http.BadStatus status ->
@@ -541,6 +544,15 @@ update msg model =
                         , Cmd.none)
                 _ -> ( model
                      , Cmd.none)
+        GotGameSessionHighs result ->
+            case result of
+                Ok sessiondata ->
+                    ( { model
+                          | highestSessionData = Just sessiondata}
+                    , Cmd.none)
+                Err err ->
+                    ( model
+                    , alert "Problem loading high scores")
                             
                     
             
@@ -567,7 +579,11 @@ allow_permission state old_group permission
                                                   group
                                               else
                                                   g))}          
-                     
+
+highscore_to_view: HighscoreRow -> String
+highscore_to_view row
+    = (String.fromInt row.correct_guesses) ++ "/" ++ (String.fromInt row.all_guesses)
+
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
@@ -600,7 +616,14 @@ view model =
                                   Nothing -> [ div [] [ text "Media manager hasn't loaded"]])
                  , div [ class "sidebar"
                        , id "right_sidebar"]
-                     [ h4 [] [ text "Your highest scores"]
-                     , ol []
-                         [ li [] [ text "16/20"]
-                         , li [] [ text "12/22"]]]]]}
+                     (case model.highestSessionData of
+                         Just highscores -> 
+                             [ h3 [] [ text "Your highest scores"]
+                             , ol []
+                                 [ li [] [ h4 [] [text "Location: "]
+                                         , div [] [text (highscore_to_view highscores.location)]]
+                                 , li [] [ h4 [] [text "Picture: "]
+                                         , div [] [text (highscore_to_view highscores.picture)]]]]
+                         Nothing ->
+                             [ div [] [ text "Can't load high scores"]])]]}
+
