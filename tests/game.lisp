@@ -283,5 +283,9 @@
 	    (let* ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" *logged-in-user-id*
 				(:dao user :single)))
 		   (result (pichunter.user-routes:get-highest-scores-per-session user)))
-	      (is (equalp (gethash "location" result) 8))
+	      (is (equalp 8 (gethash "correct_guesses"
+				     (gethash "location" result))))
+
+	      (is (equalp 8 (gethash "all_guesses"
+				      (gethash "location" result))))
 	      (is (null (gethash "picture" result)))))))))

@@ -342,17 +342,44 @@ WHERE id = $4 AND password = $5"
   (let ((query-result
 	  (coerce
 	   (query "
-select a.gametype, max(a.count)
-from
-(SELECT session_id, count(*), session.gametype
- FROM game_session_guess guess
- JOIN game_session session on session.id = guess.session_id 
- WHERE correctly_guessed AND session.user_id = $1
- GROUP BY session_id, session.gametype) as a
-group by a.gametype " (user-id user) :array-hash) 'list))
+SELECT
+    a.gametype,
+    max(a.count) AS \"correct\",
+    max(b.count) AS \"all_guesses\"
+FROM (
+    SELECT
+        session_id,
+        count(*),
+        session.gametype
+    FROM
+        game_session_guess guess
+        JOIN game_session session ON session.id = guess.session_id
+    WHERE
+        correctly_guessed AND session.user_id = $1
+    GROUP BY
+        session_id,
+        session.gametype) AS a
+    JOIN (
+        SELECT
+            session_id,
+            count(*),
+            session.gametype
+        FROM
+            game_session_guess guess
+        JOIN game_session session ON session.id = guess.session_id
+	WHERE session.user_id = $1
+        GROUP BY
+            session_id,
+            session.gametype) b ON b.session_id = a.session_id
+GROUP BY
+    a.gametype" (user-id user) :array-hash) 'list))
 	(response (make-hash-table :test 'equal :size 2)))
     (dolist (row query-result)
-      (setf (gethash (gethash "gametype" row) response) (gethash "max" row)))
+      (let ((node (make-hash-table :test 'equal :size 2)))
+	(setf (gethash "correct_guesses" node) (gethash "correct" row))
+	(setf (gethash "all_guesses" node) (gethash "all_guesses" row))
+	
+	(setf (gethash (gethash "gametype" row) response) node)))
     response))
 
 (defroute get-highest-sessions ("/api/session/highest" :method :get :decorators (@json @transaction @authenticated)) ()
