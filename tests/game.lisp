@@ -2,7 +2,8 @@
   (:use :cl
 	:com.inuoe.jzon
 	:binding-arrows
-	:pichunter.std
+   :pichunter.std
+   :pichunter.user
 	:postmodern
 	:fiveam )
   (:import-from :pichunter/tests/main
@@ -23,6 +24,17 @@
 
 (defun login* (username password)
   (pichunter/tests/main:login *jar* username password))
+
+(defvar *logged-in-user-id* nil)
+
+(defmacro with-login (username-and-password &rest body)
+  (destructuring-bind (username password) username-and-password
+    `(let* ((result (parse (trivial-utf-8:utf-8-bytes-to-string
+			    (login* ,username ,password))))
+	    (*logged-in-user-id* (gethash "id" result)))
+       (unwind-protect (progn ,@body)
+	 (logout)))))
+       
 
 (defun get-next-picture (&key gametype)
   (multiple-value-bind (body status1) (drakma:http-request (if gametype
@@ -243,4 +255,33 @@
 		(is (equalp (map 'list
 				 (partial #'gethash "correctly_guessed")
 				 (gethash "guesses" session-obj))
-			    (list  t  t  t  t  t  t  t  t ))))))))))
+			    (list  t  t  t  t  t  t  t  t ))))))
+
+	  (execute "UPDATE game_session SET completed_at = now()")
+
+	  ;; start a new session
+	  (let* ((pictures '())
+		 (picture (get-next-picture))
+		 (session-id (gethash "session-id" picture)))
+	    (push picture pictures)
+
+	    (is (query "SELECT * FROM game_session_guess"))
+	    
+	    (guess-pic session-id picture)
+
+	    (dotimes (x 3)
+	      (let ((picture (get-next-picture)))
+		(unless (equalp 'NULL picture)
+		  (push picture pictures)
+		  (guess-pic session-id picture)))))
+
+	  (execute "UPDATE game_session SET completed_at = now()")
+
+	  (logout)
+
+	  (with-login ("test_nonadmin" "testpassword")
+	    (let* ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" *logged-in-user-id*
+				(:dao user :single)))
+		   (result (pichunter.user-routes:get-highest-scores-per-session user)))
+	      (is (equalp (gethash "location" result) 8))
+	      (is (null (gethash "picture" result)))))))))

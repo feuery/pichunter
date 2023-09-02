@@ -60,9 +60,7 @@
 					 (error (c)
 					   (format t "Error when calling mml ~a~&" c)
 					   (values nil nil)))
-      (format t "returned from drakma, got ~a ~a for body and status ~%" body status)
       (when body
-	(format t "Got ~a (body ~a) from mml~%" status (trivial-utf-8:utf-8-bytes-to-string body))
 	(->> (coerce (->> body
 			  (trivial-utf-8:utf-8-bytes-to-string)
 			  parse 
@@ -103,6 +101,9 @@
 		    longitude-number
 		    municipality-code)
 
+	    (unless county-code
+	      (format t "County code can not be found. Have the codesets been successfully loaded?~%"))
+	    (assert county-code)
 	    (execute "insert into pictures (filename, mime, latitude, longitude, data, county_code) values ($1, $2, $3, $4, $5, $6)"
 		     filename
 		     mime

@@ -4,7 +4,8 @@
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.decorators :*user* :@json :@transaction :@authenticated :@can?)
   (:import-from :pichunter.std :sha-512)
-  (:export :user :user-username :register :post-login))
+  
+  (:export :get-highest-scores-per-session :user :user-username :register :post-login))
 
 (in-package :pichunter.user-routes)
 
@@ -336,4 +337,25 @@ WHERE id = $4 AND password = $5"
 		     avatar-id
 		     (user-id user))))))
     ""))
-	
+
+(defun get-highest-scores-per-session (user)
+  (let ((query-result
+	  (coerce
+	   (query "
+select a.gametype, max(a.count)
+from
+(SELECT session_id, count(*), session.gametype
+ FROM game_session_guess guess
+ JOIN game_session session on session.id = guess.session_id 
+ WHERE correctly_guessed AND session.user_id = $1
+ GROUP BY session_id, session.gametype) as a
+group by a.gametype " (user-id user) :array-hash) 'list))
+	(response (make-hash-table :test 'equal :size 2)))
+    (dolist (row query-result)
+      (setf (gethash (gethash "gametype" row) response) (gethash "max" row)))
+    response))
+
+(defroute get-highest-sessions ("/api/session/highest" :method :get :decorators (@json @transaction @authenticated)) ()
+  (stringify (get-highest-scores-per-session *user*)))
+
+    
