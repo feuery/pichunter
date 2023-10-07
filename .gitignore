@@ -8,3 +8,4 @@
 .#*
 frontend/elm-stuff/*
 frontend/elm.js
+*.DS_Store
