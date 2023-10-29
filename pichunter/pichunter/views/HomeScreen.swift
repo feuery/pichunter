@@ -8,8 +8,18 @@
 import SwiftUI
 
 struct HomeScreen: View {
+    
+    var app: pichunterApp?
+    
+    init(app: pichunterApp? = nil) {
+        self.app = app
+    }
+    
     var body: some View {
-        Text("Tervetuloa kotinäytölle!")
+        if let realApp = app {
+            Text("Tervetuloa kotinäytölle!")
+            Text(pichunterState.State.error_message ?? "")
+        }
     }
 }
 
