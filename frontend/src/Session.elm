@@ -18,5 +18,5 @@ type alias HighscoreRow =
     , all_guesses: Int}
     
 type alias SessionHighscore =
-    { location: HighscoreRow
-    , picture:  HighscoreRow}
+    { location: Maybe HighscoreRow
+    , picture:  Maybe HighscoreRow}

@@ -551,8 +551,16 @@ update msg model =
                           | highestSessionData = Just sessiondata}
                     , Cmd.none)
                 Err err ->
-                    ( model
-                    , alert "Problem loading high scores")
+                    case err of
+                        Http.BadStatus status ->
+                            if status == 404 then
+                                ( model
+                                , Cmd.none)
+                            else 
+                                ( model
+                                , alert ("(inner) Didn't get high score data due to: " ++ (Debug.toString err)))
+                        _ -> ( model
+                             , alert ("(outer) Didn't get high score data due to: " ++ (Debug.toString err)))
                             
                     
             
@@ -580,9 +588,11 @@ allow_permission state old_group permission
                                               else
                                                   g))}          
 
-highscore_to_view: HighscoreRow -> String
-highscore_to_view row
-    = (String.fromInt row.correct_guesses) ++ "/" ++ (String.fromInt row.all_guesses)
+highscore_to_view: Maybe HighscoreRow -> String
+highscore_to_view maybe_row =
+    case maybe_row of
+        Just row -> (String.fromInt row.correct_guesses) ++ "/" ++ (String.fromInt row.all_guesses)
+        Nothing -> "No high score. Have you played this?"
 
 view : Model -> Browser.Document Msg
 view model =

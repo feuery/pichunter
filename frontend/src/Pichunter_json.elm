@@ -143,5 +143,5 @@ decodeHighscoreRow =  Decode.succeed Session.HighscoreRow
                    |> decodeApply (Decode.field "all_guesses" Decode.int)
 
 decodeHighscore =  Decode.succeed Session.SessionHighscore
-                |> decodeApply (Decode.field "location" decodeHighscoreRow)
-                |> decodeApply (Decode.field "picture" decodeHighscoreRow)
+                |> decodeApply (Decode.field "location" (Decode.maybe decodeHighscoreRow))
+                |> decodeApply (Decode.field "picture" (Decode.maybe decodeHighscoreRow))

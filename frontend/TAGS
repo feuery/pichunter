@@ -1,0 +1,242 @@
+
+src/Pichunter_json.elm,1195
+module Pichunter_jsonPichunter_json1,0
+decodeApply value partial =decodeApply15,375
+encodeMaybe valueEncoder maybeValue =encodeMaybe18,458
+encodeRegistration state =encodeRegistration25,624
+encodeLogin state =encodeLogin32,901
+encodeUser user =encodeUser37,1047
+decodeUser =decodeUser45,1359
+decodeAdministrativeUser =decodeAdministrativeUser54,1796
+encodePermission permission =encodePermission63,2247
+decodePermission =decodePermission68,2438
+encodeGroup group =encodeGroup73,2635
+decodeGroup =decodeGroup81,2951
+decodeGroupTree =decodeGroupTree91,3512
+encodeGroupTree =encodeGroupTree92,3554
+decodeImageMetadata =decodeImageMetadata94,3597
+decodePicturelistResponse =decodePicturelistResponse101,4069
+decodeGuessResult =decodeGuessResult103,4130
+decodePictureCount =decodePictureCount107,4252
+type alias LocationGuess =type111,4445
+type alias LocationGuessLocationGuess111,4445
+encodeLocationGuess guess =encodeLocationGuess116,4540
+decodeGuess =decodeGuess122,4763
+decodeTimestamp =decodeTimestamp126,4948
+decodeSessionData =decodeSessionData135,5481
+decodeHighscoreRow =decodeHighscoreRow141,5856
+decodeHighscore =decodeHighscore145,6067
+
+src/Main.elm,442
+viewStatePerUrl url =viewStatePerUrl35,1038
+main =main52,1663
+init _ url key =init62,1857
+subscriptions _ =subscriptions86,2613
+handleSession model result =handleSession90,2728
+add_user_to_group state group user =add_user_to_group111,3430
+drop_user_from_group state group user =drop_user_from_group121,3832
+update msg model =update132,4315
+highscore_to_view maybe_row =highscore_to_view592,27809
+view model =view598,28057
+
+src/Game.elm,460
+module GameGame1,0
+authorizator view session state =authorizator14,326
+counties =counties21,502
+actual_guessing_gameview session gamestate =actual_guessing_gameview42,1047
+actual_picture_gameview session state =actual_picture_gameview60,1994
+gameview_guessing =gameview_guessing88,3564
+gameview_pictures =gameview_pictures89,3622
+choose_county gametype imagecounts =choose_county92,3744
+gameview session gamestate piccounts =gameview110,4722
+
+src/Pichunter_http.elm,865
+module Pichunter_httpPichunter_http1,0
+doRegister state =doRegister10,196
+login state =login16,387
+checkSession =checkSession22,567
+loadHighestSessions =loadHighestSessions27,693
+logout =logout32,845
+loadGroupTree =loadGroupTree37,951
+saveGroupTree groups =saveGroupTree41,1086
+postPicture pictureFile =postPicture47,1273
+getPictureIds =getPictureIds53,1623
+removePicture id =removePicture57,1778
+session_to_getparam firstparam session_id =session_to_getparam66,2123
+getNextForGame county_code gamestate session_id =getNextForGame72,2295
+postLocationGuess pic_id latitude longitude gamesession =postLocationGuess82,2950
+postGuessPicture gamesession pictureFile =postGuessPicture92,3407
+loadPictureCounts =loadPictureCounts100,3757
+loadSessionData sessiontype =loadSessionData104,3950
+postUser new_image user fs =postUser113,4294
+
+src/Session.elm,327
+module SessionSession1,0
+type alias Guess =type5,50
+type alias GuessGuess5,50
+type alias Session =type10,152
+type alias SessionSession10,152
+type alias HighscoreRow =type16,306
+type alias HighscoreRowHighscoreRow16,306
+type alias SessionHighscore =type20,388
+type alias SessionHighscoreSessionHighscore20,388
+
+src/MediaManager.elm,255
+module MediaManagerMediaManager1,0
+map_id_to_element_id id =map_id_to_element_id13,285
+image_list mediastate =image_list15,346
+filesDecoder =filesDecoder33,1400
+mediamanager state =mediamanager36,1470
+mediaManagerView =mediaManagerView44,1847
+
+src/User.elm,212
+module UserUser1,0
+type alias User =type3,27
+type alias UserUser3,27
+type alias Permission =type11,187
+type alias PermissionPermission11,187
+type alias Group =type15,261
+type alias GroupGroup15,261
+
+src/Header.elm,25
+module HeaderHeader1,0
+
+src/State.elm,3191
+module StateState1,0
+type alias RegistrationForm =type14,271
+type alias RegistrationFormRegistrationForm14,271
+type Session =type20,404
+type SessionSession20,404
+    | LoggedOutLoggedOut21,433
+type alias LoginForm =type23,454
+type alias LoginFormLoginForm23,454
+type alias GroupManagerState =type27,526
+type alias GroupManagerStateGroupManagerState27,526
+type alias MediaManagerState =type33,697
+type alias MediaManagerStateMediaManagerState33,697
+type GameTypeGameType36,772
+    = LocationGuessingLocationGuessing37,786
+    | PictureGuessingPictureGuessing38,809
+type GameStateGameState40,840
+    = NotPlayingNotPlaying41,855
+    | ChoosingCountyChoosingCounty42,872
+    | PictureGuessingStatePictureGuessingState43,902
+    | LocationGuessingStateLocationGuessingState50,1119
+type alias UserSettingsFormState =type56,1282
+type alias UserSettingsFormStateUserSettingsFormState56,1282
+type alias Model =type63,1451
+type alias ModelModel63,1451
+type NthNth79,2007
+    = FirstFirst80,2016
+    | SecondSecond81,2028
+type SessionTypeSessionType84,2043
+    = PicturePicture85,2060
+    | LocationLocation86,2074
+type MsgMsg88,2097
+    = UrlChangedUrlChanged89,2106
+    | LinkClickedLinkClicked90,2131
+    | RegistrationDisplaynameRegistrationDisplayname91,2168
+    | RegistrationUsernameRegistrationUsername92,2205
+    | RegistrationPasswordRegistrationPassword93,2239
+    | SendRegistrationSendRegistration94,2277
+    | DummyResponseDummyResponse95,2317
+    | LoginResultLoginResult96,2360
+    | LoginUsernameLoginUsername97,2403
+    | LoginPasswordLoginPassword98,2430
+    | LoginLogin99,2457
+    | LogoutLogout100,2479
+    | LogoutResultLogoutResult101,2492
+    | SessionResultSessionResult102,2534
+    | GroupTreeResultGroupTreeResult103,2579
+    | AdminGroupSelectedAdminGroupSelected105,2719
+    | AdminUserSelectedAdminUserSelected106,2751
+    | AdminSelectExistingAbilityAdminSelectExistingAbility107,2782
+    | AdminDisallowAdminDisallow108,2822
+    | AdminAllowAdminAllow109,2842
+    | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility110,2859
+    | AdminUserToGroupAdminUserToGroup111,2902
+    | AdminUserFromGroupAdminUserFromGroup112,2925
+    | SaveGroupManagerStateSaveGroupManagerState113,2950
+    | GotInputFilesGotInputFiles114,2978
+    | UploadedImageUploadedImage115,3010
+    | GotPictureIdsGotPictureIds116,3053
+    | RemovePictureRemovePicture117,3114
+    | RemovalResultRemovalResult118,3148
+    | GotNextPicForGameGotNextPicForGame119,3193
+    | MapClickedMapClicked120,3259
+    | ChoseCountyChoseCounty121,3298
+    | SetAllowForUsageSetAllowForUsage122,3332
+    | GotGameFilesGotGameFiles123,3360
+    | NoGpsFoundNoGpsFound124,3391
+    | SubmitGuessSubmitGuess125,3411
+    | UploadedGuessUploadedGuess126,3429
+    | GotPictureCountsGotPictureCounts127,3481
+    | GotSessionDataGotSessionData128,3544
+    | SaveLoggedInUserSaveLoggedInUser129,3613
+    | ChangeUserFieldChangeUserField130,3663
+    | SavedUserSavedUser131,3721
+    | GotUserFileGotUserFile132,3762
+    | GotGameSessionHighsGotGameSessionHighs133,3792
+
+src/RegistrationScreen.elm,112
+module RegistrationScreenRegistrationScreen1,0
+registrationScreen maybe_formState =registrationScreen11,278
+
+src/RouteParser.elm,458
+module RouteParserRouteParser1,0
+type RouteRoute7,153
+    = HomeHome8,164
+    | RegisterScreenRegisterScreen9,176
+    | ManageUsersGroupsManageUsersGroups10,197
+    | ManageMediaManageMedia11,221
+    | PlayLocationGuessingPlayLocationGuessing12,239
+    | PlayPictureGuessingPlayPictureGuessing13,266
+    | UserSettingsUserSettings14,292
+    | NotFoundNotFound15,311
+routeParser =routeParser17,327
+url_to_route url =url_to_route27,730
+
+src/UserSettings.elm,172
+module UserSettingsUserSettings1,0
+editor user formstate =editor14,239
+defaultFormState user formstate =defaultFormState43,2256
+view session formstate =view48,2476
+
+src/GroupManager.elm,511
+module GroupManagerGroupManager1,0
+list_diff a b =list_diff9,174
+userDetails user =userDetails14,275
+all_users users =all_users40,1296
+group_users groupstate group =group_users50,1766
+user_container state selectedGroup =user_container60,2261
+group_permissions group =group_permissions66,2490
+group_details group =group_details95,4060
+groupmanager groupstate =groupmanager99,4148
+authorizator view ability groupstate session =authorizator131,5852
+groupManagerView =groupManagerView142,6189
+
+src/Image.elm,186
+module ImageImage1,0
+type alias ImageMetadata =type3,28
+type alias ImageMetadataImageMetadata3,28
+type alias PictureCount =type11,234
+type alias PictureCountPictureCount11,234
+
+src/HomeScreen.elm,120
+module HomeScreenHomeScreen1,0
+session_label game_session =session_label10,190
+homeScreen model =homeScreen21,767
+
+src/StupidTime.elm,237
+module StupidTimeStupidTime1,0
+type alias StupidTime =type3,33
+type alias StupidTimeStupidTime3,33
+type FormattingFormatting12,179
+    = DateDate13,195
+    | DateTimeDateTime14,206
+format formatting timestamp =format16,222
+
+src/GuessResult.elm,110
+module GuessResultGuessResult1,0
+type alias GuessResult =type3,34
+type alias GuessResultGuessResult3,34

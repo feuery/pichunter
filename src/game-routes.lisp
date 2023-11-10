@@ -156,6 +156,7 @@ WHERE session_id = $1" session-id :array-hash)))
 
 	  (stringify session-root))
 	(progn
+	  (format t "~&Session of ~a is empty...~%" gametype)
 	  (setf (hunchentoot:return-code*) 404)
 	  ""))))
 

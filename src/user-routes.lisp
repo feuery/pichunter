@@ -78,12 +78,7 @@ GROUP BY \"user\".id" username (sha-512 password) :array-hash)))
 								      (parse (gethash "abilities" data-for-frontend))
 								      'list)
 									   :test 'equal))
-	  ;; (when (or (equalp (gethash "imgId" data-for-frontend)
-	  ;; 		    "NULL")
-	  ;; 	    (equalp (gethash "imgId" data-for-frontend)
-	  ;; 		    :NULL))
-	  ;;   (remhash "imgId" data-for-frontend))
-	  ;; (break)
+	  
 	  (setf (hunchentoot:session-value :logged-in-username) username)
 	  (setf (hunchentoot:session-value :logged-in-user-id) (user-id user-row))
 	  (stringify data-for-frontend))
@@ -380,6 +375,13 @@ GROUP BY
 	(setf (gethash "all_guesses" node) (gethash "all_guesses" row))
 	
 	(setf (gethash (gethash "gametype" row) response) node)))
+
+    (unless (gethash "picture" response)
+      (setf (gethash "picture" response) nil))
+
+    (unless (gethash "location" response)
+      (setf (gethash "location" response) nil))
+    
     response))
 
 (defroute get-highest-sessions ("/api/session/highest" :method :get :decorators (@json @transaction @authenticated)) ()
