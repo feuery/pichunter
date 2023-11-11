@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6188FCB2AFF672000B7C5D9 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6188FCA2AFF672000B7C5D9 /* User.swift */; };
 		C6528A842AD0409100EE756C /* pichunterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528A832AD0409100EE756C /* pichunterApp.swift */; };
 		C6528A862AD0409100EE756C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528A852AD0409100EE756C /* LoginView.swift */; };
 		C6528A882AD0409200EE756C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6528A872AD0409200EE756C /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C6188FCA2AFF672000B7C5D9 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C6528A802AD0409100EE756C /* pichunter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pichunter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6528A832AD0409100EE756C /* pichunterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pichunterApp.swift; sourceTree = "<group>"; };
 		C6528A852AD0409100EE756C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -73,6 +75,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C6188FC92AFF670000B7C5D9 /* domain */ = {
+			isa = PBXGroup;
+			children = (
+				C6188FCA2AFF672000B7C5D9 /* User.swift */,
+			);
+			path = domain;
+			sourceTree = "<group>";
+		};
 		C6528A772AD0409100EE756C = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +106,7 @@
 		C6528A822AD0409100EE756C /* pichunter */ = {
 			isa = PBXGroup;
 			children = (
+				C6188FC92AFF670000B7C5D9 /* domain */,
 				C6528AB02AD1823E00EE756C /* views */,
 				C6528AAD2AD0897600EE756C /* state */,
 				C6528A832AD0409100EE756C /* pichunterApp.swift */,
@@ -276,6 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6188FCB2AFF672000B7C5D9 /* User.swift in Sources */,
 				C6528A862AD0409100EE756C /* LoginView.swift in Sources */,
 				C6528A842AD0409100EE756C /* pichunterApp.swift in Sources */,
 				C6528AB22AD1825500EE756C /* HomeScreen.swift in Sources */,

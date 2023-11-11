@@ -10,9 +10,9 @@ import SwiftUI
 class pichunterState: ObservableObject {
     static var State = pichunterState()
 
-    @Published var logged_in = false
     @Published var server_url = ""
     @Published var error_message: String? = nil
+    @Published var logged_in_user: User? = nil
     
 
     
@@ -52,14 +52,49 @@ struct pichunterApp: App {
             let session = URLSession(configuration: .default)
             
             let task = session.dataTask(with: request) { (data, response, error) in
-                DispatchQueue.main.async {
-                    if let actual_error = error {
-                        state.error_message = actual_error.localizedDescription
-                        return
-                    }
+                
+                
+                guard let realResponse = response as? HTTPURLResponse else {
+                    print("Can't cast response as? HTTPURLResponse")
+                    return
+                }
+                
+                guard let actualData = data else {
+                    print("Didn't receive reponse data from login")
+                    return
+                }
+                
+                guard realResponse.statusCode == 200 else {
+                    print ("Response for login request was \(realResponse.statusCode)")
+                    return
+                }
+                
+                guard let jsonString = String(data: actualData, encoding: .utf8) else {
+                    print("Can't create jsonstring")
+                    return
+                }
+                
+                let dec = JSONDecoder()
+                
+                do {
+                    let logged_in_user = try dec.decode(User.self, from: actualData)
                     
-                    print("Login successful: \(error), \(response), \(data)")
-                    state.logged_in = true
+                    DispatchQueue.main.async {
+                        if let actual_error = error {
+                            state.error_message = actual_error.localizedDescription
+                            return
+                        }
+                        
+                        
+                        
+                        print("Login successful: \(jsonString)")
+                        state.logged_in_user = logged_in_user
+                    }
+                }
+                catch {
+                    print(error)
+                    print("decoding user json failed")
+                    
                 }
             }
             task.resume()
@@ -71,7 +106,7 @@ struct pichunterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if state.logged_in {
+            if state.logged_in_user != nil {
                 HomeScreen(app: self)
             }
             else {
