@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		C6188FCB2AFF672000B7C5D9 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6188FCA2AFF672000B7C5D9 /* User.swift */; };
+		C6188FCD2AFFE1F700B7C5D9 /* PictureCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6188FCC2AFFE1F700B7C5D9 /* PictureCount.swift */; };
+		C6188FD32B01462F00B7C5D9 /* pichunter_http.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6188FD22B01462F00B7C5D9 /* pichunter_http.swift */; };
 		C6528A842AD0409100EE756C /* pichunterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528A832AD0409100EE756C /* pichunterApp.swift */; };
 		C6528A862AD0409100EE756C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528A852AD0409100EE756C /* LoginView.swift */; };
 		C6528A882AD0409200EE756C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6528A872AD0409200EE756C /* Assets.xcassets */; };
@@ -16,6 +18,7 @@
 		C6528A9F2AD0409300EE756C /* pichunterUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528A9E2AD0409300EE756C /* pichunterUITests.swift */; };
 		C6528AA12AD0409300EE756C /* pichunterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528AA02AD0409300EE756C /* pichunterUITestsLaunchTests.swift */; };
 		C6528AB22AD1825500EE756C /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6528AB12AD1825500EE756C /* HomeScreen.swift */; };
+		C6D3DA412B0946F900B11528 /* codesets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D3DA402B0946F900B11528 /* codesets.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +40,8 @@
 
 /* Begin PBXFileReference section */
 		C6188FCA2AFF672000B7C5D9 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C6188FCC2AFFE1F700B7C5D9 /* PictureCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureCount.swift; sourceTree = "<group>"; };
+		C6188FD22B01462F00B7C5D9 /* pichunter_http.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pichunter_http.swift; sourceTree = "<group>"; };
 		C6528A802AD0409100EE756C /* pichunter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pichunter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6528A832AD0409100EE756C /* pichunterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pichunterApp.swift; sourceTree = "<group>"; };
 		C6528A852AD0409100EE756C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -48,6 +53,7 @@
 		C6528A9E2AD0409300EE756C /* pichunterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pichunterUITests.swift; sourceTree = "<group>"; };
 		C6528AA02AD0409300EE756C /* pichunterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pichunterUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		C6528AB12AD1825500EE756C /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
+		C6D3DA402B0946F900B11528 /* codesets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = codesets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,8 +85,18 @@
 			isa = PBXGroup;
 			children = (
 				C6188FCA2AFF672000B7C5D9 /* User.swift */,
+				C6188FCC2AFFE1F700B7C5D9 /* PictureCount.swift */,
+				C6D3DA402B0946F900B11528 /* codesets.swift */,
 			);
 			path = domain;
+			sourceTree = "<group>";
+		};
+		C6188FD12B01462100B7C5D9 /* http */ = {
+			isa = PBXGroup;
+			children = (
+				C6188FD22B01462F00B7C5D9 /* pichunter_http.swift */,
+			);
+			path = http;
 			sourceTree = "<group>";
 		};
 		C6528A772AD0409100EE756C = {
@@ -106,9 +122,9 @@
 		C6528A822AD0409100EE756C /* pichunter */ = {
 			isa = PBXGroup;
 			children = (
+				C6188FD12B01462100B7C5D9 /* http */,
 				C6188FC92AFF670000B7C5D9 /* domain */,
 				C6528AB02AD1823E00EE756C /* views */,
-				C6528AAD2AD0897600EE756C /* state */,
 				C6528A832AD0409100EE756C /* pichunterApp.swift */,
 				C6528A872AD0409200EE756C /* Assets.xcassets */,
 				C6528A892AD0409200EE756C /* Preview Content */,
@@ -141,13 +157,6 @@
 			path = pichunterUITests;
 			sourceTree = "<group>";
 		};
-		C6528AAD2AD0897600EE756C /* state */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = state;
-			sourceTree = "<group>";
-		};
 		C6528AB02AD1823E00EE756C /* views */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +182,8 @@
 			dependencies = (
 			);
 			name = pichunter;
+			packageProductDependencies = (
+			);
 			productName = pichunter;
 			productReference = C6528A802AD0409100EE756C /* pichunter.app */;
 			productType = "com.apple.product-type.application";
@@ -245,6 +256,8 @@
 				Base,
 			);
 			mainGroup = C6528A772AD0409100EE756C;
+			packageReferences = (
+			);
 			productRefGroup = C6528A812AD0409100EE756C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -287,9 +300,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6188FCD2AFFE1F700B7C5D9 /* PictureCount.swift in Sources */,
 				C6188FCB2AFF672000B7C5D9 /* User.swift in Sources */,
+				C6188FD32B01462F00B7C5D9 /* pichunter_http.swift in Sources */,
 				C6528A862AD0409100EE756C /* LoginView.swift in Sources */,
 				C6528A842AD0409100EE756C /* pichunterApp.swift in Sources */,
+				C6D3DA412B0946F900B11528 /* codesets.swift in Sources */,
 				C6528AB22AD1825500EE756C /* HomeScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

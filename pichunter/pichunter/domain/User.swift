@@ -23,3 +23,8 @@ struct User: Codable {
         case id, username, displayName, imgId, abilities, activated = "activated?"
     }
 }
+
+struct Login_User: Codable {
+    let username: String
+    let password: String
+}

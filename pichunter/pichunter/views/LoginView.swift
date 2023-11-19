@@ -33,7 +33,7 @@ struct LoginView: View {
     
     var body: some View {
         if let realApp = app {
-            VStack (alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/) {
+            VStack{
                 TextField("Username", text: $username)
                 SecureField("Password", text: $password)
                 
@@ -50,6 +50,7 @@ struct LoginView: View {
                 
                     TextField("Server", text: $state.server_url)
             }
+            .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, maxHeight: .infinity	)
             .padding()
         }
     }
