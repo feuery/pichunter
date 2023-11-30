@@ -20,6 +20,7 @@
   :components ((:module "src"
                 :components
                 ((:file "std")
+		 (:file "halisql")
 		 (:file "config")
 		 (:file "migrations")
 		 (:file "migration-list")

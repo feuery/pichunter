@@ -4,27 +4,25 @@
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.decorators :*user* :@json :@transaction :@authenticated :@can?)
   (:import-from :pichunter.std :sha-512)
+
+  (:import-from :halisql :defqueries)
   
   (:export :get-highest-scores-per-session :user :user-username :register :post-login))
 
 (in-package :pichunter.user-routes)
 
+(defqueries "user-routes.sql") 
+
 (defun setup-admin-user ()
-  (execute "INSERT INTO groupmapping (UserID, GroupID)
-SELECT \"user\".ID, \"group\".ID
-FROM users \"user\"
-JOIN usergroup \"group\" ON 1=1;")
-  (execute 
-"-- at this point, there is only one row in the user
-UPDATE users
-SET activated = true;"))
+  (make-everybody-member-of-everything!)
+  (activate-everybody!))
 
 (defun register (username displayname password)
-  (let ((prior-users (query "SELECT EXISTS (SELECT * FROM users)" :single)))
-    (execute "INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3)"
-	     username
-	     (sha-512 password)
-	     displayname)
+  (let ((prior-users (users-exists?)))
+    (insert-user
+     username
+     (sha-512 password)
+     displayname)
     (unless prior-users
       (setup-admin-user))))
 
@@ -41,13 +39,11 @@ SET activated = true;"))
 	  (assert (string= password password-again))
 
 	  (register username displayname password)
-
-	  (format t "Registered ~a (~a)~%" displayname username)
+	  
 	  "{\"success?\": true}")
       (error (e)
-	(format t "Error in \"/register\": ~a~%" e)
-	(break "~a" e)
-	
+	;; TODO oispa lokitusta
+	(format t "Error in \"/register\": ~a~%" e)	
 	(easy-routes:http-error 500)))))
 
 (defun clean-postmodern-rubbish-json (json)
@@ -61,14 +57,8 @@ SET activated = true;"))
   (let* ((body-params (parse (hunchentoot:raw-post-data :force-text t)))
 	 (username (gethash "username" body-params))
 	 (password (gethash "password" body-params))
-
-	 (user-row  (query "SELECT id, username, display_name, img_id FROM users WHERE username = $1 AND password = $2" username (sha-512 password)
-			   (:dao user :single)))
-	 (data-for-frontend (query "SELECT \"user\".id, \"user\".username, \"user\".display_name AS \"displayName\", \"user\".img_id AS \"imgId\", json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
-FROM users \"user\"
-JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
-WHERE \"user\".username = $1 AND \"user\".password = $2
-GROUP BY \"user\".id" username (sha-512 password) :array-hash)))
+	 (user-row (select-user-by-login  username (sha-512 password)))
+	 (data-for-frontend (data-for-frontend-with-password username (sha-512 password))))
       
     (if (and user-row
 	     (string= (user-username user-row) username))
@@ -89,11 +79,7 @@ GROUP BY \"user\".id" username (sha-512 password) :array-hash)))
 
 (defroute getsession ("/api/session" :method :get :decorators (@transaction @json)) ()
   (if (hunchentoot:session-value :logged-in-username)
-      (let ((users (coerce (query "SELECT \"user\".id, \"user\".username, \"user\".display_name AS \"displayName\", \"user\".img_id AS \"imgId\", json_agg(\"abilities\".action) as abilities, activated as \"activated?\"
-FROM users \"user\"
-JOIN user_abilities \"abilities\" ON \"abilities\".id = \"user\".id
-WHERE \"user\".id = $1
-GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash)
+      (let ((users (coerce (data-for-frontend-without-password (hunchentoot:session-value :logged-in-user-id))
 			  'list)))
 	(if users
 	    (let ((user (first users)))
@@ -222,16 +208,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 				      (:as :display-name :displayName)
 				      (:as :img_id :imgId)
 				      :from :users)
-				  :plists)
-			;; (mapcar (lambda (row)
-			;; 	  (let ((hashmap (make-hash-table :test 'equal :size 5)))
-			;; 	    (setf (gethash "user-id" hashmap) (getf row :user-id))
-			;; 	    (setf (gethash "activated" hashmap) (getf row :activated))
-			;; 	    (setf (gethash "username" hashmap) (getf row :username))
-			;; 	    (setf (gethash "displayName" hashmap) (getf row :displayName))
-			;; 	    (setf (gethash "imgId" hashmap) (getf row :imgId))
-			;; 	    hashmap)))
-			))
+				  :plists)))
 	   (actual-groups (remove-duplicates
 			   (mapcar (lambda (g)
 				     (let ((hashmap (make-hash-table :test 'equal :size 7)))
@@ -242,32 +219,32 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 				       (setf (gethash "id" hashmap) (getf g :group-id))
 				       (setf (gethash "permissions" hashmap)
 					     (or (remove-duplicates
-									      (->>
-										groups
-										(remove-if
-										       (lambda (r)
-											 (equalp
-											  (getf r :permission-id)
-											  :NULL)))
-										(remove-if-not 
-										 (lambda (r)
-										   (equalp
-										    (getf r :group-id)
-										    (getf g :group-id))))
-										(mapcar #'transform-permission))
-									      :test (lambda (a b)
-										      (equalp
-										       (gethash "id" a)
-										       (gethash "id" b))))
+						  (->>
+						    groups
+						    (remove-if
+						     (lambda (r)
+						       (equalp
+							(getf r :permission-id)
+							:NULL)))
+						    (remove-if-not 
+						     (lambda (r)
+						       (equalp
+							(getf r :group-id)
+							(getf g :group-id))))
+						    (mapcar #'transform-permission))
+						  :test (lambda (a b)
+							  (equalp
+							   (gethash "id" a)
+							   (gethash "id" b))))
 						 (vector)))
 				       (setf (gethash "users" hashmap) (remove-duplicates
 									(->>
 									  groups
 									  (remove-if-not 
-										 (lambda (r)
-										   (equalp
-										    (getf r :group-id)
-										    (getf g :group-id))))
+									   (lambda (r)
+									     (equalp
+									      (getf r :group-id)
+									      (getf g :group-id))))
 									  (mapcar #'user-plist->user-response))
 									
 									:test (lambda (a b)
@@ -284,8 +261,7 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
       (stringify actual-groups)))
 
 (defun hash->user (hash)
-  (let ((user (query "SELECT id, username, display_name, img_id FROM users WHERE id = $1" (gethash "id" hash)
-		     (:dao user :single))))
+  (let ((user (user-by-id (gethash "id" hash))))
     (setf (user-username user) (gethash "username" hash))
     (setf (user-display-name user) (gethash "displayName" hash))
     user))
@@ -298,25 +274,16 @@ GROUP BY \"user\".id" (hunchentoot:session-value :logged-in-user-id) :array-hash
 		  (user-id *user*))
 
       (cond ((string= new_password "")
-	     (execute
-	      "UPDATE users 
-SET username = $1,
-    display_name = $2
-WHERE id = $3"
-	      (user-username user)
-	      (user-display-name user)
-	      (user-id user)))
+	     (update-names	      
+	       (user-username user)
+	       (user-display-name user)
+	       (user-id user)))
 
 	    ((string=
-	      (caar (query "SELECT password FROM users WHERE id = $1" (user-id *user*)))
+	      (caar (get-password-by-id  (user-id *user*)))
 	      (sha-512 old_password))
 
-	     (execute
-	      "UPDATE users 
-SET username = $1,
-    display_name = $2,
-    password = $3
-WHERE id = $4 AND password = $5"
+	     (update-everything
 	      (user-username user)
 	      (user-display-name user)
 	      new_password
@@ -326,48 +293,17 @@ WHERE id = $4 AND password = $5"
       (when file
 	(destructuring-bind (tmp-file filename mime) file
 	  (let* ((bytes (slurp-bytes tmp-file))
-		 (avatar-id (caar (query "insert into avatar (filename, mime, data) values ($1, $2, $3) returning id" filename mime bytes))))
+		 (avatar-id (caar (insert-avatar filename mime bytes))))
 
-	    (execute "UPDATE users SET img_id = $1 WHERE id = $2"
-		     avatar-id
-		     (user-id user))))))
+	    (update-avatar-reference
+	     avatar-id
+	     (user-id user))))))
     ""))
 
 (defun get-highest-scores-per-session (user)
   (let ((query-result
 	  (coerce
-	   (query "
-SELECT
-    a.gametype,
-    max(a.count) AS \"correct\",
-    max(b.count) AS \"all_guesses\"
-FROM (
-    SELECT
-        session_id,
-        count(*),
-        session.gametype
-    FROM
-        game_session_guess guess
-        JOIN game_session session ON session.id = guess.session_id
-    WHERE
-        correctly_guessed AND session.user_id = $1
-    GROUP BY
-        session_id,
-        session.gametype) AS a
-    JOIN (
-        SELECT
-            session_id,
-            count(*),
-            session.gametype
-        FROM
-            game_session_guess guess
-        JOIN game_session session ON session.id = guess.session_id
-	WHERE session.user_id = $1
-        GROUP BY
-            session_id,
-            session.gametype) b ON b.session_id = a.session_id
-GROUP BY
-    a.gametype" (user-id user) :array-hash) 'list))
+	   (get-session-scores (user-id user)) 'list))
 	(response (make-hash-table :test 'equal :size 2)))
     (dolist (row query-result)
       (let ((node (make-hash-table :test 'equal :size 2)))

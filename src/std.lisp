@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng*))
+  (:export :repeatedly :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng* :compose))
 
 (in-package pichunter.std)
 
@@ -104,3 +104,15 @@
 (defun partial (f &rest args)
   (lambda (&rest rst-args)
     (apply f (concatenate 'list args rst-args))))
+
+(defun compose (&rest functions)
+  "Compose FUNCTIONS right-associatively, returning a function"
+  #'(lambda (x)
+      (reduce #'funcall functions
+              :initial-value x
+              :from-end t)))
+
+(defun repeatedly (fn n)
+  (if (equalp n 0)
+      '()
+      (cons (funcall fn n) (repeatedly fn (1- n)))))
