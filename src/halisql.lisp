@@ -85,42 +85,43 @@
 		   (remove-if (lambda (query)
 				(every (partial #'string= "") query))))))
     `(progn
-     ,@(->> queries
-	 (mapcar (lambda (query)
-		   (let* ((meta (query-meta query))
-			  (sql (get-sql query))
-			  (amount-of-params (amount-of-query-params sql))
-			  (name (first (gethash "name" meta)))
-			  (returns (str:join #\Space (gethash "returns" meta)))
-			  (modifiers (gethash "modifiers" meta))
-			  (execute? (some (partial #'string= "@execute") modifiers))
-			  ;;(args (gensym))
-			  (fn (if execute?
-				  'postmodern:execute
-				  'postmodern:query))
-			  (params (loop for x from 1 to amount-of-params collect (gensym))))
+       ,@(->> queries
+	   (mapcar (lambda (query)
+		     (let* ((meta (query-meta query))
+			    (sql (get-sql query))
+			    (amount-of-params (amount-of-query-params sql))
+			    (name (first (gethash "name" meta)))
+			    (returns (str:join #\Space (gethash "returns" meta)))
+			    (modifiers (gethash "modifiers" meta))
+			    (execute? (some (partial #'string= "@execute") modifiers))
+			    ;;(args (gensym))
+			    (fn (if execute?
+				    'postmodern:execute
+				    'postmodern:query))
+			    (params (loop for x from 1 to amount-of-params collect (gensym))))
 
-		     `(defun ,(intern (string-upcase name)) ,params
-			(when *log* 
-			  (format t "running ~a~%" ,sql))
-			(handler-case 
-			    (,fn ,sql 
-			      ,@params
-			      ,(if (not (string= "" returns))
-				 (let ((*read-eval* nil))
-				   (format t "returns: ~a~%" (prin1-to-string returns))
-				   (read-from-string (string-upcase returns)))
-				 (if (equalp fn 'postmodern:query)
-				     :rows
-				     :none)))
-			  (error (e)
-			    (format t "caught error in ~a~%~a~%" (quote ,(intern (string-upcase name)))
-				    e)
-			    e)))))))
-     '(,@(->> queries
-	(mapcar (lambda (query)
-		  (let ((meta (query-meta query)))
-		    (intern (string-upcase (first (gethash "name" meta))))))))))))
+		       `(defun ,(intern (string-upcase name)) ,params
+			  (when *log* 
+			    (format t "running ~a~%" ,sql))
+			  (handler-case 
+			      (,fn ,sql 
+				,@params
+				,(if (not (string= "" returns))
+				     (let ((*read-eval* nil))
+				       (when *log*
+					 (format t "returns: ~a~%" (prin1-to-string returns)))
+				       (read-from-string (string-upcase returns)))
+				     (if (equalp fn 'postmodern:query)
+					 :rows
+					 :none)))
+			    (error (e)
+			      (format t "caught error in ~a~%~a~%" (quote ,(intern (string-upcase name)))
+				      e)
+			      e)))))))
+       '(,@(->> queries
+	     (mapcar (lambda (query)
+		       (let ((meta (query-meta query)))
+			 (intern (string-upcase (first (gethash "name" meta))))))))))))
 
 
 ;; (macroexpand-1  '
