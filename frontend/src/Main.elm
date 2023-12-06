@@ -306,6 +306,25 @@ update msg model =
                                 _ -> (model, alert "no permission selected")
                         _ -> (model, alert "no group selected")
                 _ -> (model, alert "groupmanager uninitialized")
+        AdminUserActivated selected_user activated ->
+            case model.groupManagerState of
+                Nothing -> (model, Cmd.none)
+                Just state ->
+                    ({ model | groupManagerState =
+                           Just {state | loadedGroups =
+                                     List.map (\group ->
+                                                   {group |
+                                                        users = List.map
+                                                        (\user ->
+                                                             if user.id == selected_user.id then
+                                                                 {user | activated = activated}
+                                                             else 
+                                                                 user
+                                                        ) group.users}
+                                                   
+                                              ) state.loadedGroups
+                                , selectedUser = Just {selected_user | activated = activated}}}
+                    , Cmd.none)
         AdminUserToGroup ->
             case model.groupManagerState of
                 Just state ->

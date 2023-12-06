@@ -36,8 +36,8 @@ handleSession model result =handleSession90,2728
 add_user_to_group state group user =add_user_to_group111,3430
 drop_user_from_group state group user =drop_user_from_group121,3832
 update msg model =update132,4315
-highscore_to_view maybe_row =highscore_to_view592,27809
-view model =view598,28057
+highscore_to_view maybe_row =highscore_to_view611,28993
+view model =view617,29241
 
 src/Game.elm,460
 module GameGame1,0
@@ -101,7 +101,7 @@ type alias GroupGroup15,261
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/State.elm,3191
+src/State.elm,3244
 module StateState1,0
 type alias RegistrationForm =type14,271
 type alias RegistrationFormRegistrationForm14,271
@@ -155,28 +155,29 @@ type MsgMsg88,2097
     | AdminAllowAdminAllow109,2842
     | AdminSelectNonExistingAbilityAdminSelectNonExistingAbility110,2859
     | AdminUserToGroupAdminUserToGroup111,2902
-    | AdminUserFromGroupAdminUserFromGroup112,2925
-    | SaveGroupManagerStateSaveGroupManagerState113,2950
-    | GotInputFilesGotInputFiles114,2978
-    | UploadedImageUploadedImage115,3010
-    | GotPictureIdsGotPictureIds116,3053
-    | RemovePictureRemovePicture117,3114
-    | RemovalResultRemovalResult118,3148
-    | GotNextPicForGameGotNextPicForGame119,3193
-    | MapClickedMapClicked120,3259
-    | ChoseCountyChoseCounty121,3298
-    | SetAllowForUsageSetAllowForUsage122,3332
-    | GotGameFilesGotGameFiles123,3360
-    | NoGpsFoundNoGpsFound124,3391
-    | SubmitGuessSubmitGuess125,3411
-    | UploadedGuessUploadedGuess126,3429
-    | GotPictureCountsGotPictureCounts127,3481
-    | GotSessionDataGotSessionData128,3544
-    | SaveLoggedInUserSaveLoggedInUser129,3613
-    | ChangeUserFieldChangeUserField130,3663
-    | SavedUserSavedUser131,3721
-    | GotUserFileGotUserFile132,3762
-    | GotGameSessionHighsGotGameSessionHighs133,3792
+    | AdminUserActivatedAdminUserActivated112,2925
+    | AdminUserFromGroupAdminUserFromGroup113,2960
+    | SaveGroupManagerStateSaveGroupManagerState114,2985
+    | GotInputFilesGotInputFiles115,3013
+    | UploadedImageUploadedImage116,3045
+    | GotPictureIdsGotPictureIds117,3088
+    | RemovePictureRemovePicture118,3149
+    | RemovalResultRemovalResult119,3183
+    | GotNextPicForGameGotNextPicForGame120,3228
+    | MapClickedMapClicked121,3294
+    | ChoseCountyChoseCounty122,3333
+    | SetAllowForUsageSetAllowForUsage123,3367
+    | GotGameFilesGotGameFiles124,3395
+    | NoGpsFoundNoGpsFound125,3426
+    | SubmitGuessSubmitGuess126,3446
+    | UploadedGuessUploadedGuess127,3464
+    | GotPictureCountsGotPictureCounts128,3516
+    | GotSessionDataGotSessionData129,3579
+    | SaveLoggedInUserSaveLoggedInUser130,3648
+    | ChangeUserFieldChangeUserField131,3698
+    | SavedUserSavedUser132,3756
+    | GotUserFileGotUserFile133,3797
+    | GotGameSessionHighsGotGameSessionHighs134,3827
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -202,18 +203,18 @@ editor user formstate =editor14,239
 defaultFormState user formstate =defaultFormState43,2256
 view session formstate =view48,2476
 
-src/GroupManager.elm,511
+src/GroupManager.elm,512
 module GroupManagerGroupManager1,0
-list_diff a b =list_diff9,174
-userDetails user =userDetails14,275
-all_users users =all_users40,1296
-group_users groupstate group =group_users50,1766
-user_container state selectedGroup =user_container60,2261
-group_permissions group =group_permissions66,2490
-group_details group =group_details95,4060
-groupmanager groupstate =groupmanager99,4148
-authorizator view ability groupstate session =authorizator131,5852
-groupManagerView =groupManagerView142,6189
+list_diff a b =list_diff9,160
+userDetails user =userDetails14,261
+all_users users =all_users41,1338
+group_users groupstate group =group_users51,1808
+user_container state selectedGroup =user_container61,2303
+group_permissions group =group_permissions67,2532
+group_details group =group_details96,4102
+groupmanager groupstate =groupmanager100,4190
+authorizator view ability groupstate session =authorizator132,5894
+groupManagerView =groupManagerView143,6231
 
 src/Image.elm,186
 module ImageImage1,0

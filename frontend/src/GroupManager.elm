@@ -2,7 +2,7 @@ module GroupManager exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (..)
 
 import State exposing (..)
 
@@ -35,6 +35,7 @@ userDetails user =
                     , id "activated_lbl"] [ text "User activated?"]
             , input [ id "activated" 
                     , type_ "checkbox"
+                    , onCheck (AdminUserActivated user)
                     , checked user.activated] []]]
         
 all_users users =

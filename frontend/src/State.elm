@@ -109,6 +109,7 @@ type Msg
     | AdminAllow
     | AdminSelectNonExistingAbility String
     | AdminUserToGroup
+    | AdminUserActivated User Bool
     | AdminUserFromGroup
     | SaveGroupManagerState
     | GotInputFiles (List File)

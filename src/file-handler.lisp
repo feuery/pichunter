@@ -18,7 +18,8 @@
     (values file-data mime)))
 
 (defun get-picture (guid)
-  (when guid
+  (when (and guid
+	     (not (string= "" guid)))
       (multiple-value-bind (picture-data mime) (get-picture-data guid "pictures")
 	(setf (hunchentoot:content-type*) mime)
 	picture-data)))
