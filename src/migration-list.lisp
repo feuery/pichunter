@@ -15,3 +15,5 @@
 (defmigration #P"place_data.sql")
 
 (defmigration #P"session.sql")
+
+(defmigration #P"users-banned.sql")

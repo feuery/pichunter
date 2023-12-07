@@ -132,3 +132,5 @@ type Msg
     | SavedUser (Result Http.Error User)
     | GotUserFile (List File)
     | GotGameSessionHighs (Result Http.Error Session.SessionHighscore)
+    | AdminSetUsername User String
+    | AdminUserBanned User Bool

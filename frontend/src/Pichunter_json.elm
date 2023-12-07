@@ -40,7 +40,8 @@ encodeUser user =
         , ("id", Encode.int user.id)
         , ("displayName", Encode.string user.displayName)
         , ("imgId", Enc_Extra.maybe Encode.string user.imgId)
-        , ("activated?", Encode.bool user.activated)]
+        , ("activated?", Encode.bool user.activated)
+        , ("banned?", Encode.bool user.banned)]
             
 decodeUser =
     Decode.succeed User
@@ -50,6 +51,7 @@ decodeUser =
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
         |> decodeApply (Decode.field "activated?" Decode.bool)
+        |> decodeApply (Decode.field "banned?" Decode.bool)
 
 decodeAdministrativeUser =
     Decode.succeed User
@@ -59,6 +61,7 @@ decodeAdministrativeUser =
         |> decodeApply (Decode.field "imgId" (Decode.maybe Decode.string))
         |> decodeApply (Decode.field "abilities" (Decode.list Decode.string))
         |> decodeApply (Decode.field "activated?" Decode.bool)
+        |> decodeApply (Decode.field "banned?" Decode.bool)
 
 encodePermission permission =
     Encode.object 

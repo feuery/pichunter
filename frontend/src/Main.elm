@@ -325,6 +325,44 @@ update msg model =
                                               ) state.loadedGroups
                                 , selectedUser = Just {selected_user | activated = activated}}}
                     , Cmd.none)
+        AdminSetUsername selected_user name ->
+            case model.groupManagerState of
+                Nothing -> (model, Cmd.none)
+                Just state ->
+                    ({ model | groupManagerState =
+                           Just {state | loadedGroups =
+                                     List.map (\group ->
+                                                   {group |
+                                                        users = List.map
+                                                        (\user ->
+                                                             if user.id == selected_user.id then
+                                                                 {user | displayName = name}
+                                                             else 
+                                                                 user
+                                                        ) group.users}
+                                                   
+                                              ) state.loadedGroups
+                                , selectedUser = Just {selected_user | displayName = name}}}
+                    , Cmd.none)
+        AdminUserBanned selected_user banned ->
+            case model.groupManagerState of
+                Nothing -> (model, Cmd.none)
+                Just state ->
+                    ({ model | groupManagerState =
+                           Just {state | loadedGroups =
+                                     List.map (\group ->
+                                                   {group |
+                                                        users = List.map
+                                                        (\user ->
+                                                             if user.id == selected_user.id then
+                                                                 {user | banned = banned}
+                                                             else 
+                                                                 user
+                                                        ) group.users}
+                                                   
+                                              ) state.loadedGroups
+                                , selectedUser = Just {selected_user | banned = banned}}}
+                    , Cmd.none)                    
         AdminUserToGroup ->
             case model.groupManagerState of
                 Just state ->

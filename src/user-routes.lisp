@@ -57,7 +57,7 @@
   (let* ((body-params (parse (hunchentoot:raw-post-data :force-text t)))
 	 (username (gethash "username" body-params))
 	 (password (gethash "password" body-params))
-	 (user-row (select-user-by-login  username (sha-512 password)))
+	 (user-row (select-user-by-login username (sha-512 password)))
 	 (data-for-frontend (data-for-frontend-with-password username (sha-512 password))))
       
     (if (and user-row
@@ -112,15 +112,18 @@
     (setf (gethash "displayName" hashmap) (getf user :displayName ))
     (setf (gethash "id" hashmap) (getf user :user-id))
     (setf (gethash "activated?" hashmap) (getf user :activated))
+    (setf (gethash "banned?" hashmap) (getf user :banned))
     hashmap))
 
 (defun save-user (group-id user)
   (let ((id (gethash "id" user))
 	(displayName (gethash "displayName" user))
-	(activated? (gethash "activated?" user)))
+	(activated? (gethash "activated?" user))
+	(banned? (gethash "banned?" user)))
     (execute (:update 'users
 	      :set 'display_name displayName
 	      'activated activated?
+	      'banned banned?
 	      :where (:= 'id id)))
     (execute (:insert-into 'groupmapping
 	      :set 'UserID id 'GroupID group-id))))
@@ -181,6 +184,7 @@
 				   (:as :users.id :user-id)
 				   (:as :users.username :username)
 				   (:as :users.activated :activated)
+			           (:as :users.banned :banned)
 				   (:as :display-name :displayName)
 				   (:as :img_id :imgId)
 				   (:as "[]" :abilities)
@@ -204,6 +208,7 @@
 			    (mapcar #'transform-permission)))
 	   (all-users (->> (query (:select (:as :users.id :user-id)
 				      (:as :users.activated :activated)
+				      (:as :users.banned :banned)
 				      (:as :users.username :username)
 				      (:as :display-name :displayName)
 				      (:as :img_id :imgId)

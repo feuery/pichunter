@@ -6,26 +6,26 @@ encodeMaybe valueEncoder maybeValue =encodeMaybe18,458
 encodeRegistration state =encodeRegistration25,624
 encodeLogin state =encodeLogin32,901
 encodeUser user =encodeUser37,1047
-decodeUser =decodeUser45,1359
-decodeAdministrativeUser =decodeAdministrativeUser54,1796
-encodePermission permission =encodePermission63,2247
-decodePermission =decodePermission68,2438
-encodeGroup group =encodeGroup73,2635
-decodeGroup =decodeGroup81,2951
-decodeGroupTree =decodeGroupTree91,3512
-encodeGroupTree =encodeGroupTree92,3554
-decodeImageMetadata =decodeImageMetadata94,3597
-decodePicturelistResponse =decodePicturelistResponse101,4069
-decodeGuessResult =decodeGuessResult103,4130
-decodePictureCount =decodePictureCount107,4252
-type alias LocationGuess =type111,4445
-type alias LocationGuessLocationGuess111,4445
-encodeLocationGuess guess =encodeLocationGuess116,4540
-decodeGuess =decodeGuess122,4763
-decodeTimestamp =decodeTimestamp126,4948
-decodeSessionData =decodeSessionData135,5481
-decodeHighscoreRow =decodeHighscoreRow141,5856
-decodeHighscore =decodeHighscore145,6067
+decodeUser =decodeUser46,1406
+decodeAdministrativeUser =decodeAdministrativeUser56,1903
+encodePermission permission =encodePermission66,2414
+decodePermission =decodePermission71,2605
+encodeGroup group =encodeGroup76,2802
+decodeGroup =decodeGroup84,3118
+decodeGroupTree =decodeGroupTree94,3679
+encodeGroupTree =encodeGroupTree95,3721
+decodeImageMetadata =decodeImageMetadata97,3764
+decodePicturelistResponse =decodePicturelistResponse104,4236
+decodeGuessResult =decodeGuessResult106,4297
+decodePictureCount =decodePictureCount110,4419
+type alias LocationGuess =type114,4612
+type alias LocationGuessLocationGuess114,4612
+encodeLocationGuess guess =encodeLocationGuess119,4707
+decodeGuess =decodeGuess125,4930
+decodeTimestamp =decodeTimestamp129,5115
+decodeSessionData =decodeSessionData138,5648
+decodeHighscoreRow =decodeHighscoreRow144,6023
+decodeHighscore =decodeHighscore148,6234
 
 src/Main.elm,442
 viewStatePerUrl url =viewStatePerUrl35,1038
@@ -36,8 +36,8 @@ handleSession model result =handleSession90,2728
 add_user_to_group state group user =add_user_to_group111,3430
 drop_user_from_group state group user =drop_user_from_group121,3832
 update msg model =update132,4315
-highscore_to_view maybe_row =highscore_to_view611,28993
-view model =view617,29241
+highscore_to_view maybe_row =highscore_to_view649,31350
+view model =view655,31598
 
 src/Game.elm,460
 module GameGame1,0
@@ -93,15 +93,15 @@ src/User.elm,212
 module UserUser1,0
 type alias User =type3,27
 type alias UserUser3,27
-type alias Permission =type11,187
-type alias PermissionPermission11,187
-type alias Group =type15,261
-type alias GroupGroup15,261
+type alias Permission =type12,206
+type alias PermissionPermission12,206
+type alias Group =type16,280
+type alias GroupGroup16,280
 
 src/Header.elm,25
 module HeaderHeader1,0
 
-src/State.elm,3244
+src/State.elm,3340
 module StateState1,0
 type alias RegistrationForm =type14,271
 type alias RegistrationFormRegistrationForm14,271
@@ -178,6 +178,8 @@ type MsgMsg88,2097
     | SavedUserSavedUser132,3756
     | GotUserFileGotUserFile133,3797
     | GotGameSessionHighsGotGameSessionHighs134,3827
+    | AdminSetUsernameAdminSetUsername135,3898
+    | AdminUserBannedAdminUserBanned136,3933
 
 src/RegistrationScreen.elm,112
 module RegistrationScreenRegistrationScreen1,0
@@ -203,18 +205,18 @@ editor user formstate =editor14,239
 defaultFormState user formstate =defaultFormState43,2256
 view session formstate =view48,2476
 
-src/GroupManager.elm,512
+src/GroupManager.elm,513
 module GroupManagerGroupManager1,0
 list_diff a b =list_diff9,160
 userDetails user =userDetails14,261
-all_users users =all_users41,1338
-group_users groupstate group =group_users51,1808
-user_container state selectedGroup =user_container61,2303
-group_permissions group =group_permissions67,2532
-group_details group =group_details96,4102
-groupmanager groupstate =groupmanager100,4190
-authorizator view ability groupstate session =authorizator132,5894
-groupManagerView =groupManagerView143,6231
+all_users users =all_users49,1661
+group_users groupstate group =group_users59,2131
+user_container state selectedGroup =user_container69,2626
+group_permissions group =group_permissions75,2855
+group_details group =group_details104,4425
+groupmanager groupstate =groupmanager108,4513
+authorizator view ability groupstate session =authorizator140,6217
+groupManagerView =groupManagerView151,6554
 
 src/Image.elm,186
 module ImageImage1,0

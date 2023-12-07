@@ -6,7 +6,8 @@ type alias User =
     , displayName: String
     , imgId: Maybe String
     , abilities: List String
-    , activated: Bool}
+    , activated: Bool
+    , banned: Bool}
 
 type alias Permission =
     { id: Maybe Int

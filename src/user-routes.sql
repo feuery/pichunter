@@ -26,20 +26,20 @@ INSERT INTO users(username, password, display_name) VALUES ($1, $2, $3);
 
 -- name: select-user-by-login @query
 -- returns: (:dao user :single)
-SELECT id, username, display_name, img_id FROM users WHERE username = $1 AND password = $2;
+SELECT id, username, display_name, img_id FROM users WHERE username = $1 AND password = $2 AND NOT banned; 
 
 -- name: data-for-frontend-with-password @query
 -- returns: :array-hash
 
-SELECT "user".id, "user".username, "user".display_name AS "displayName", "user".img_id AS "imgId", json_agg("abilities".action) as abilities, activated as "activated?"
+SELECT "user".id, "user".username, "user".display_name AS "displayName", "user".img_id AS "imgId", json_agg("abilities".action) as abilities, activated as "activated?", banned as "banned?"
 FROM users "user"
 JOIN user_abilities "abilities" ON "abilities".id = "user".id
-WHERE "user".username = $1 AND "user".password = $2
+WHERE "user".username = $1 AND "user".password = $2 AND NOT "user".banned
 GROUP BY "user".id;
 
 -- name: data-for-frontend-without-password @query
 -- returns: :array-hash
-SELECT "user".id, "user".username, "user".display_name AS "displayName", "user".img_id AS "imgId", json_agg("abilities".action) as abilities, activated as "activated?"
+SELECT "user".id, "user".username, "user".display_name AS "displayName", "user".img_id AS "imgId", json_agg("abilities".action) as abilities, activated as "activated?", banned as "banned?"
 FROM users "user"
 JOIN user_abilities "abilities" ON "abilities".id = "user".id
 WHERE "user".id = $1

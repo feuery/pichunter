@@ -23,7 +23,7 @@ userDetails user =
             , label [ id "displayname_lbl"
                     , for "displayname"] [ text "Display name" ]
             , input [ id "displayname"
-                    , disabled True
+                    , onInput (AdminSetUsername user)
                     , value user.displayName] []
                 
             , case user.imgId of
@@ -32,11 +32,19 @@ userDetails user =
                   _ ->
                       p [] [ text "no image set up"]
             , label [ for "activated"
-                    , id "activated_lbl"] [ text "User activated?"]
+                    , id "activated_lbl"]
+                  [ text "User activated?"]
             , input [ id "activated" 
                     , type_ "checkbox"
                     , onCheck (AdminUserActivated user)
-                    , checked user.activated] []]]
+                    , checked user.activated] []
+            , label [ for "banned"
+                    , id "banned_lbl"]
+                  [ text "User banned?"]
+            , input [ id "banned"
+                    , type_ "checkbox"
+                    , onCheck (AdminUserBanned user)
+                    , checked user.banned] []]]
         
 all_users users =
     div [] [ h5 [] [text "All users"]
