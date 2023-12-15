@@ -679,6 +679,24 @@ highscore_to_view maybe_row =
         Just row -> (String.fromInt row.correct_guesses) ++ "/" ++ (String.fromInt row.all_guesses)
         Nothing -> "No high score. Have you played this?"
 
+user_meta user =                    
+    div [ class "user-meta " ]
+        [ img [ class "picture"
+              , width 50
+              , height 50
+              , src ("/api/avatar/" ++ (Maybe.withDefault "" user.imgId))] []
+        , p [ class "displayname"] [ text user.displayName ]
+        , p [ class "username"] [ text user.username ]]
+
+session_summary highscores =
+    div [ class "session-summary" ]
+        [ h3 [] [ text "Your highest scores"]
+        , ol []
+            [ li [] [ h4 [] [text "Location: "]
+                    , div [] [text (highscore_to_view highscores.location)]]
+            , li [] [ h4 [] [text "Picture: "]
+                    , div [] [text (highscore_to_view highscores.picture)]]]]
+        
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
@@ -686,15 +704,15 @@ view model =
              , div [ class "body_container" ]
                  [ div [class "sidebar"
                        , id "left_sidebar"]
-                       (case model.session of
-                            LoggedIn user ->
-                                [ img [ class "picture"
-                                      , width 50
-                                      , height 50
-                                      , src ("/api/avatar/" ++ (Maybe.withDefault "" user.imgId))] []
-                                , p [ class "displayname"] [ text user.displayName ]
-                                , p [ class "username"] [ text user.username ]]
-                            LoggedOut -> [ text "Welcome to pichunter"])
+                       [ (case model.session of
+                              LoggedIn user ->
+                                  user_meta user
+                              LoggedOut -> text "")
+                       , (case model.highestSessionData of
+                              Just highscores -> 
+                                  session_summary highscores 
+                              Nothing -> text "")]
+                                   
                  , article [ ]
                      (case model.route of
                           Home -> homeScreen model
@@ -708,17 +726,5 @@ view model =
                           ManageMedia ->
                               case model.mediaManagerState of
                                   Just state -> mediaManagerView state model.session
-                                  Nothing -> [ div [] [ text "Media manager hasn't loaded"]])
-                 , div [ class "sidebar"
-                       , id "right_sidebar"]
-                     (case model.highestSessionData of
-                         Just highscores -> 
-                             [ h3 [] [ text "Your highest scores"]
-                             , ol []
-                                 [ li [] [ h4 [] [text "Location: "]
-                                         , div [] [text (highscore_to_view highscores.location)]]
-                                 , li [] [ h4 [] [text "Picture: "]
-                                         , div [] [text (highscore_to_view highscores.picture)]]]]
-                         Nothing ->
-                             [ div [] [ text "Can't load high scores"]])]]}
+                                  Nothing -> [ div [] [ text "Media manager hasn't loaded"]])]]}
 

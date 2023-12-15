@@ -27,7 +27,7 @@ decodeSessionData =decodeSessionData139,5737
 decodeHighscoreRow =decodeHighscoreRow145,6112
 decodeHighscore =decodeHighscore149,6323
 
-src/Main.elm,442
+src/Main.elm,534
 viewStatePerUrl url =viewStatePerUrl35,1038
 main =main53,1716
 init _ url key =init63,1910
@@ -37,7 +37,9 @@ add_user_to_group state group user =add_user_to_group112,3483
 drop_user_from_group state group user =drop_user_from_group122,3885
 update msg model =update133,4368
 highscore_to_view maybe_row =highscore_to_view677,32823
-view model =view683,33071
+user_meta user =user_meta682,33034
+session_summary highscores =session_summary691,33381
+view model =view701,33804
 
 src/Game.elm,460
 module GameGame1,0
