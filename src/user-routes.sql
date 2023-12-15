@@ -65,7 +65,7 @@ SET username = $1,
     password = $3
 WHERE id = $4 AND password = $5;
 
--- name: insert-avatar @execute
+-- name: insert-avatar @query
 insert into avatar (filename, mime, data) values ($1, $2, $3) returning id;
 
 -- name: update-avatar-reference @execute

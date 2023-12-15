@@ -275,7 +275,6 @@
     user))
 
 (defroute usersettings-saver ("/api/user" :method :post :decorators (@json @transaction @authenticated)) (&post file user new_password old_password)
-
   (let ((user (hash->user (parse user))))
 
     (when (equalp (user-id user)
@@ -283,9 +282,9 @@
 
       (cond ((string= new_password "")
 	     (update-names	      
-	       (user-username user)
-	       (user-display-name user)
-	       (user-id user)))
+	      (user-username user)
+	      (user-display-name user)
+	      (user-id user)))
 
 	    ((string=
 	      (caar (get-password-by-id  (user-id *user*)))
@@ -302,10 +301,9 @@
 	(destructuring-bind (tmp-file filename mime) file
 	  (let* ((bytes (slurp-bytes tmp-file))
 		 (avatar-id (caar (insert-avatar filename mime bytes))))
-
-	    (update-avatar-reference
-	     avatar-id
-	     (user-id user))))))
+		    (update-avatar-reference
+		     avatar-id
+		     (user-id user))))))
     ""))
 
 (defun get-highest-scores-per-session (user)
