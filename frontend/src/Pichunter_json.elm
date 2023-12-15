@@ -100,6 +100,7 @@ decodeImageMetadata = Decode.succeed ImageMetadata
                       |> decodeApply (Decode.field "latitude" Decode.float)
                       |> decodeApply (Decode.field "longitude" Decode.float)
                       |> decodeApply (Decode.field "session-id" (Decode.maybe Decode.string))
+                      |> decodeApply (Decode.field "approver" (Decode.maybe decodeUser))
                          
 decodePicturelistResponse = Decode.list decodeImageMetadata
 

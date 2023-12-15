@@ -17,3 +17,4 @@
 (defmigration #P"session.sql")
 
 (defmigration #P"users-banned.sql")
+(defmigration #P"picture-approved.sql")

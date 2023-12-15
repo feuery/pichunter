@@ -31,7 +31,9 @@ type alias GroupManagerState =
     , loadedGroups: List Group}
 
 type alias MediaManagerState =
-    { known_metadata: List ImageMetadata }
+    { known_metadata: List ImageMetadata
+    , unapproved_queue: List ImageMetadata
+    }
 
 type GameType
     = LocationGuessing
@@ -115,6 +117,7 @@ type Msg
     | GotInputFiles (List File)
     | UploadedImage (Result Http.Error ())
     | GotPictureIds (Result Http.Error (List ImageMetadata))
+    | GotUnapprovedImageQueue (Result Http.Error (List ImageMetadata))
     | RemovePicture ImageMetadata
     | RemovalResult (Result Http.Error Bool)
     | GotNextPicForGame (Result Http.Error (Maybe ImageMetadata))
@@ -134,3 +137,5 @@ type Msg
     | GotGameSessionHighs (Result Http.Error Session.SessionHighscore)
     | AdminSetUsername User String
     | AdminUserBanned User Bool
+    | ApproveImage ImageMetadata Bool
+    | ImageApproved (Result Http.Error ())

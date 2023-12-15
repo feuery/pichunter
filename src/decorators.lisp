@@ -17,9 +17,14 @@
 		     :pichunter_test
 		     :pichunter)))
     (with-db 
-      (with-schema (schema :if-not-exist nil)
-	(with-transaction ()
-	  (funcall next))))))
+	(with-schema (schema :if-not-exist nil)
+	  (handler-bind ((cl-postgres:database-error
+			   (lambda (c)
+			     (format t "Error from db: ~a~%" c)
+			     (setf (hunchentoot:return-code*) 500)
+			     "Internal Server Error")))
+	    (with-transaction ()
+	      (funcall next)))))))
 
 (defun @no-cache (next)
   (setf (hunchentoot:header-out "Cache-Control") "no-cache")

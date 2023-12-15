@@ -125,3 +125,19 @@ postUser new_image user fs =
             , body = body
             , expect = Http.expectJson SavedUser Json.decodeUser}
             
+getUnapprovedImgQueue =
+    Http.get
+        { url = "/api/pictures/unapproved"
+        , expect = Http.expectJson GotUnapprovedImageQueue Json.decodePicturelistResponse}
+
+approveImage img =
+    Http.post
+        { url = "/api/pictures/approve/" ++ img.id
+        , body = Http.emptyBody
+        , expect = Http.expectWhatever ImageApproved }
+
+unapproveImage img =
+    Http.post
+        { url = "/api/pictures/unapprove/" ++ img.id
+        , body = Http.emptyBody
+        , expect = Http.expectWhatever ImageApproved }        

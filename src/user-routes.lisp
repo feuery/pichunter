@@ -7,7 +7,7 @@
 
   (:import-from :halisql :defqueries)
   
-  (:export :get-highest-scores-per-session :user :user-username :register :post-login))
+  (:export :data-for-frontend-without-password :get-highest-scores-per-session :user :user-username :register :post-login :fix-user-abilities))
 
 (in-package :pichunter.user-routes)
 
@@ -77,16 +77,19 @@
 	  (setf (hunchentoot:return-code*) 401)
 	  "not authorized"))))
 
+(defun fix-user-abilities (user)
+  (let ((abilities (coerce (parse (gethash "abilities" user)) 'list)))
+    (setf (gethash "abilities" user)
+	  (remove-duplicates abilities :test 'equal))
+    user))
+
 (defroute getsession ("/api/session" :method :get :decorators (@transaction @json)) ()
   (if (hunchentoot:session-value :logged-in-username)
-      (let ((users (coerce (data-for-frontend-without-password (hunchentoot:session-value :logged-in-user-id))
-			  'list)))
+      (let ((users (mapcar #'fix-user-abilities
+			   (coerce (data-for-frontend-without-password (hunchentoot:session-value :logged-in-user-id))
+			  'list))))
 	(if users
-	    (let ((user (first users)))
-	      (setf (gethash "abilities" user) (remove-duplicates (coerce
-								   (parse (gethash "abilities" user))
-								   'list)
-								  :test 'equal))	      
+	    (let ((user (first users)))	      
 	      (stringify user))
 	    (progn
 	      (setf (hunchentoot:return-code*) 500)

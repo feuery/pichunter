@@ -45,7 +45,8 @@ viewStatePerUrl url =
               ManageUsersGroups -> [ checkSession
                                    , loadGroupTree]
               ManageMedia -> [ checkSession
-                             , getPictureIds]
+                             , getPictureIds
+                             , getUnapprovedImgQueue]
               NotFound -> [checkSession])
         
 main : Program () Model Msg
@@ -420,18 +421,34 @@ update msg model =
         UploadedImage result ->
             ( model
             , getPictureIds)
+        GotUnapprovedImageQueue result ->
+            case result of
+                Ok imgs ->
+                    ({ model | mediaManagerState = Just (case model.mediaManagerState of
+                                                             Just mmState ->
+                                                                 {mmState | unapproved_queue = imgs}
+                                                             Nothing ->
+                                                                 MediaManagerState [] imgs)}
+                    , Cmd.none)
+                Err error ->
+                    ( model
+                    , alert ("fetching unapprovedqueue failed " ++ (Debug.toString error)))
         GotPictureIds result ->
             case result of
                 Ok list_of_ids ->
                     ( { model
-                          | mediaManagerState = Just ( MediaManagerState list_of_ids)}
+                          | mediaManagerState =
+                            Just (case model.mediaManagerState of
+                                      Just mmstate -> { mmstate | known_metadata = list_of_ids}
+                                      Nothing -> MediaManagerState list_of_ids [])}
+                          
                     , initializeAdminMaps (List.map (\meta ->
-                                                    ( MediaManager.map_id_to_element_id meta.id
-                                                    , meta.latitude
-                                                    , meta.longitude)) list_of_ids))
+                                                         ( MediaManager.map_id_to_element_id meta.id
+                                                         , meta.latitude
+                                                         , meta.longitude)) list_of_ids))
                 Err error ->
                     ( model
-                    , alert ("Error: " ++ (Debug.toString error)))
+                    , alert ("Error in gotpictureids: " ++ (Debug.toString error)))
         RemovePicture metadata ->
             ( model
             , removePicture metadata.id)
@@ -618,10 +635,21 @@ update msg model =
                                 , alert ("(inner) Didn't get high score data due to: " ++ (Debug.toString err)))
                         _ -> ( model
                              , alert ("(outer) Didn't get high score data due to: " ++ (Debug.toString err)))
-                            
-                    
-            
-                    
+        ApproveImage img approved ->
+            ( model
+            , if approved then
+                  approveImage img
+              else
+                  unapproveImage img)
+        ImageApproved result ->
+            case result of
+                Err err ->
+                    ( model
+                    , alert ("Error approving img: " ++ Debug.toString err))
+                Ok _ ->
+                    ( model
+                    , Cmd.batch [ getPictureIds
+                                , getUnapprovedImgQueue])
 
                                         
 disallow_permission state old_group permission 
