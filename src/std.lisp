@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :repeatedly :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng* :compose))
+  (:export :repeatedly :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng* :compose :e2e?))
 
 (in-package pichunter.std)
 
@@ -116,3 +116,6 @@
   (if (equalp n 0)
       '()
       (cons (funcall fn n) (repeatedly fn (1- n)))))
+
+(defun e2e? ()
+  (sb-ext:posix-getenv "PICHUNTER_E2E"))

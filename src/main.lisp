@@ -116,7 +116,10 @@
       (with-schema (:pichunter)
 	(migrate)
 	(pichunter.game-routes:load-codesets)
-	(import-pictures-from-fs)))
+	(import-pictures-from-fs)
+
+	(when (pichunter.std:e2e?)
+	  (pichunter.e2e:setup-e2e))))
   (start-server :port port)
   (handler-case
       (loop do (sleep 1000))

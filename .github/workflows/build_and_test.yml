@@ -27,7 +27,7 @@ jobs:
 
       - name: Start the database
         run: |
-          docker-compose up -d        
+          docker-compose up -d
 
       - name: Setup and run tests
         uses: addnab/docker-run-action@v3
@@ -36,7 +36,7 @@ jobs:
           options: -v ${{ github.workspace }}:/workspace -v ${{ github.workspace }}/config:/etc/pichunter -e PICHUNTER_DB_HOST=db --network pichunter_pichunter_test_network
           run: |
             cd /workspace
-            ls -la .
+
             sbcl --load ./quicklisp.lisp --load ./install_ql.lisp
 
             current_dir=$(pwd)
@@ -46,7 +46,6 @@ jobs:
             cd ~/common-lisp
             ln -s $current_dir
             cd /workspace
-            echo lol testaan kontin sisältä >> $GITHUB_STEP_SUMMARY            
             sbcl --load run_tests.lisp
 
   build:
@@ -105,3 +104,65 @@ jobs:
             ghcr.io/feuery/pichunter:latest
             ghcr.io/feuery/pichunter:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  test-playwright:
+    name: Runs playwright browserr tests
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout code
+        
+      - name: Fetch codeset files and quicklisp
+        run: |
+          mkdir -p config
+          curl -o config/maakunnat_kunnat.csv "https://www2.tilastokeskus.fi/fi/luokitukset/corrmaps/export/kunta_1_20160101%23maakunta_1_20160101/"
+          curl -o config/counties.json "https://data.stat.fi/api/classifications/v2/classifications/maakunta_1_20230101/classificationItems?content=data&meta=max&lang=fi&format=json" 
+          echo '(:mml-api-key "INVALID API KEY")' > config/config.lisp
+          # curl https://beta.quicklisp.org/quicklisp.lisp -o ./quicklisp.lisp
+
+      - name: Start the database
+        run: |
+          docker-compose up -d
+          
+      - name: Start pichunter
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ghcr.io/feuery/pichunter:latest
+          options: -v ${{ github.workspace }}:/workspace -v ${{ github.workspace }}/config:/etc/pichunter -e PICHUNTER_DB_HOST=db -e PICHUNTER_E2E=e2e -p 3000:3000 --network pichunter_pichunter_test_network
+          run: |
+            set -eux
+
+            ./pichunter_server&
+            
+            cd /workspace
+            
+            apt-get install curl npm -q -y >/dev/null
+            npm install -g n
+            n lts
+
+            hash -r
+            npm install -g npm
+            
+            cd playwright-tests
+            npm ci
+            npx playwright install --with-deps
+            npx playwright test --reporter=line
+            find . -name '*.webm'
+
+      - name: Search for webms
+        if: always()
+        run: |
+          find ${{ github.workspace }} -name '*.webm'
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: ${{ github.workspace }}/playwright-tests/test-results
+          if-no-files-found: error
+          retention-days: 30          

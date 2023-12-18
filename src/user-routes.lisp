@@ -56,11 +56,17 @@
 (defroute post-login ("/api/login" :method :post :decorators (@transaction @json)) ()
   (let* ((body-params (parse (hunchentoot:raw-post-data :force-text t)))
 	 (username (gethash "username" body-params))
+	 (_ (when (pichunter.std:e2e?)
+	      (format t "trying to log in as ~a~%" username)))
 	 (password (gethash "password" body-params))
 	 (user-row (select-user-by-login username (sha-512 password)))
 	 (data-for-frontend (data-for-frontend-with-password username (sha-512 password))))
-      
+    (when (pichunter.std:e2e?)
+      (format t "user is ~a~%" data-for-frontend)
+      (inspect user-row))
+    
     (if (and user-row
+	     (> (length data-for-frontend) 0)
 	     (string= (user-username user-row) username))
 	(progn
 	  (setf data-for-frontend (aref data-for-frontend 0))

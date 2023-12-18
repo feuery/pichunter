@@ -30,6 +30,7 @@
 		 (:file "file-handler")
 		 (:file "media-routes")
 		 (:file "game-routes")
+		 (:file "e2e")
 		 (:file "main"))))
   :description ""
   :in-order-to ((test-op (test-op "pichunter/tests"))))
