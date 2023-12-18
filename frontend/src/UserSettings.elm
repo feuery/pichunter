@@ -14,15 +14,18 @@ import MediaManager
 editor user formstate =
     [ p [] [ text "Fill the old password only when setting a new password"]
     , ul [ class "usersettings" ]
-        ([ ("Login username", formstate.username)
-        , ( "Display name", formstate.displayname)
-        , ( "Old password", formstate.oldPassword)
-        , ( "Password", formstate.newPassword)]
+        ([ ("Login username", "login_usrname", formstate.username)
+        , ( "Display name", "display_name", formstate.displayname)
+        , ( "Old password", "old_passwd", formstate.oldPassword)
+        , ( "Password", "passwd", formstate.newPassword)]
         |> List.concatMap ( \tuple ->
-                                let (title, value_) = tuple in
-                                [ li [class "user-setting-list-item"] [ h3 [] [text title]]
+                                let (title, input_id, value_) = tuple in
+                                [ li [class "user-setting-list-item"] [ h3 [] [ label [ id (input_id ++ "_lbl")
+                                                                                      , for input_id ]
+                                                                                    [ text title]]]
                                 , li [class "user-setting-list-item"] [ input
                                                                             [ onInput (ChangeUserField formstate title)
+                                                                            , id input_id
                                                                             , type_
                                                                                   (if String.contains "password" (String.toLower title) then
                                                                                        "password"
@@ -37,7 +40,8 @@ editor user formstate =
                                                        , id "avatar_file" 
                                                        , on "change" (Decode.map GotUserFile MediaManager.filesDecoder)] []]]
 
-    , button [ onClick (SaveLoggedInUser user formstate) ] [text "Save user"]]
+    , button [ id "save_user_btn"
+             , onClick (SaveLoggedInUser user formstate) ] [text "Save user"]]
 
 defaultFormState: User -> Maybe UserSettingsFormState -> UserSettingsFormState
 defaultFormState user formstate =

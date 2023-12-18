@@ -111,3 +111,7 @@ FROM (
             session.gametype) b ON b.session_id = a.session_id
 GROUP BY
     a.gametype;
+
+-- name: find-by-username @query
+-- returns: :plists
+select * from users where username = $1;

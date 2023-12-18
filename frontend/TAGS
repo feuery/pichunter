@@ -50,7 +50,7 @@ actual_picture_gameview session state =actual_picture_gameview60,1994
 gameview_guessing =gameview_guessing88,3564
 gameview_pictures =gameview_pictures89,3622
 choose_county gametype imagecounts =choose_county92,3744
-gameview session gamestate piccounts =gameview110,4722
+gameview session gamestate piccounts =gameview111,4756
 
 src/Pichunter_http.elm,1006
 module Pichunter_httpPichunter_http1,0
@@ -213,8 +213,8 @@ url_to_route url =url_to_route27,730
 src/UserSettings.elm,172
 module UserSettingsUserSettings1,0
 editor user formstate =editor14,239
-defaultFormState user formstate =defaultFormState43,2256
-view session formstate =view48,2476
+defaultFormState user formstate =defaultFormState47,2670
+view session formstate =view52,2890
 
 src/GroupManager.elm,513
 module GroupManagerGroupManager1,0

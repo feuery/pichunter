@@ -23,7 +23,8 @@ homeScreen model =
     [  p [] [ text "Pichunter is a location-based image game" ]
     , case session of
           LoggedIn user -> ul []
-                           [ li [] [ a [ href "/play/locationguessing"] [ text "Place pictures on the map"]
+                           [ li [] [ a [ href "/play/locationguessing"
+                                       , id "locationguessing_link" ] [ text "Place pictures on the map"]
                                    , p [] [ text (case model.locationGameSession of
                                                       Just game_session -> 
                                                           session_label game_session

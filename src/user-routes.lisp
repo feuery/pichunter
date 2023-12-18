@@ -7,7 +7,7 @@
 
   (:import-from :halisql :defqueries)
   
-  (:export :data-for-frontend-without-password :get-highest-scores-per-session :user :user-username :register :post-login :fix-user-abilities))
+  (:export :find-by-username :insert-user :data-for-frontend-without-password :get-highest-scores-per-session :user :user-username :register :post-login :fix-user-abilities))
 
 (in-package :pichunter.user-routes)
 

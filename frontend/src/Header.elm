@@ -7,10 +7,11 @@ import State exposing (..)
 
 topbar session loginstate
     = header [ class "login" ]
-       (  h2 [] [ a [ href "/" ] [text "Welcome to pichunter" ] ]
+       (  h2 [] [ a [ href "/", id "goto_home" ] [text "Welcome to pichunter" ] ] -- <- that <a> is broken in playwright for reasons
        :: (case session of
               LoggedIn usr -> [ span [ id "topbar_welcome" ] [ text ("Welcome, " ++ usr.displayName)]
-                              , a [ href "/user_details" ] [ text "Profile settings" ]
+                              , a [ href "/user_details"
+                                  , id "user_details_btn"] [ text "Profile settings" ]
                               , if List.member "can-admin" usr.abilities then
                                     ul [ id "topbar_tools"]
                                         [ li [] [ a [href "/admin/usersgroups"] [ text "Handle users and groups"]]
@@ -30,4 +31,5 @@ topbar session loginstate
                                    , type_ "password"
                                    , onInput LoginPassword
                                    , value loginstate.password] []
-                           , button [ onClick (Login loginstate)] [ text "Log in!"]]))
+                           , button [ id "login_btn"
+                                    , onClick (Login loginstate)] [ text "Log in!"]]))

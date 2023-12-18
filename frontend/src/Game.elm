@@ -91,7 +91,8 @@ gameview_pictures = authorizator actual_picture_gameview
 choose_county: GameType -> List PictureCount -> List (Html Msg)
 choose_county gametype imagecounts =
     [ h3 [] [ text "Choose a county you expect pictures from" ]
-    , select [ onInput (ChoseCounty gametype) ]
+    , select [ onInput (ChoseCounty gametype)
+             , id "county_chooser"]
         (  ("null", "Choose a county") :: counties
         |> List.map (\c ->
                          let (county_code, county_name) = c
