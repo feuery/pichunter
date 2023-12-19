@@ -141,7 +141,7 @@ jobs:
             
             cd /workspace
             
-            apt-get install curl npm -q -y >/dev/null
+            apt-get install curl npm -qq
             npm install -g n
             n lts
 

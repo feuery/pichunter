@@ -125,7 +125,7 @@
 	    (is-true session-id)
 	    (format t "Session-id: ~a ~%" session-id)
 	    (is (equalp (hash-keys picture)
-			(list "id" "filename" "latitude" "longitude" "session-id")))
+			(list "id" "filename" "latitude" "longitude" "approver" "session-id")))
 	    
 	    (push picture pictures)
 
@@ -209,7 +209,7 @@
 	    (is-true session-id)
 	    (format t "Session-id: ~a ~%" session-id)
 	    (is (equalp (hash-keys picture)
-			(list "id" "filename" "latitude" "longitude" "session-id")))
+			(list "id" "filename" "latitude" "longitude" "approver" "session-id")))
 	    
 	    (push picture pictures)
 

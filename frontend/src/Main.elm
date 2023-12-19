@@ -480,7 +480,7 @@ update msg model =
                                      , alert ("invalid state " ++ (Debug.toString model.gameState)))
                         Nothing ->
                             ( model
-                            , alert "NextPic returned null. You probably won the game?")
+                            , alert ("NextPic returned " ++ (Debug.toString result) ++ ". You probably won the game?"))
                 Err error ->
                     (model, alert (Debug.toString error))
         MapClicked (distance, latitude, longitude) ->

@@ -2,15 +2,24 @@
   (:use :cl :postmodern :pichunter.std :com.inuoe.jzon :binding-arrows :com.inuoe.jzon :pichunter.decorators :pichunter.user)
   (:import-from :pichunter.file-handler :coordinate->number)
   (:import-from :easy-routes :defroute)
+  (:import-from :halisql :defqueries)
   (:export :get-position :load-codesets :*test-position-lat* :*test-position-lng*))
 
 (in-package :pichunter.game-routes)
 
-(defun init-session (game-type user-id)
-  (let ((session-id (getf (query "SELECT id FROM game_session WHERE completed_at IS NULL AND user_id = $1 AND gametype = $2" user-id game-type :plist) :id)))
-    (if session-id
-	session-id
-	(caar (query "INSERT INTO game_session (user_id, gametype) VALUES ($1, $2) returning id" user-id game-type)))))
+;; (ql:quickload :log4cl.log4slime)
+;; (log4cl.log4slime:install)
+
+
+(defqueries "game-routes.sql")
+
+(defun init-session (game-type user-id gamesession)
+  (if gamesession
+      gamesession
+      (let ((session-id (getf (get-session-id user-id game-type) :id)))
+	(if session-id
+	    session-id
+	    (caar (insert-new-session user-id game-type))))))
   
 
 (defroute next-image ("/api/next-picture/:county-code" :method :get :decorators (@json @transaction @no-cache @authenticated)) (&get gametype gamesession)
@@ -18,17 +27,15 @@
 			  "picture"
 			  "location"))
 		       
-	 (gamesession (init-session db-gametype (user-id *user*)))
+	 (gamesession (init-session db-gametype (user-id *user*) gamesession))
 	 (id (user-id *user*))
-	 (results (coerce (query "
-SELECT pic.id, pic.filename, pic.latitude, pic.longitude
-FROM pictures pic
-JOIN game_session session ON session.user_id = $1 AND completed_at IS NULL AND gametype = $2
-WHERE pic.id NOT IN (select picture_id from game_session_guess where session_id = session.id)
-ORDER BY random()
-LIMIT 1" id db-gametype :array-hash) 'list )))
+	 (results (coerce (get-next-pic id db-gametype) 'list )))
 
-    (format t "found ~d results for the next image in game type ~a ~% game session id is ~a~% the results: ~a~%" (length results) gametype gamesession results)
+    (log:info "found ~d results for the next image in game type ~a ~% game session id is ~a~% the results: ~a~%" (length results) gametype gamesession results)
+
+    (when (and (pichunter.std:e2e?)
+	       (not (coerce (query "SELECT id FROM pictures") 'list)))
+      (log:warn "pictures table seems to be empty"))
     
     (if results
 	(let ((result (first results)))

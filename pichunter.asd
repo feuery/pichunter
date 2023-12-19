@@ -16,7 +16,8 @@
 	       "easy-routes"
 	       "zpb-exif"
 	       "drakma"
-               "str")
+               "str"
+	       "log4cl")
   :components ((:module "src"
                 :components
                 ((:file "std")

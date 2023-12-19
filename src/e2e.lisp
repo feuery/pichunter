@@ -14,12 +14,4 @@
     (execute "UPDATE users SET activated = true, banned = false, display_name = 'Test User' WHERE id = $1" user-id)
     (execute "INSERT INTO groupmapping VALUES ($1, $2) ON CONFLICT DO NOTHING" user-id group-id)
     (execute "INSERT INTO grouppermission SELECT permission.id, usergroup.id FROM permission JOIN usergroup ON usergroup.name = 'Users' ON CONFLICT DO NOTHING")
-    (format t "updated user mapping as correct~%")
-    (format t "users: ~a~%" (query "SELECT * FROM users" :plists ))))
-
-
-	;; TODO commit this transaction, after which:
-	;; TODO call the playwright script to run the actual e2e-tests and scrape their results
-	;; TODO report them
-	;; TODO and Idunno rollback this transaction?
-	
+    (format t "updated user mapping as correct~%")))
