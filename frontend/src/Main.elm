@@ -680,23 +680,19 @@ highscore_to_view maybe_row =
         Nothing -> "No high score. Have you played this?"
 
 user_meta user =                    
-    div [ class "user-meta " ]
-        [ img [ class "picture"
-              , width 50
-              , height 50
-              , src ("/api/avatar/" ++ (Maybe.withDefault "" user.imgId))] []
-        , p [ class "displayname"] [ text user.displayName ]
-        , p [ class "username"] [ text user.username ]]
+    [ img [ class "picture profile-picture"
+          , src ("/api/avatar/" ++ (Maybe.withDefault "" user.imgId))] []
+    , p [ class "displayname"] [ text user.displayName ]
+    , p [ class "username"] [ text user.username ]]
 
 session_summary highscores =
-    div [ class "session-summary" ]
-        [ h3 [] [ text "Your highest scores"]
-        , ol []
-            [ li [] [ h4 [] [text "Location: "]
-                    , div [] [text (highscore_to_view highscores.location)]]
-            , li [] [ h4 [] [text "Picture: "]
-                    , div [] [text (highscore_to_view highscores.picture)]]]]
-        
+    [ h3 [] [ text "Your highest scores"]
+    , ol []
+        [ li [] [ h4 [] [text "Location: "]
+                , div [] [text (highscore_to_view highscores.location)]]
+        , li [] [ h4 [] [text "Picture: "]
+                , div [] [text (highscore_to_view highscores.picture)]]]]
+    
 view : Model -> Browser.Document Msg
 view model =
     { title = "Hello pichunter!"
@@ -704,14 +700,15 @@ view model =
              , div [ class "body_container" ]
                  [ div [class "sidebar"
                        , id "left_sidebar"]
-                       [ (case model.session of
+                       (List.append 
+                            (case model.session of
                               LoggedIn user ->
                                   user_meta user
-                              LoggedOut -> text "")
-                       , (case model.highestSessionData of
+                              LoggedOut -> [])
+                            (case model.highestSessionData of
                               Just highscores -> 
                                   session_summary highscores 
-                              Nothing -> text "")]
+                              Nothing -> []))
                                    
                  , article [ ]
                      (case model.route of
