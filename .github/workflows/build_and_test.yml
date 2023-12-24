@@ -130,6 +130,7 @@ jobs:
           docker-compose up -d
           
       - name: Start pichunter
+        id: tests
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/feuery/pichunter:latest
@@ -141,7 +142,7 @@ jobs:
             
             cd /workspace
             
-            apt-get install curl npm -qq
+            apt-get -qq install curl npm 
             npm install -g n
             n lts
 
@@ -154,13 +155,8 @@ jobs:
             npx playwright test --reporter=line
             find . -name '*.webm'
 
-      - name: Search for webms
-        if: always()
-        run: |
-          find ${{ github.workspace }} -name '*.webm'
-
       - uses: actions/upload-artifact@v3
-        if: always()
+        if: always() && steps.tests.outcome == 'failure'
         with:
           name: playwright-report
           path: ${{ github.workspace }}/playwright-tests/test-results

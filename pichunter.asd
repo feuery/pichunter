@@ -17,7 +17,8 @@
 	       "zpb-exif"
 	       "drakma"
                "str"
-	       "log4cl")
+	       "log4cl"
+	       "cl-advice")
   :components ((:module "src"
                 :components
                 ((:file "std")

@@ -1,7 +1,7 @@
 (defpackage pichunter.std
   (:use :cl)
   (:import-from :postmodern :with-connection)
-  (:export :repeatedly :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng* :compose :e2e?))
+  (:export :in-compile-path :repeatedly :drop :hash-keys :slurp :slurp-bytes :partial :if-let :when-let :with-db :take :sha-512 :slurp-utf-8 :*automatic-tests-mode* :*test-position-lat* :*test-position-lng* :compose :e2e?))
 
 (in-package pichunter.std)
 
@@ -119,3 +119,19 @@
 
 (defun e2e? ()
   (sb-ext:posix-getenv "PICHUNTER_E2E"))
+
+(defmacro in-compile-path (file-path)
+  ;; (unless (or *load-pathname* *compile-file-pathname*)
+  ;;   (format t "*load-pathname* and *compile-file-pathname* are nil, please don't C-c C-c in-compile-path macro but load them by C-c C-k'ing the current namespace"))
+
+  (let* ((local-path (drop 1 (pathname-directory (or *load-pathname*
+						     *compile-file-pathname*
+						     #P"/Users/feuer/Projects/pichunter/src/"))))
+	 (local-path (if (not (equalp (first (last local-path))
+				      "src"))
+			 (concatenate 'list local-path (list "src"))
+			 local-path))
+	 (file-path (pathname (format nil "/~{~a/~}~a"
+						local-path
+						file-path))))
+    file-path))

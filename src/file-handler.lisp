@@ -2,7 +2,7 @@
   (:use :cl :pichunter.std :postmodern :pichunter.config :binding-arrows :com.inuoe.jzon)
   (:import-from :easy-routes :defroute)
   (:import-from :pichunter.decorators :@can? :@json :@transaction :@authenticated)
-  (:export :imported-filenames :get-picture-data :import-picture))
+  (:export :query-municipality-from-mml :imported-filenames :get-picture-data :import-picture))
 
 (in-package pichunter.file-handler)
 
